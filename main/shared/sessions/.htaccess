@@ -1,0 +1,5 @@
+# Prevent direct access to session preference files
+<FilesMatch "\.json$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

@@ -1,0 +1,24 @@
+{
+  "name": "mc-tutor/platform",
+  "description": "MC Peer Tutoring Platform",
+  "type": "project",
+  "version": "1.0.0",
+  "require": {
+    "php": "^8.0",
+    "ext-openssl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "main/shared/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "format": "php-cs-fixer fix"
+  }
+}

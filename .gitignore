@@ -1,0 +1,63 @@
+# MC Tutor - Git Ignore File
+
+# Encryption Keys - NEVER COMMIT THESE
+config/encryption_key.php
+.env
+.env.local
+.env.production
+
+# Database Credentials
+config/database.php
+
+# Uploaded Files (may contain sensitive data)
+uploads/profiles/*
+uploads/study_materials/*
+!uploads/profiles/.gitkeep
+!uploads/study_materials/.gitkeep
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# PHP
+vendor/
+composer.phar
+composer.lock
+
+# Logs
+*.log
+error_log
+debug.log
+
+# Temporary Files
+tmp/
+temp/
+cache/
+
+# Node Modules (if using npm for frontend)
+node_modules/
+
+# Build Files
+dist/
+build/
+
+# Backup Files
+*.bak
+*.backup
+*_backup.sql
+
+# Vercel
+.vercel
+
+# Environment-specific
+.env.development
+.env.staging
+.env.test
