@@ -11,14 +11,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Verify connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('Email configuration error:', error);
-  } else {
-    console.log('✅ Email service ready');
-  }
-});
+// Verify connection only in development (not in serverless)
+if (process.env.NODE_ENV === 'development') {
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error('Email configuration error:', error);
+    } else {
+      console.log('✅ Email service ready');
+    }
+  });
+}
 
 // Email templates
 const templates = {

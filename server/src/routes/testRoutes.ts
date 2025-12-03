@@ -4,6 +4,22 @@ import { emailService } from '../services/emailService';
 const router = Router();
 
 /**
+ * Health check for test routes
+ * GET /api/test
+ */
+router.get('/', (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: 'Test API is working',
+    endpoints: [
+      'POST /api/test/email',
+      'POST /api/test/email/welcome',
+      'POST /api/test/email/session',
+    ],
+  });
+});
+
+/**
  * Test email endpoint
  * POST /api/test/email
  */
