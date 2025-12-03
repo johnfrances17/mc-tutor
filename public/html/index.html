@@ -3,28 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MC Tutor - Home</title>
-  <link rel="stylesheet" href="../styles/style.css">
+  <title>MC Tutor - Cloud-Based Peer Tutoring Platform</title>
+  <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
+<body style="padding: 0;">
   <nav class="navbar">
-    <div class="container">
-      <div class="navbar-brand">
-        <h2>MC Tutor</h2>
-      </div>
-      <div class="navbar-menu">
-        <a href="/html/login.html" class="btn btn-outline">Login</a>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">MC Tutor</a>
+      <div class="nav-links">
+        <a href="/html/login.html" class="btn btn-outline" style="background: transparent; border: 2px solid #667eea; color: #667eea;">Login</a>
         <a href="/html/register.html" class="btn btn-primary">Get Started</a>
       </div>
     </div>
   </nav>
 
   <section class="hero">
-    <div class="container">
+    <div class="container" style="max-width: 900px;">
       <div class="hero-content">
-        <h1>Welcome to MC Tutor</h1>
-        <p class="lead">Cloud-Based Peer Tutoring Platform for MC Students</p>
-        <p>Connect with fellow students, share knowledge, and excel together.</p>
+        <h1>MC Tutor</h1>
+        <p class="lead">Cloud-Based Peer Tutoring Platform</p>
+        <p style="font-size: 16px; margin-bottom: 10px;">Mabini College Inc.</p>
+        <p>Connect with fellow students, share knowledge, and excel together in your academic journey.</p>
         <div class="hero-actions">
           <a href="/html/register.html" class="btn btn-primary btn-lg">Register Now</a>
           <a href="/html/login.html" class="btn btn-outline btn-lg">Login</a>
@@ -40,32 +39,32 @@
         <div class="feature-card">
           <div class="feature-icon">📚</div>
           <h3>Find Expert Tutors</h3>
-          <p>Connect with peer tutors who excel in your subjects</p>
+          <p>Connect with peer tutors who excel in your subjects and understand your learning needs</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">📅</div>
           <h3>Easy Scheduling</h3>
-          <p>Book sessions that fit your schedule, online or in-person</p>
+          <p>Book tutoring sessions that fit your schedule, available both online and in-person</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">💬</div>
           <h3>Real-Time Chat</h3>
-          <p>Communicate with tutors before and after sessions</p>
+          <p>Communicate with tutors instantly before, during, and after your sessions</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">📄</div>
           <h3>Study Materials</h3>
-          <p>Access shared notes, guides, and learning resources</p>
+          <p>Access shared notes, guides, and learning resources from successful students</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">⭐</div>
           <h3>Rating System</h3>
-          <p>Read reviews and provide feedback on tutoring sessions</p>
+          <p>Read reviews and provide feedback to help maintain quality tutoring sessions</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🔒</div>
           <h3>Secure Platform</h3>
-          <p>Your data is protected with industry-standard security</p>
+          <p>Your data and conversations are protected with industry-standard security</p>
         </div>
       </div>
     </div>
@@ -74,7 +73,7 @@
   <section class="cta">
     <div class="container">
       <h2>Ready to Get Started?</h2>
-      <p>Join hundreds of students already using MC Tutor</p>
+      <p>Join hundreds of Mabini College students already using MC Tutor to achieve academic success</p>
       <a href="/html/register.html" class="btn btn-primary btn-lg">Create Your Account</a>
     </div>
   </section>
@@ -82,18 +81,29 @@
   <footer class="footer">
     <div class="container">
       <p>&copy; 2025 MC Tutor. All rights reserved.</p>
-      <p>Cloud-Based Peer Tutoring Platform</p>
+      <p>Cloud-Based Peer Tutoring Platform - Mabini College Inc.</p>
     </div>
   </footer>
 
-  <script src="../scripts/api.js"></script>
-  <script src="../scripts/auth.js"></script>
-  <script src="../scripts/utils.js"></script>
-  <script>
+  <script type="module" src="../scripts/api.js"></script>
+  <script type="module" src="../scripts/auth.js"></script>
+  <script type="module">
     // Redirect if already logged in
-    if (window.auth && window.auth.isLoggedIn()) {
-      const user = window.auth.getCurrentUser();
-      window.auth.redirectToDashboard(user.role);
+    import { getCurrentUser } from '../scripts/auth.js';
+    
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        // Redirect to appropriate dashboard
+        const dashboards = {
+          'admin': 'admin-dashboard.html',
+          'tutor': 'tutor-dashboard.html',
+          'tutee': 'student-dashboard.html'
+        };
+        window.location.href = dashboards[user.role] || 'student-dashboard.html';
+      }
+    } catch (error) {
+      // User not logged in, stay on landing page
     }
   </script>
 </body>
