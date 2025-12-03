@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MC Tutor - Home</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <h2>MC Tutor</h2>
+      </div>
+      <div class="navbar-menu">
+        <a href="login.html" class="btn btn-outline">Login</a>
+        <a href="register.html" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Welcome to MC Tutor</h1>
+        <p class="lead">Cloud-Based Peer Tutoring Platform for MC Students</p>
+        <p>Connect with fellow students, share knowledge, and excel together.</p>
+        <div class="hero-actions">
+          <a href="register.html" class="btn btn-primary btn-lg">Register Now</a>
+          <a href="login.html" class="btn btn-outline btn-lg">Login</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2>Why Choose MC Tutor?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Find Expert Tutors</h3>
+          <p>Connect with peer tutors who excel in your subjects</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3>Easy Scheduling</h3>
+          <p>Book sessions that fit your schedule, online or in-person</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Real-Time Chat</h3>
+          <p>Communicate with tutors before and after sessions</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📄</div>
+          <h3>Study Materials</h3>
+          <p>Access shared notes, guides, and learning resources</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⭐</div>
+          <h3>Rating System</h3>
+          <p>Read reviews and provide feedback on tutoring sessions</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Secure Platform</h3>
+          <p>Your data is protected with industry-standard security</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to Get Started?</h2>
+      <p>Join hundreds of students already using MC Tutor</p>
+      <a href="register.html" class="btn btn-primary btn-lg">Create Your Account</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 MC Tutor. All rights reserved.</p>
+      <p>Cloud-Based Peer Tutoring Platform</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Redirect if already logged in
+    if (api.isAuthenticated()) {
+      const role = api.getUserRole();
+      auth.redirectToDashboard(role);
+    }
+  </script>
+</body>
+</html>

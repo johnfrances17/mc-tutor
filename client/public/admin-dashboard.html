@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MC Tutor</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">MC Tutor Admin</a>
+            <div class="nav-links">
+                <a href="admin-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="manage-users.html" class="nav-link">Users</a>
+                <a href="manage-sessions.html" class="nav-link">Sessions</a>
+                <a href="manage-subjects.html" class="nav-link">Subjects</a>
+                <a href="view-materials.html" class="nav-link">Materials</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p class="text-muted">System overview and management</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportData()">
+                    📊 Export Data
+                </button>
+                <a href="manage-users.html?action=create" class="btn btn-primary">
+                    ➕ Add User
+                </a>
+            </div>
+        </div>
+
+        <!-- System Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalUsersCount">0</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-breakdown" id="userBreakdown"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalSessionsCount">0</div>
+                    <div class="stat-label">Total Sessions</div>
+                    <div class="stat-breakdown" id="sessionBreakdown"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📖</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalSubjectsCount">0</div>
+                    <div class="stat-label">Subjects</div>
+                    <div class="stat-breakdown" id="subjectBreakdown"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalMaterialsCount">0</div>
+                    <div class="stat-label">Study Materials</div>
+                    <div class="stat-breakdown" id="materialsBreakdown"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Overview -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recent User Registrations</h3>
+                        <a href="manage-users.html" class="text-primary">View all</a>
+                    </div>
+                    <div class="card-body" id="recentUsersList">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pending Session Requests</h3>
+                        <a href="manage-sessions.html?status=pending" class="text-primary">View all</a>
+                    </div>
+                    <div class="card-body" id="pendingSessionsList">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Tutors -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Active Tutors Overview</h3>
+                <div class="card-header-actions">
+                    <select id="tutorFilterSubject" class="form-select">
+                        <option value="">All Subjects</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body" id="activeTutorsList">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- System Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h3>System Activity Log</h3>
+                <div class="card-header-actions">
+                    <select id="activityFilter" class="form-select">
+                        <option value="all">All Activities</option>
+                        <option value="user_registration">Registrations</option>
+                        <option value="session_created">Sessions Created</option>
+                        <option value="session_completed">Sessions Completed</option>
+                        <option value="material_uploaded">Materials Uploaded</option>
+                        <option value="feedback_submitted">Feedback Submitted</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body" id="activityLogList">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Charts -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Sessions by Status</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionStatusChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Popular Subjects</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="popularSubjectsChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/api.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/utils.js"></script>
+    <script type="module">
+        import { api } from './js/api.js';
+        import { logout, getCurrentUser } from './js/auth.js';
+        import { showToast, formatDate, formatDateTime, getStatusBadgeClass } from './js/utils.js';
+
+        let currentUser = null;
+        let allSessions = [];
+        let allUsers = [];
+        let allSubjects = [];
+
+        // Initialize dashboard
+        async function initDashboard() {
+            try {
+                currentUser = await getCurrentUser();
+                
+                if (!currentUser) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (currentUser.role !== 'admin') {
+                    showToast('Access denied. Admins only.', 'error');
+                    setTimeout(() => window.location.href = 'index.html', 2000);
+                    return;
+                }
+
+                // Load all data
+                await Promise.all([
+                    loadSystemStats(),
+                    loadRecentUsers(),
+                    loadPendingSessions(),
+                    loadActiveTutors(),
+                    loadActivityLog(),
+                    loadSubjects()
+                ]);
+
+                renderCharts();
+            } catch (error) {
+                console.error('Dashboard init error:', error);
+                showToast('Failed to load dashboard', 'error');
+            }
+        }
+
+        // Load system statistics
+        async function loadSystemStats() {
+            try {
+                const [users, sessions, subjects, materials] = await Promise.all([
+                    api.get('/users'),
+                    api.get('/sessions'),
+                    api.get('/subjects'),
+                    api.get('/materials')
+                ]);
+
+                allUsers = users.data || [];
+                allSessions = sessions.data || [];
+                allSubjects = subjects.data || [];
+
+                // User stats
+                const tutors = allUsers.filter(u => u.role === 'tutor').length;
+                const tutees = allUsers.filter(u => u.role === 'tutee').length;
+                const admins = allUsers.filter(u => u.role === 'admin').length;
+                
+                document.getElementById('totalUsersCount').textContent = allUsers.length;
+                document.getElementById('userBreakdown').innerHTML = `
+                    <small>${tutors} tutors, ${tutees} students, ${admins} admins</small>
+                `;
+
+                // Session stats
+                const pending = allSessions.filter(s => s.status === 'pending').length;
+                const confirmed = allSessions.filter(s => s.status === 'confirmed').length;
+                const completed = allSessions.filter(s => s.status === 'completed').length;
+                
+                document.getElementById('totalSessionsCount').textContent = allSessions.length;
+                document.getElementById('sessionBreakdown').innerHTML = `
+                    <small>${pending} pending, ${confirmed} confirmed, ${completed} completed</small>
+                `;
+
+                // Subject stats
+                document.getElementById('totalSubjectsCount').textContent = allSubjects.length;
+                const courses = [...new Set(allSubjects.map(s => s.course))].length;
+                document.getElementById('subjectBreakdown').innerHTML = `
+                    <small>${courses} courses</small>
+                `;
+
+                // Materials stats
+                document.getElementById('totalMaterialsCount').textContent = materials.data.length;
+                document.getElementById('materialsBreakdown').innerHTML = `
+                    <small>Uploaded by tutors</small>
+                `;
+            } catch (error) {
+                console.error('Stats error:', error);
+            }
+        }
+
+        // Load recent users
+        async function loadRecentUsers() {
+            try {
+                const response = await api.get('/users?limit=5&sort=created_at:desc');
+                const users = response.data || allUsers.slice(0, 5);
+
+                const container = document.getElementById('recentUsersList');
+                
+                if (users.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No recent registrations</p>';
+                } else {
+                    container.innerHTML = users.map(user => `
+                        <div class="user-item">
+                            <div class="user-avatar">${user.full_name.charAt(0)}</div>
+                            <div class="user-info">
+                                <div class="user-name">${user.full_name}</div>
+                                <div class="user-meta">
+                                    <span class="badge ${user.role === 'tutor' ? 'badge-primary' : 'badge-secondary'}">
+                                        ${user.role}
+                                    </span>
+                                    <span>${user.student_id}</span>
+                                    <span>${formatDate(user.created_at || new Date())}</span>
+                                </div>
+                            </div>
+                            <a href="manage-users.html?id=${user.student_id}" class="btn btn-sm">View</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Recent users error:', error);
+                document.getElementById('recentUsersList').innerHTML = 
+                    '<p class="text-muted">Failed to load users</p>';
+            }
+        }
+
+        // Load pending sessions
+        async function loadPendingSessions() {
+            try {
+                const pending = allSessions.filter(s => s.status === 'pending').slice(0, 5);
+
+                const container = document.getElementById('pendingSessionsList');
+                
+                if (pending.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No pending sessions</p>';
+                } else {
+                    container.innerHTML = pending.map(session => `
+                        <div class="session-item compact">
+                            <div class="session-info">
+                                <div class="session-subject">${session.subject_name || 'Subject'}</div>
+                                <div class="session-details">
+                                    <span>👤 ${session.student_name} → ${session.tutor_name}</span>
+                                    <span>📅 ${formatDate(session.session_date)}</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-warning">Pending</span>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Pending sessions error:', error);
+                document.getElementById('pendingSessionsList').innerHTML = 
+                    '<p class="text-muted">Failed to load sessions</p>';
+            }
+        }
+
+        // Load active tutors
+        async function loadActiveTutors() {
+            try {
+                const response = await api.get('/tutors/search');
+                const tutors = response.data || [];
+
+                const container = document.getElementById('activeTutorsList');
+                
+                if (tutors.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No active tutors</p>';
+                    return;
+                }
+
+                // Calculate tutor stats
+                const tutorStats = await Promise.all(tutors.slice(0, 10).map(async tutor => {
+                    try {
+                        const sessions = allSessions.filter(s => s.tutor_id === tutor.student_id);
+                        const feedback = await api.get(`/feedback/tutor/${tutor.student_id}`);
+                        
+                        return {
+                            ...tutor,
+                            sessionCount: sessions.length,
+                            completedSessions: sessions.filter(s => s.status === 'completed').length,
+                            avgRating: feedback.data.length > 0 
+                                ? (feedback.data.reduce((sum, f) => sum + f.rating, 0) / feedback.data.length).toFixed(1)
+                                : 'N/A'
+                        };
+                    } catch {
+                        return { ...tutor, sessionCount: 0, completedSessions: 0, avgRating: 'N/A' };
+                    }
+                }));
+
+                container.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tutor</th>
+                                    <th>Student ID</th>
+                                    <th>Subjects</th>
+                                    <th>Sessions</th>
+                                    <th>Completed</th>
+                                    <th>Rating</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tutorStats.map(tutor => `
+                                    <tr>
+                                        <td>${tutor.full_name}</td>
+                                        <td>${tutor.student_id}</td>
+                                        <td>${tutor.subject_count || 0}</td>
+                                        <td>${tutor.sessionCount}</td>
+                                        <td>${tutor.completedSessions}</td>
+                                        <td>${tutor.avgRating}</td>
+                                        <td>
+                                            <a href="manage-users.html?id=${tutor.student_id}" class="btn btn-sm">View</a>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Active tutors error:', error);
+                document.getElementById('activeTutorsList').innerHTML = 
+                    '<p class="text-muted">Failed to load tutors</p>';
+            }
+        }
+
+        // Load activity log (simulated)
+        async function loadActivityLog() {
+            try {
+                // Create activity log from sessions and users
+                const activities = [];
+                
+                allSessions.slice(0, 10).forEach(session => {
+                    activities.push({
+                        type: 'session_created',
+                        description: `${session.student_name} booked a session with ${session.tutor_name}`,
+                        timestamp: session.created_at,
+                        icon: '📚'
+                    });
+                });
+
+                activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                const container = document.getElementById('activityLogList');
+                
+                if (activities.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No recent activity</p>';
+                } else {
+                    container.innerHTML = activities.slice(0, 15).map(activity => `
+                        <div class="activity-item">
+                            <div class="activity-icon">${activity.icon}</div>
+                            <div class="activity-content">
+                                <div class="activity-description">${activity.description}</div>
+                                <div class="activity-time">${formatDateTime(activity.timestamp)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Activity log error:', error);
+                document.getElementById('activityLogList').innerHTML = 
+                    '<p class="text-muted">Failed to load activity log</p>';
+            }
+        }
+
+        // Load subjects for filter
+        async function loadSubjects() {
+            try {
+                const select = document.getElementById('tutorFilterSubject');
+                select.innerHTML = '<option value="">All Subjects</option>' +
+                    allSubjects.map(subject => 
+                        `<option value="${subject.id}">${subject.subject_name}</option>`
+                    ).join('');
+            } catch (error) {
+                console.error('Subjects error:', error);
+            }
+        }
+
+        // Render simple charts (text-based)
+        function renderCharts() {
+            // Session status chart
+            const statusCounts = {
+                pending: allSessions.filter(s => s.status === 'pending').length,
+                confirmed: allSessions.filter(s => s.status === 'confirmed').length,
+                completed: allSessions.filter(s => s.status === 'completed').length,
+                cancelled: allSessions.filter(s => s.status === 'cancelled').length
+            };
+
+            document.getElementById('sessionStatusChart').innerHTML = `
+                <div class="simple-chart">
+                    ${Object.entries(statusCounts).map(([status, count]) => `
+                        <div class="chart-row">
+                            <span class="chart-label">${status}</span>
+                            <div class="chart-bar">
+                                <div class="chart-fill ${getStatusBadgeClass(status)}" 
+                                     style="width: ${(count / allSessions.length * 100) || 0}%">
+                                </div>
+                            </div>
+                            <span class="chart-value">${count}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Popular subjects chart
+            const subjectCounts = {};
+            allSessions.forEach(session => {
+                const subject = session.subject_name || 'Unknown';
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
+            });
+
+            const topSubjects = Object.entries(subjectCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            const maxCount = topSubjects[0]?.[1] || 1;
+
+            document.getElementById('popularSubjectsChart').innerHTML = `
+                <div class="simple-chart">
+                    ${topSubjects.map(([subject, count]) => `
+                        <div class="chart-row">
+                            <span class="chart-label">${subject}</span>
+                            <div class="chart-bar">
+                                <div class="chart-fill badge-primary" 
+                                     style="width: ${(count / maxCount * 100)}%">
+                                </div>
+                            </div>
+                            <span class="chart-value">${count}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Export data function
+        window.exportData = function() {
+            showToast('Export functionality coming soon', 'info');
+        };
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await logout();
+        });
+
+        // Filter change handlers
+        document.getElementById('tutorFilterSubject')?.addEventListener('change', loadActiveTutors);
+        document.getElementById('activityFilter')?.addEventListener('change', loadActivityLog);
+
+        // Initialize on load
+        initDashboard();
+
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            loadSystemStats();
+            loadRecentUsers();
+            loadPendingSessions();
+        }, 60000);
+    </script>
+</body>
+</html>
