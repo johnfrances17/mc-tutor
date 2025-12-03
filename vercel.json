@@ -4,10 +4,6 @@
     {
       "src": "server/src/server.ts",
       "use": "@vercel/node"
-    },
-    {
-      "src": "client/public/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -16,28 +12,12 @@
       "dest": "server/src/server.ts"
     },
     {
-      "src": "/html/(.*)",
-      "dest": "client/public/html/$1"
-    },
-    {
-      "src": "/styles/(.*)",
-      "dest": "client/public/styles/$1"
-    },
-    {
-      "src": "/scripts/(.*)",
-      "dest": "client/public/scripts/$1"
+      "handle": "filesystem"
     },
     {
       "src": "/",
-      "dest": "client/public/html/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "client/public/html/$1"
+      "dest": "/html/index.html"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "regions": ["sin1"]
+  "public": true
 }
