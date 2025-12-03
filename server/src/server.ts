@@ -49,16 +49,6 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
-// Health check endpoint
-app.get('/health', (_req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    version: '2.0.0'
-  });
-});
-
 // Import routes
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
@@ -75,6 +65,16 @@ import { apiLimiter } from './middleware/rateLimiter';
 
 // Apply general rate limiting to all API routes
 app.use('/api', apiLimiter);
+
+// Health check endpoint
+app.get('/api/health', (_req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    version: '2.0.0'
+  });
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);

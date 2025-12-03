@@ -1,22 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server/src/server.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["server/src/**"]
-      }
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/src/server.ts"
+      "dest": "/api/index.js"
     },
     {
       "src": "/html/(.*)",

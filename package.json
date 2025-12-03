@@ -4,6 +4,7 @@
   "description": "Cloud-Based Peer Tutoring Platform",
   "scripts": {
     "build": "cd server && npm install && npm run build",
+    "vercel-build": "cd server && npm install && npm run build",
     "start": "cd server && npm start",
     "dev": "cd server && npm run dev"
   },

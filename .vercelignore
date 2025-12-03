@@ -19,3 +19,7 @@ main/shared/materials/*
 mc_tutor_db.sql
 *.backup
 *.bak
+server/src
+_archive_docs
+_archive_php
+old-mc-tutor
