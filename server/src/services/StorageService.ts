@@ -1,5 +1,5 @@
 import { supabase } from '../config/database';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -102,7 +102,7 @@ export class StorageService {
     subjectId: number
   ): Promise<{ url: string; filename: string }> {
     try {
-      const uniqueId = uuidv4().substring(0, 8);
+      const uniqueId = randomUUID().substring(0, 8);
       const fileName = `${Date.now()}_${uniqueId}_${file.originalname}`;
       const filePath = `materials/${tutorId}/${subjectId}/${fileName}`;
 
@@ -152,7 +152,7 @@ export class StorageService {
     const baseDir = path.join(process.cwd(), '..', 'uploads', 'study_materials', tutorId, subjectId.toString());
     await fs.mkdir(baseDir, { recursive: true });
 
-    const uniqueId = uuidv4().substring(0, 8);
+    const uniqueId = randomUUID().substring(0, 8);
     const fileName = `${Date.now()}_${uniqueId}_${file.originalname}`;
     const filePath = path.join(baseDir, fileName);
 
