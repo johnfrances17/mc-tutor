@@ -1,0 +1,21 @@
+{
+  "name": "mc-tutor",
+  "version": "1.0.0",
+  "description": "Cloud-Based Peer Tutoring Platform",
+  "scripts": {
+    "build": "cd server && npm install && npm run build",
+    "start": "cd server && npm start",
+    "dev": "cd server && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnfrances17/mc-tutor.git"
+  },
+  "keywords": [
+    "tutoring",
+    "education",
+    "peer-learning"
+  ],
+  "author": "MC Tutor Team",
+  "license": "MIT"
+}

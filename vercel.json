@@ -2,8 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/package.json",
+      "src": "server/src/server.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "client/public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -12,8 +16,24 @@
       "dest": "server/src/server.ts"
     },
     {
+      "src": "/html/(.*)",
+      "dest": "client/public/html/$1"
+    },
+    {
+      "src": "/styles/(.*)",
+      "dest": "client/public/styles/$1"
+    },
+    {
+      "src": "/scripts/(.*)",
+      "dest": "client/public/scripts/$1"
+    },
+    {
+      "src": "/",
+      "dest": "client/public/html/index.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "client/public/$1"
+      "dest": "client/public/html/$1"
     }
   ],
   "env": {
