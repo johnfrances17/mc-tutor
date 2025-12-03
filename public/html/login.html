@@ -69,8 +69,8 @@
 
     .role-cards {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
       margin-bottom: 40px;
     }
 
@@ -178,6 +178,12 @@
         font-size: 28px;
       }
     }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .role-cards {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -205,6 +211,12 @@
               <div class="icon">🎓</div>
               <h3>Tutor</h3>
               <p>I want to share my knowledge and help fellow students succeed</p>
+            </div>
+
+            <div class="role-card" onclick="selectRole('admin')">
+              <div class="icon">👨‍💼</div>
+              <h3>Admin</h3>
+              <p>Manage platform, users, and oversee tutoring activities</p>
             </div>
           </div>
 
@@ -293,8 +305,23 @@
       selectedRole = role;
       document.getElementById('roleSelection').style.display = 'none';
       document.getElementById('loginForm').classList.add('active');
-      document.getElementById('roleLabel').textContent = role === 'student' ? 'Student' : 'Tutor';
-      document.getElementById('registerLink').href = `/html/register.html?role=${role}`;
+      
+      // Set role label
+      const roleLabels = {
+        'student': 'Student',
+        'tutor': 'Tutor',
+        'admin': 'Admin'
+      };
+      document.getElementById('roleLabel').textContent = roleLabels[role] || 'Student';
+      
+      // Update register link (admin shouldn't have register link)
+      const registerLink = document.getElementById('registerLink');
+      if (role === 'admin') {
+        registerLink.parentElement.style.display = 'none';
+      } else {
+        registerLink.parentElement.style.display = 'block';
+        registerLink.href = `/html/register.html?role=${role}`;
+      }
     }
 
     // Back to role selection
