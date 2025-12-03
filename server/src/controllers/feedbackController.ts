@@ -7,7 +7,7 @@ import { AuthRequest } from '../types';
  */
 export const submitFeedback = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tuteeId = req.user!.userId;
+    const tuteeId = req.user!.user_id;
     const { session_id, rating, comment } = req.body;
 
     if (!session_id || !rating) {
@@ -117,7 +117,7 @@ export const getTutorFeedback = async (req: AuthRequest, res: Response, next: Ne
  */
 export const getMyFeedback = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tuteeId = req.user!.userId;
+    const tuteeId = req.user!.user_id;
 
     const { data, error } = await supabase
       .from('feedback')
@@ -144,7 +144,7 @@ export const getMyFeedback = async (req: AuthRequest, res: Response, next: NextF
  */
 export const getReceivedFeedback = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tutorId = req.user!.userId;
+    const tutorId = req.user!.user_id;
 
     const { data, error } = await supabase
       .from('feedback')

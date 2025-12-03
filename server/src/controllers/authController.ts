@@ -11,19 +11,19 @@ const authService = new AuthService();
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const {
-      studentId,
+      student_id,
       email,
       password,
-      confirmPassword,
-      fullName,
+      confirm_password,
+      full_name,
       role,
       phone,
-      yearLevel,
+      year_level,
       course,
     } = req.body;
 
     // Validate required fields
-    if (!studentId || !email || !password || !fullName || !role || !phone || !yearLevel || !course) {
+    if (!student_id || !email || !password || !full_name || !role || !phone || !year_level || !course) {
       return res.status(400).json({
         success: false,
         error: { message: 'All fields are required' },
@@ -31,7 +31,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 
     // Validate password confirmation
-    if (password !== confirmPassword) {
+    if (password !== confirm_password) {
       return res.status(400).json({
         success: false,
         error: { message: 'Passwords do not match' },
@@ -47,19 +47,19 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 
     const result = await authService.register({
-      studentId,
+      student_id,
       email,
       password,
-      fullName,
+      full_name,
       role,
       phone,
-      yearLevel,
+      year_level,
       course,
     });
 
     // Send welcome email (lazy load and don't await - send in background)
     import('../services/emailService')
-      .then(({ emailService }) => emailService.sendWelcomeEmail(email, fullName))
+      .then(({ emailService }) => emailService.sendWelcomeEmail(email, full_name))
       .catch(err => console.error('Welcome email failed:', err));
 
     res.status(201).json({
@@ -125,7 +125,7 @@ export const getCurrentUser = async (
       });
     }
 
-    const user = await authService.getUserById(req.user.userId);
+    const user = await authService.getUserById(req.user.user_id);
 
     res.json({
       success: true,

@@ -9,7 +9,7 @@ const notificationService = new NotificationService();
  */
 export const getNotifications = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
     const { unread_only } = req.query;
 
     const notifications = notificationService.getNotifications(
@@ -34,7 +34,7 @@ export const getNotifications = async (req: AuthRequest, res: Response, next: Ne
  */
 export const markAsRead = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
     const { id } = req.params;
 
     const result = notificationService.markAsRead(studentId, Number(id));
@@ -54,7 +54,7 @@ export const markAsRead = async (req: AuthRequest, res: Response, next: NextFunc
  */
 export const markAllAsRead = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
 
     const result = notificationService.markAllAsRead(studentId);
 
@@ -73,7 +73,7 @@ export const markAllAsRead = async (req: AuthRequest, res: Response, next: NextF
  */
 export const deleteNotification = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
     const { id } = req.params;
 
     const result = notificationService.deleteNotification(studentId, Number(id));
@@ -93,7 +93,7 @@ export const deleteNotification = async (req: AuthRequest, res: Response, next: 
  */
 export const deleteAllNotifications = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
 
     const result = notificationService.deleteAllNotifications(studentId);
 
@@ -112,7 +112,7 @@ export const deleteAllNotifications = async (req: AuthRequest, res: Response, ne
  */
 export const getUnreadCount = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
     const count = notificationService.getUnreadCount(studentId);
 
     res.json({ success: true, count });

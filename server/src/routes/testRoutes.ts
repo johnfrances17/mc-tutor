@@ -22,7 +22,7 @@ router.get('/', (_req: Request, res: Response) => {
  * Test email endpoint
  * POST /api/test/email
  */
-router.post('/email', async (req: Request, res: Response) => {
+router.post('/email', async (req: Request, res: Response): Promise<any> => {
   try {
     // Lazy load email service to avoid initialization issues
     const { emailService } = await import('../services/emailService');
@@ -39,19 +39,19 @@ router.post('/email', async (req: Request, res: Response) => {
     const result = await emailService.sendTestEmail(email);
 
     if (result.success) {
-      res.json({
+      return res.json({
         success: true,
         message: 'Test email sent successfully!',
         messageId: result.messageId,
       });
     } else {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: { message: 'Failed to send email', details: result.error },
       });
     }
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: 'Email sending failed', details: error.message },
     });
@@ -62,7 +62,7 @@ router.post('/email', async (req: Request, res: Response) => {
  * Test welcome email
  * POST /api/test/email/welcome
  */
-router.post('/email/welcome', async (req: Request, res: Response) => {
+router.post('/email/welcome', async (req: Request, res: Response): Promise<any> => {
   try {
     // Lazy load email service
     const { emailService } = await import('../services/emailService');
@@ -79,19 +79,19 @@ router.post('/email/welcome', async (req: Request, res: Response) => {
     const result = await emailService.sendWelcomeEmail(email, name);
 
     if (result.success) {
-      res.json({
+      return res.json({
         success: true,
         message: 'Welcome email sent successfully!',
         messageId: result.messageId,
       });
     } else {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: { message: 'Failed to send email', details: result.error },
       });
     }
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: 'Email sending failed', details: error.message },
     });
@@ -102,7 +102,7 @@ router.post('/email/welcome', async (req: Request, res: Response) => {
  * Test session confirmation email
  * POST /api/test/email/session
  */
-router.post('/email/session', async (req: Request, res: Response) => {
+router.post('/email/session', async (req: Request, res: Response): Promise<any> => {
   try {
     // Lazy load email service
     const { emailService } = await import('../services/emailService');
@@ -129,19 +129,19 @@ router.post('/email/session', async (req: Request, res: Response) => {
     const result = await emailService.sendSessionConfirmation(email, sessionDetails);
 
     if (result.success) {
-      res.json({
+      return res.json({
         success: true,
         message: 'Session confirmation email sent successfully!',
         messageId: result.messageId,
       });
     } else {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: { message: 'Failed to send email', details: result.error },
       });
     }
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: 'Email sending failed', details: error.message },
     });

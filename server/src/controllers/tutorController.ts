@@ -168,7 +168,7 @@ export const getTutorSubjects = async (req: Request, res: Response, next: NextFu
  */
 export const addTutorSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tutorId = req.user!.userId;
+    const tutorId = req.user!.user_id;
     const { subject_id } = req.body;
 
     if (!subject_id) {
@@ -224,7 +224,7 @@ export const addTutorSubject = async (req: AuthRequest, res: Response, next: Nex
  */
 export const removeTutorSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tutorId = req.user!.userId;
+    const tutorId = req.user!.user_id;
     const { subjectId } = req.params;
 
     const { error } = await supabase

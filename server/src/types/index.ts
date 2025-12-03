@@ -3,11 +3,11 @@ import { Request } from 'express';
 // Extend Express Request type to include authenticated user
 export interface AuthRequest extends Request {
   user?: {
-    userId: number;
-    studentId: string;
+    user_id: number;
+    student_id: string;
     email: string;
     role: string;
-    fullName: string;
+    full_name: string;
   };
 }
 

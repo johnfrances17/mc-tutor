@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 // Verify connection only in development (not in serverless)
 if (process.env.NODE_ENV === 'development') {
-  transporter.verify((error, success) => {
+  transporter.verify((error) => {
     if (error) {
       console.error('Email configuration error:', error);
     } else {

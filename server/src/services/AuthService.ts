@@ -4,13 +4,13 @@ import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { createError } from '../middleware/errorHandler';
 
 interface RegisterData {
-  studentId: string;
+  student_id: string;
   email: string;
   password: string;
-  fullName: string;
+  full_name: string;
   role: 'tutor' | 'tutee';
   phone: string;
-  yearLevel: string;
+  year_level: string;
   course: string;
 }
 
@@ -22,15 +22,15 @@ interface LoginData {
 
 interface AuthResponse {
   user: {
-    userId: number;
-    studentId: string;
+    user_id: number;
+    student_id: string;
     email: string;
-    fullName: string;
+    full_name: string;
     role: string;
     phone: string | null;
-    yearLevel: string | null;
+    year_level: string | null;
     course: string | null;
-    profilePicture: string | null;
+    profile_picture: string | null;
   };
   token: string;
   refreshToken: string;
@@ -56,14 +56,14 @@ export class AuthService {
     const { data: existingUser } = await supabase
       .from('users')
       .select('user_id, email, student_id')
-      .or(`email.eq.${data.email},student_id.eq.${data.studentId}`)
+      .or(`email.eq.${data.email},student_id.eq.${data.student_id}`)
       .single();
 
     if (existingUser) {
       if (existingUser.email === data.email) {
         throw createError('Email already exists', 400);
       }
-      if (existingUser.student_id === data.studentId) {
+      if (existingUser.student_id === data.student_id) {
         throw createError('Student ID already exists', 400);
       }
     }
@@ -75,13 +75,13 @@ export class AuthService {
     const { data: newUser, error: insertError } = await supabase
       .from('users')
       .insert({
-        student_id: data.studentId,
+        student_id: data.student_id,
         email: data.email,
         password: hashedPassword,
-        full_name: data.fullName,
+        full_name: data.full_name,
         role: data.role,
         phone: data.phone,
-        year_level: data.yearLevel,
+        year_level: data.year_level,
         course: data.course,
         status: 'active',
       })
@@ -95,11 +95,11 @@ export class AuthService {
 
     // Generate tokens
     const tokenPayload = {
-      userId: newUser.user_id,
-      studentId: newUser.student_id,
+      user_id: newUser.user_id,
+      student_id: newUser.student_id,
       email: newUser.email,
       role: newUser.role,
-      fullName: newUser.full_name,
+      full_name: newUser.full_name,
     };
 
     const token = generateToken(tokenPayload);
@@ -107,15 +107,15 @@ export class AuthService {
 
     return {
       user: {
-        userId: newUser.user_id,
-        studentId: newUser.student_id,
+        user_id: newUser.user_id,
+        student_id: newUser.student_id,
         email: newUser.email,
-        fullName: newUser.full_name,
+        full_name: newUser.full_name,
         role: newUser.role,
         phone: newUser.phone,
-        yearLevel: newUser.year_level,
+        year_level: newUser.year_level,
         course: newUser.course,
-        profilePicture: newUser.profile_picture,
+        profile_picture: newUser.profile_picture,
       },
       token,
       refreshToken,
@@ -153,11 +153,11 @@ export class AuthService {
 
     // Generate tokens
     const tokenPayload = {
-      userId: user.user_id,
-      studentId: user.student_id,
+      user_id: user.user_id,
+      student_id: user.student_id,
       email: user.email,
       role: user.role,
-      fullName: user.full_name,
+      full_name: user.full_name,
     };
 
     const token = generateToken(tokenPayload);
@@ -165,15 +165,15 @@ export class AuthService {
 
     return {
       user: {
-        userId: user.user_id,
-        studentId: user.student_id,
+        user_id: user.user_id,
+        student_id: user.student_id,
         email: user.email,
-        fullName: user.full_name,
+        full_name: user.full_name,
         role: user.role,
         phone: user.phone,
-        yearLevel: user.year_level,
+        year_level: user.year_level,
         course: user.course,
-        profilePicture: user.profile_picture,
+        profile_picture: user.profile_picture,
       },
       token,
       refreshToken,
@@ -210,7 +210,7 @@ export class AuthService {
       const { data: user, error } = await supabase
         .from('users')
         .select('user_id, status')
-        .eq('user_id', payload.userId)
+        .eq('user_id', payload.user_id)
         .single();
 
       if (error || !user || user.status !== 'active') {

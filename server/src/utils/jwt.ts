@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 
 interface TokenPayload {
-  userId: number;
-  studentId: string;
+  user_id: number;
+  student_id: string;
   email: string;
   role: string;
-  fullName: string;
+  full_name: string;
 }
 
 /**

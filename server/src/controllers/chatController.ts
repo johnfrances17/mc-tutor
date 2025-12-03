@@ -9,7 +9,7 @@ const chatService = new ChatService();
  */
 export const getConversations = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const studentId = req.user!.studentId;
+    const studentId = req.user!.student_id;
 
     const conversations = await chatService.getAllConversations(studentId);
 
@@ -24,7 +24,7 @@ export const getConversations = async (req: AuthRequest, res: Response, next: Ne
  */
 export const getMessages = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const myStudentId = req.user!.studentId;
+    const myStudentId = req.user!.student_id;
     const { otherStudentId } = req.params;
 
     const messages = chatService.getMessages(myStudentId, otherStudentId, true);
@@ -40,7 +40,7 @@ export const getMessages = async (req: AuthRequest, res: Response, next: NextFun
  */
 export const sendMessage = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const senderStudentId = req.user!.studentId;
+    const senderStudentId = req.user!.student_id;
     const { receiver_student_id, message } = req.body;
 
     if (!receiver_student_id || !message) {
@@ -64,7 +64,7 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
  */
 export const markMessagesAsRead = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const myStudentId = req.user!.studentId;
+    const myStudentId = req.user!.student_id;
     const { otherStudentId } = req.params;
 
     chatService.markAsRead(myStudentId, otherStudentId);
@@ -80,7 +80,7 @@ export const markMessagesAsRead = async (req: AuthRequest, res: Response, next: 
  */
 export const getUnreadCount = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const myStudentId = req.user!.studentId;
+    const myStudentId = req.user!.student_id;
     const { otherStudentId } = req.params;
 
     const count = chatService.getUnreadCount(myStudentId, otherStudentId);

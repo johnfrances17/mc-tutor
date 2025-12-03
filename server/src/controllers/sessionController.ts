@@ -11,7 +11,7 @@ const sessionPrefsService = new SessionPreferencesService();
  */
 export const getSessions = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
     const role = req.user!.role;
     const { status, page = '1', limit = '20' } = req.query;
 
@@ -70,7 +70,7 @@ export const getSessions = async (req: AuthRequest, res: Response, next: NextFun
  */
 export const createSession = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const tuteeId = req.user!.userId;
+    const tuteeId = req.user!.user_id;
     const {
       tutor_id,
       subject_id,
@@ -130,7 +130,7 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
  */
 export const confirmSession = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
     const { id } = req.params;
 
     // Check if session exists and user is the tutor
@@ -177,7 +177,7 @@ export const confirmSession = async (req: AuthRequest, res: Response, next: Next
  */
 export const cancelSession = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
     const { id } = req.params;
     const { reason } = req.body;
 
@@ -228,7 +228,7 @@ export const cancelSession = async (req: AuthRequest, res: Response, next: NextF
  */
 export const completeSession = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
     const { id } = req.params;
 
     // Check if session exists and user is the tutor
@@ -298,7 +298,7 @@ export const getSessionOptions = async (req: AuthRequest, res: Response, next: N
  */
 export const saveSessionPreferences = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const tutorStudentId = req.user!.studentId;
+    const tutorStudentId = req.user!.student_id;
     const {
       subject_code,
       session_type,

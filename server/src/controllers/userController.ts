@@ -11,7 +11,7 @@ const storageService = StorageService.getInstance();
  */
 export const getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
 
     const { data: user, error } = await supabase
       .from('users')
@@ -34,7 +34,7 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
  */
 export const updateProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
     const { full_name, phone, course, year_level, bio } = req.body;
 
     const updateData: any = {};
@@ -67,8 +67,8 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
  */
 export const uploadProfilePicture = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
-    const studentId = req.user!.studentId;
+    const userId = req.user!.user_id;
+    const studentId = req.user!.student_id;
 
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
@@ -144,7 +144,7 @@ export const getUserByStudentId = async (req: Request, res: Response, next: Next
  */
 export const changePassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.user_id;
     const { current_password, new_password, confirm_password } = req.body;
 
     if (!current_password || !new_password || !confirm_password) {

@@ -4,11 +4,11 @@ import { AuthRequest } from '../types';
 import { createError } from './errorHandler';
 
 interface JWTPayload {
-  userId: number;
-  studentId: string;
+  user_id: number;
+  student_id: string;
   email: string;
   role: string;
-  fullName: string;
+  full_name: string;
 }
 
 /**
@@ -44,11 +44,11 @@ export const authMiddleware = async (
 
     // Attach user to request
     req.user = {
-      userId: decoded.userId,
-      studentId: decoded.studentId,
+      user_id: decoded.user_id,
+      student_id: decoded.student_id,
       email: decoded.email,
       role: decoded.role,
-      fullName: decoded.fullName,
+      full_name: decoded.full_name,
     };
 
     next();
@@ -108,11 +108,11 @@ export const optionalAuthMiddleware = async (
       if (jwtSecret) {
         const decoded = jwt.verify(token, jwtSecret) as JWTPayload;
         req.user = {
-          userId: decoded.userId,
-          studentId: decoded.studentId,
+          user_id: decoded.user_id,
+          student_id: decoded.student_id,
           email: decoded.email,
           role: decoded.role,
-          fullName: decoded.fullName,
+          full_name: decoded.full_name,
         };
       }
     }
