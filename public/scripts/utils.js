@@ -4,6 +4,169 @@
  */
 
 /**
+ * Show toast notification
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'success', 'error', 'warning', 'info'
+ * @param {number} duration - Duration in milliseconds (default: 3000)
+ */
+function showToast(message, type = 'info', duration = 3000) {
+  // Create toast container if it doesn't exist
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    `;
+    document.body.appendChild(container);
+  }
+
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  const icons = {
+    success: 'fa-check-circle',
+    error: 'fa-exclamation-circle',
+    warning: 'fa-exclamation-triangle',
+    info: 'fa-info-circle'
+  };
+
+  const colors = {
+    success: '#28a745',
+    error: '#dc3545',
+    warning: '#ffc107',
+    info: '#667eea'
+  };
+
+  toast.style.cssText = `
+    background: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid ${colors[type]};
+    animation: slideInRight 0.3s ease;
+  `;
+
+  toast.innerHTML = `
+    <i class="fas ${icons[type]}" style="color: ${colors[type]}; font-size: 20px;"></i>
+    <span style="flex: 1; color: #333; font-size: 14px; line-height: 1.4;">${message}</span>
+    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #999; cursor: pointer; font-size: 18px; padding: 0; line-height: 1;">×</button>
+  `;
+
+  container.appendChild(toast);
+
+  // Auto-remove after duration
+  if (duration > 0) {
+    setTimeout(() => {
+      toast.style.animation = 'slideOutRight 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+
+  // Add animation styles if not already added
+  if (!document.getElementById('toast-animations')) {
+    const style = document.createElement('style');
+    style.id = 'toast-animations';
+    style.textContent = `
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+/**
+ * Show loading spinner in container
+ * @param {HTMLElement} container - Container element
+ * @param {string} message - Loading message
+ */
+function showLoading(container, message = 'Loading...') {
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div style="text-align: center; padding: 40px; color: #666;">
+      <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+/**
+ * Show empty state in container
+ * @param {HTMLElement} container - Container element
+ * @param {string} message - Empty state message
+ */
+function showEmptyState(container, message) {
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div class="empty-state">
+      <i class="fas fa-inbox" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+      <p style="font-size: 16px; color: #666;">${message}</p>
+    </div>
+  `;
+}
+
+/**
+ * Show error state in container
+ * @param {HTMLElement} container - Container element
+ * @param {string} message - Error message
+ */
+function showError(container, message = 'An error occurred') {
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div style="text-align: center; padding: 40px;">
+      <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
+      <p style="font-size: 16px; color: #721c24;">${message}</p>
+      <button class="btn btn-secondary" onclick="location.reload()" style="margin-top: 20px;">
+        <i class="fas fa-redo"></i> Try Again
+      </button>
+    </div>
+  `;
+}
+
+/**
+ * Handle API error and show toast
+ * @param {Error} error - Error object
+ * @param {string} defaultMessage - Default message if error has none
+ */
+function handleApiError(error, defaultMessage = 'An error occurred') {
+  console.error('API Error:', error);
+  const message = error.message || defaultMessage;
+  showToast(message, 'error', 5000);
+}
+
+/**
  * Format date to readable string
  * @param {string|Date} date - Date to format
  * @returns {string} Formatted date string

@@ -4,27 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutor Dashboard - MC Tutor</title>
-    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="nav-brand">MC Tutor</a>
-            <div class="nav-links">
-                <a href="tutor-dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="tutor-sessions.html" class="nav-link">Sessions</a>
-                <a href="my-subjects.html" class="nav-link">My Subjects</a>
-                <a href="upload-materials.html" class="nav-link">Upload Materials</a>
-                <a href="messenger.html" class="nav-link">
-                    Messages
-                    <span class="badge" id="unreadMessagesCount" style="display: none;"></span>
-                </a>
-                <a href="tutor-feedback.html" class="nav-link">Feedback</a>
-                <a href="profile.html" class="nav-link">Profile</a>
-                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
-            </div>
-        </div>
-    </nav>
+    <!-- Header and Nav will be injected by components -->
 
     <div class="container">
         <div class="dashboard-header">
@@ -38,33 +22,29 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">⏳</div>
+        <div class="dashboard-grid">
+            <div class="stat-card" id="pendingSessions">
                 <div class="stat-content">
-                    <div class="stat-value" id="pendingRequestsCount">0</div>
-                    <div class="stat-label">Pending Requests</div>
+                    <h3>Pending Requests</h3>
+                    <p class="number">0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="confirmedSessions">
+                <div class="stat-content">
+                    <h3>Confirmed</h3>
+                    <p class="number">0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="completedSessions">
+                <div class="stat-content">
+                    <h3>Completed</h3>
+                    <p class="number">0</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📅</div>
                 <div class="stat-content">
-                    <div class="stat-value" id="upcomingSessionsCount">0</div>
-                    <div class="stat-label">Upcoming Sessions</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-content">
-                    <div class="stat-value" id="completedSessionsCount">0</div>
-                    <div class="stat-label">Completed Sessions</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-content">
-                    <div class="stat-value" id="averageRating">0.0</div>
-                    <div class="stat-label">Average Rating</div>
+                    <h3>Avg Rating</h3>
+                    <p class="number" id="averageRating">0.0</p>
                 </div>
             </div>
         </div>
