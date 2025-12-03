@@ -2,8 +2,8 @@
  * Vercel Serverless Function Entry Point
  */
 
-// Import the compiled Express app from the TypeScript build
+// Import the compiled Express app
 const { app } = require('../server/dist/server.js');
 
-// Export the Express app as a Vercel serverless function
+// Export for Vercel serverless
 module.exports = app;
