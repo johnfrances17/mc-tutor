@@ -20,6 +20,10 @@
       "dest": "public/html/$1"
     },
     {
+      "src": "/css/(.*)",
+      "dest": "public/css/$1"
+    },
+    {
       "src": "/styles/(.*)",
       "dest": "public/styles/$1"
     },
