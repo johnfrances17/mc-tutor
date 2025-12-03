@@ -8,28 +8,12 @@ import {
 } from '../controllers/materialController';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
 
 const router = Router();
 
-// Configure multer for file uploads
-const uploadDir = path.join(process.cwd(), 'uploads', 'temp');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
- destination: (_req, _file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
+// Configure multer for file uploads (use memory storage for serverless)
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (_req, file, cb: any) => {
     const allowedTypes = /pdf|doc|docx|ppt|pptx|txt|zip|rar/;
