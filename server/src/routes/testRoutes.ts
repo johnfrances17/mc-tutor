@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { emailService } from '../services/emailService';
 
 const router = Router();
 
@@ -25,6 +24,9 @@ router.get('/', (_req: Request, res: Response) => {
  */
 router.post('/email', async (req: Request, res: Response) => {
   try {
+    // Lazy load email service to avoid initialization issues
+    const { emailService } = await import('../services/emailService');
+    
     const { email } = req.body;
 
     if (!email) {
@@ -62,6 +64,9 @@ router.post('/email', async (req: Request, res: Response) => {
  */
 router.post('/email/welcome', async (req: Request, res: Response) => {
   try {
+    // Lazy load email service
+    const { emailService } = await import('../services/emailService');
+    
     const { email, name } = req.body;
 
     if (!email || !name) {
@@ -99,6 +104,9 @@ router.post('/email/welcome', async (req: Request, res: Response) => {
  */
 router.post('/email/session', async (req: Request, res: Response) => {
   try {
+    // Lazy load email service
+    const { emailService } = await import('../services/emailService');
+    
     const { email } = req.body;
 
     if (!email) {
