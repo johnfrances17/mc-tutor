@@ -70,6 +70,7 @@ import feedbackRoutes from './routes/feedbackRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import chatRoutes from './routes/chatRoutes';
 import adminRoutes from './routes/adminRoutes';
+import testRoutes from './routes/testRoutes';
 import { apiLimiter } from './middleware/rateLimiter';
 
 // Apply general rate limiting to all API routes
@@ -86,6 +87,7 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/test', testRoutes); // Test endpoints
 
 app.get('/api', (_req, res) => {
   res.json({

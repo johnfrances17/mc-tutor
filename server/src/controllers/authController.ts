@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/AuthService';
 import { AuthRequest } from '../types';
+import { emailService } from '../services/emailService';
 
 const authService = new AuthService();
 
@@ -56,6 +57,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       yearLevel,
       course,
     });
+
+    // Send welcome email (don't await - send in background)
+    emailService.sendWelcomeEmail(email, fullName)
+      .catch(err => console.error('Welcome email failed:', err));
 
     res.status(201).json({
       success: true,
