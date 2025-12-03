@@ -11,6 +11,9 @@ const API_BASE_URL = isLocalhost
   ? 'http://localhost:3000/api'  // Local development
   : '/api';                        // Production (Vercel)
 
+// Expose to window for system status page
+window.API_BASE_URL = API_BASE_URL;
+
 /**
  * Make authenticated API request
  * @param {string} endpoint - API endpoint (e.g., '/users/profile')

@@ -120,19 +120,24 @@ io.on('connection', (socket) => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// Initialize data directories
-initializeDataDirectories();
+// Initialize data directories (skip in Vercel serverless)
+if (!process.env.VERCEL) {
+  initializeDataDirectories();
+}
 
 // Initialize Socket.IO handlers
 initializeSocketIO(io);
 
-// Start server
-const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
-  console.log(`🚀 MC Tutor Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔌 Socket.IO enabled`);
-});
+// Start server (only in non-serverless environment)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3000;
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 MC Tutor Server running on port ${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔌 Socket.IO enabled`);
+  });
+}
 
-// Export for testing
-export { app, io };
+// Export for Vercel serverless and testing
+export default app;
+export { app, io, httpServer };
