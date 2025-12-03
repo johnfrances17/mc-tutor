@@ -1,51 +1,20 @@
 {
   "version": 2,
-  "installCommand": "npm install && cd server && npm install",
-  "buildCommand": "cd server && npm run build",
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["server/dist/**"]
-      }
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
+  "installCommand": "npm install --prefix server",
+  "buildCommand": "npm run build --prefix server",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "server/dist/**"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "/api/index.js"
     },
     {
-      "src": "/html/(.*)",
-      "dest": "/public/html/$1"
-    },
-    {
-      "src": "/css/(.*)",
-      "dest": "/public/css/$1"
-    },
-    {
-      "src": "/styles/(.*)",
-      "dest": "/public/styles/$1"
-    },
-    {
-      "src": "/scripts/(.*)",
-      "dest": "/public/scripts/$1"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/public/html/index.html"
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
