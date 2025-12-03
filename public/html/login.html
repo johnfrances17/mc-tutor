@@ -5,238 +5,279 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - MC Tutor</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
-      background: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .login-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
     }
-    
-    .auth-wrapper {
-      width: 100%;
-      max-width: 800px;
-    }
-    
-    .role-selection-card {
+
+    .login-container {
       background: white;
-      padding: 50px;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 900px;
+      width: 100%;
+      overflow: hidden;
     }
-    
-    .role-selection-card h1 {
-      color: #667eea;
+
+    .login-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      text-align: center;
+      color: white;
+    }
+
+    .login-header h1 {
+      margin: 0 0 8px 0;
       font-size: 36px;
-      margin-bottom: 8px;
-      text-align: center;
+      font-weight: 700;
     }
-    
-    .role-selection-card .subtitle {
-      color: #666;
-      font-size: 18px;
-      margin-bottom: 8px;
-      text-align: center;
+
+    .login-header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.95;
     }
-    
-    .role-selection-card .institution {
-      color: #999;
-      font-size: 14px;
-      margin-bottom: 40px;
-      text-align: center;
+
+    .login-header .institution {
+      margin-top: 5px;
+      font-size: 13px;
+      opacity: 0.85;
     }
-    
-    .role-selection-card h2 {
+
+    .login-body {
+      padding: 50px;
+    }
+
+    .role-selection h2 {
+      text-align: center;
       color: #333;
-      font-size: 24px;
-      margin-bottom: 40px;
-      font-weight: 500;
-      text-align: center;
+      font-size: 28px;
+      margin: 0 0 40px 0;
+      font-weight: 600;
     }
-    
+
     .role-cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-top: 30px;
+      gap: 25px;
+      margin-bottom: 40px;
     }
-    
+
     .role-card {
       background: #f8f9fa;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 40px 30px;
+      border: 3px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 40px 25px;
       cursor: pointer;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: block;
+      transition: all 0.3s ease;
       text-align: center;
     }
-    
+
     .role-card:hover {
       border-color: #667eea;
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-      transform: translateY(-4px);
+      background: #f0f3ff;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
     }
-    
+
     .role-card .icon {
-      display: flex;
-      justify-content: center;
+      font-size: 48px;
       margin-bottom: 20px;
     }
-    
+
     .role-card h3 {
       color: #333;
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
     }
-    
+
     .role-card p {
       color: #666;
       font-size: 14px;
       line-height: 1.6;
       margin: 0;
     }
-    
-    .login-form-card {
-      background: white;
-      border-radius: 12px;
-      padding: 50px 45px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+
+    .login-form {
+      display: none;
     }
-    
-    .login-form-card h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
+
+    .login-form.active {
+      display: block;
     }
-    
-    .divider {
+
+    .back-btn {
+      background: none;
       border: none;
-      border-top: 2px solid #f0f0f0;
-      margin: 0 0 30px 0;
+      color: #667eea;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 8px 0;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      transition: all 0.3s;
     }
-    
+
+    .back-btn:hover {
+      gap: 12px;
+      color: #5568d3;
+    }
+
+    .form-title {
+      text-align: center;
+      color: #333;
+      font-size: 28px;
+      margin: 0 0 30px 0;
+      font-weight: 600;
+    }
+
+    .auth-footer {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 2px solid #f0f0f0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .auth-footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 768px) {
+      .login-body {
+        padding: 30px 25px;
+      }
+
       .role-cards {
         grid-template-columns: 1fr;
+        gap: 20px;
       }
-      
-      .role-selection-card,
-      .login-form-card {
-        padding: 30px 25px;
+
+      .login-header h1 {
+        font-size: 28px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="auth-wrapper">
-    <!-- Role Selection Screen -->
-    <div id="roleSelectionScreen" class="role-selection-card">
-      <h1>MC Tutor</h1>
-      <div class="subtitle">Cloud-Based Peer Tutoring Platform</div>
-      <div class="institution">Mabini College Inc.</div>
-      
-      <h2>Choose Your Role</h2>
-      
-      <div class="role-cards">
-        <a href="javascript:void(0)" class="role-card" onclick="selectRole('student')">
-          <div class="icon">
-            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="10" y="15" width="40" height="30" rx="2" fill="#667eea" opacity="0.2"/>
-              <rect x="15" y="20" width="30" height="20" rx="1" fill="#667eea"/>
-              <line x1="20" y1="26" x2="40" y2="26" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <line x1="20" y1="31" x2="35" y2="31" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="30" cy="12" r="8" fill="#667eea"/>
-              <path d="M 30 8 L 32 14 L 28 14 Z" fill="white"/>
-            </svg>
+  <div class="login-hero">
+    <div class="login-container">
+      <div class="login-header">
+        <h1><i class="fas fa-graduation-cap"></i> MC Tutor</h1>
+        <p>Cloud-Based Peer Tutoring Platform</p>
+        <p class="institution">Mabini College Inc.</p>
+      </div>
+
+      <div class="login-body">
+        <!-- Role Selection -->
+        <div id="roleSelection" class="role-selection">
+          <h2>Choose Your Role</h2>
+          
+          <div class="role-cards">
+            <div class="role-card" onclick="selectRole('student')">
+              <div class="icon">📚</div>
+              <h3>Student</h3>
+              <p>I need help with my subjects and want to find tutors to guide me</p>
+            </div>
+            
+            <div class="role-card" onclick="selectRole('tutor')">
+              <div class="icon">🎓</div>
+              <h3>Tutor</h3>
+              <p>I want to share my knowledge and help fellow students succeed</p>
+            </div>
           </div>
-          <h3>Student</h3>
-          <p>I need help with my subjects and want to find tutors to guide me</p>
-        </a>
-        
-        <a href="javascript:void(0)" class="role-card" onclick="selectRole('tutor')">
-          <div class="icon">
-            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="30" cy="18" r="10" fill="#667eea"/>
-              <path d="M 15 45 Q 15 30 30 30 Q 45 30 45 45" fill="#667eea"/>
-              <rect x="20" y="48" width="20" height="8" rx="1" fill="#667eea" opacity="0.7"/>
-              <path d="M 10 25 L 30 15 L 50 25 L 30 20 Z" fill="#667eea" opacity="0.3"/>
-              <circle cx="42" cy="22" r="6" fill="#667eea" opacity="0.5"/>
-              <path d="M 40 20 L 42 24 L 44 20" stroke="white" stroke-width="2" fill="none"/>
-            </svg>
+
+          <div class="auth-footer">
+            Don't have an account? 
+            <a href="/html/register.html">Register here</a>
           </div>
-          <h3>Tutor</h3>
-          <p>I want to share my knowledge and help fellow students succeed</p>
-        </a>
-      </div>
-      
-      <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
-        <p style="text-align: center; color: #666; margin: 0;">
-          Don't have an account? 
-          <a href="/html/register.html" style="color: #667eea; text-decoration: none; font-weight: 600;">Register here</a>
-        </p>
-      </div>
-    </div>
-
-    <!-- Login Form Screen (hidden initially) -->
-    <div id="loginFormScreen" class="login-form-card" style="display: none;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #667eea; margin-bottom: 5px; font-size: 32px;">MC Tutor</h1>
-        <p style="color: #666; font-size: 16px;">Cloud-Based Peer Tutoring Platform</p>
-        <p style="color: #999; font-size: 13px;">Mabini College Inc.</p>
-      </div>
-      
-      <h2>
-        <span id="roleLabel">Student</span> Login
-      </h2>
-      
-      <hr class="divider">
-
-      <form id="loginForm" class="auth-form">
-        <div id="errorMessage" class="error-message" style="display: none;"></div>
-
-        <div class="form-group">
-          <label for="student_id">Student ID</label>
-          <input type="text" id="student_id" name="student_id" placeholder="Enter your student ID" required>
         </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <!-- Login Form -->
+        <div id="loginForm" class="login-form">
+          <button class="back-btn" onclick="backToRoleSelection()">
+            <i class="fas fa-arrow-left"></i> Back to role selection
+          </button>
+
+          <h2 class="form-title">
+            <span id="roleLabel">Student</span> Login
+          </h2>
+
+          <form id="loginFormElement">
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+            <div class="form-group">
+              <label for="student_id"><i class="fas fa-id-card"></i> Student ID</label>
+              <input 
+                type="text" 
+                id="student_id" 
+                name="student_id" 
+                placeholder="e.g., 2021-12345" 
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="password"><i class="fas fa-lock"></i> Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                placeholder="Enter your password" 
+                required
+              >
+            </div>
+
+            <div style="text-align: right; margin-bottom: 20px;">
+              <a href="/html/forgot-password.html" style="color: #667eea; font-size: 14px; text-decoration: none;">
+                Forgot password?
+              </a>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%; padding: 15px; font-size: 16px;">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            Don't have an account? 
+            <a href="/html/register.html" id="registerLink">Register here</a>
+          </div>
         </div>
-
-        <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%; margin-bottom: 15px;">
-          Login
-        </button>
-
-        <button type="button" class="btn btn-secondary" onclick="backToRoleSelection()" style="width: 100%; display: block; text-align: center; margin-bottom: 10px;">
-          ← Back to Role Selection
-        </button>
-      </form>
-
-      <div class="auth-footer" style="text-align: center; margin-top: 20px;">
-        Don't have an account? 
-        <a href="/html/register.html" id="registerLink">Register here</a>
       </div>
     </div>
   </div>
 
-  <script type="module" src="../scripts/api.js"></script>
-  <script type="module" src="../scripts/auth.js"></script>
-  <script type="module" src="../scripts/utils.js"></script>
-  <script type="module">
-    import { api } from '../scripts/api.js';
-    import { getCurrentUser } from '../scripts/auth.js';
-
+  <script src="../scripts/utils.js"></script>
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/auth.js"></script>
+  <script>
     let selectedRole = '';
 
-    // Redirect if already logged in
-    try {
-      const user = await getCurrentUser();
+    // Check if already logged in
+    (function() {
+      const user = window.auth?.getCurrentUser();
       if (user) {
         const dashboards = {
           'admin': 'admin-dashboard.html',
@@ -245,84 +286,65 @@
         };
         window.location.href = dashboards[user.role] || 'student-dashboard.html';
       }
-    } catch (error) {
-      // User not logged in, continue
-    }
+    })();
 
-    // Handle role selection
-    window.selectRole = function(role) {
+    // Role selection
+    function selectRole(role) {
       selectedRole = role;
-      document.getElementById('roleSelectionScreen').style.display = 'none';
-      document.getElementById('loginFormScreen').style.display = 'block';
+      document.getElementById('roleSelection').style.display = 'none';
+      document.getElementById('loginForm').classList.add('active');
       document.getElementById('roleLabel').textContent = role === 'student' ? 'Student' : 'Tutor';
       document.getElementById('registerLink').href = `/html/register.html?role=${role}`;
-    };
+    }
 
     // Back to role selection
-    window.backToRoleSelection = function() {
-      document.getElementById('loginFormScreen').style.display = 'none';
-      document.getElementById('roleSelectionScreen').style.display = 'block';
+    function backToRoleSelection() {
+      document.getElementById('loginForm').classList.remove('active');
+      document.getElementById('roleSelection').style.display = 'block';
       selectedRole = '';
-      document.getElementById('loginForm').reset();
+      document.getElementById('loginFormElement').reset();
       document.getElementById('errorMessage').style.display = 'none';
-    };
+    }
 
-    // Handle login form submission
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    // Handle login
+    document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const studentId = document.getElementById('student_id').value;
+      const studentId = document.getElementById('student_id').value.trim();
       const password = document.getElementById('password').value;
       const errorMessage = document.getElementById('errorMessage');
       const loginBtn = document.getElementById('loginBtn');
 
-      // Clear previous errors
       errorMessage.style.display = 'none';
-      errorMessage.textContent = '';
-
-      // Disable button
       loginBtn.disabled = true;
-      loginBtn.textContent = 'Logging in...';
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
       try {
-        const response = await api.post('/auth/login', {
+        const response = await window.API.auth.login({
           student_id: studentId,
-          password: password
+          password: password,
+          role: selectedRole === 'student' ? 'tutee' : selectedRole
         });
 
-        if (response.success && response.token) {
-          // Store token
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
+        if (response.success && response.data) {
+          window.auth.saveSession(response.data);
           
-          // Verify role matches selection
-          const userRole = response.user.role === 'tutee' ? 'student' : response.user.role;
-          
-          if (selectedRole && selectedRole !== userRole) {
-            errorMessage.textContent = `Invalid login. Please use the ${selectedRole} login.`;
-            errorMessage.style.display = 'block';
-            loginBtn.disabled = false;
-            loginBtn.textContent = 'Login';
-            return;
+          if (window.utils && window.utils.showToast) {
+            window.utils.showToast('Login successful!', 'success');
           }
           
-          // Redirect to dashboard
-          const dashboards = {
-            'admin': 'admin-dashboard.html',
-            'tutor': 'tutor-dashboard.html',
-            'tutee': 'student-dashboard.html'
-          };
-          
           setTimeout(() => {
-            window.location.href = dashboards[response.user.role] || 'student-dashboard.html';
+            window.auth.redirectToDashboard(response.data.user.role);
           }, 500);
+        } else {
+          throw new Error(response.message || 'Login failed');
         }
       } catch (error) {
         console.error('Login error:', error);
         errorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
         errorMessage.style.display = 'block';
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Login';
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
       }
     });
 

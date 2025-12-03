@@ -5,259 +5,392 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - MC Tutor</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
-      background: #f5f5f5;
-      padding: 40px 20px;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .register-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 700px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .register-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      text-align: center;
+      color: white;
+    }
+
+    .register-header h1 {
+      margin: 0 0 8px 0;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    .register-header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .register-header .institution {
+      margin-top: 5px;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .register-body {
+      padding: 50px;
+    }
+
+    .register-body h2 {
+      text-align: center;
+      color: #333;
+      font-size: 28px;
+      margin: 0 0 30px 0;
+      font-weight: 600;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .password-requirements {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .password-requirements ul {
+      margin: 8px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .password-requirements li {
+      margin: 4px 0;
+    }
+
+    .password-requirements li.valid {
+      color: #28a745;
+    }
+
+    .password-requirements li.invalid {
+      color: #dc3545;
+    }
+
+    @media (max-width: 768px) {
+      .register-body {
+        padding: 30px 25px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="auth-container" style="max-width: 600px;">
-    <div class="auth-card">
-      <div class="auth-header">
-        <h1>MC Tutor</h1>
-        <p>Join Our Tutoring Community</p>
-        <p style="font-size: 13px; color: #999; margin-top: 5px;">Mabini College Inc.</p>
-      </div>
+  <div class="register-container">
+    <div class="register-header">
+      <h1><i class="fas fa-graduation-cap"></i> MC Tutor</h1>
+      <p>Join Our Tutoring Community</p>
+      <p class="institution">Mabini College Inc.</p>
+    </div>
 
-      <form id="registerForm" class="auth-form">
-        <h2>Register</h2>
+    <div class="register-body">
+      <h2>Create Your Account</h2>
 
+      <form id="registerForm">
         <div id="errorMessage" class="error-message" style="display: none;"></div>
+        <div id="successMessage" class="success-message" style="display: none;"></div>
 
         <div class="form-group">
-          <label for="student_id">Student ID *</label>
-          <input type="text" id="student_id" name="student_id" placeholder="e.g., 2021-12345" required>
+          <label for="student_id"><i class="fas fa-id-card"></i> Student ID *</label>
+          <input 
+            type="text" 
+            id="student_id" 
+            name="student_id"
+            placeholder="e.g., 2021-12345" 
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label for="full_name">Full Name *</label>
-          <input type="text" id="full_name" name="full_name" placeholder="Juan Dela Cruz" required>
+          <label for="full_name"><i class="fas fa-user"></i> Full Name *</label>
+          <input 
+            type="text" 
+            id="full_name" 
+            name="full_name"
+            placeholder="Juan Dela Cruz" 
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label for="email">Email Address *</label>
-          <input type="email" id="email" name="email" placeholder="student@example.com" required>
+          <label for="email"><i class="fas fa-envelope"></i> Email Address *</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email"
+            placeholder="student@example.com" 
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label for="phone">Phone Number *</label>
-          <input type="tel" id="phone" name="phone" placeholder="09123456789" required>
+          <label for="phone"><i class="fas fa-phone"></i> Phone Number *</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone"
+            placeholder="09123456789" 
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label for="role">I want to be a *</label>
+          <label for="role"><i class="fas fa-user-tag"></i> I want to be a *</label>
           <select id="role" name="role" required>
             <option value="">Select role</option>
-            <option value="tutee">Student (Looking for tutoring)</option>
-            <option value="tutor">Tutor (Provide tutoring)</option>
+            <option value="tutee">Student (I need tutoring)</option>
+            <option value="tutor">Tutor (I want to teach)</option>
           </select>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="year_level">Year Level *</label>
+            <label for="year_level"><i class="fas fa-layer-group"></i> Year Level *</label>
             <select id="year_level" name="year_level" required>
               <option value="">Select year level</option>
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
-              <option value="3rd Year">3rd Year</option>
-              <option value="4th Year">4th Year</option>
-              <option value="N/A">N/A</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+              <option value="5">5th Year</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="course">Course *</label>
+            <label for="course"><i class="fas fa-book"></i> Course *</label>
             <select id="course" name="course" required>
               <option value="">Select course</option>
-              <optgroup label="Business & Administration">
-                <option value="Administration">Administration</option>
-                <option value="BS in Accountancy (B.S.A.)">BS in Accountancy (B.S.A.)</option>
-                <option value="BS in Business Administration - Operations Management (B.S.B.A.)">BS in Business Administration - Operations Management</option>
-                <option value="BS in Business Administration - Financial Management (B.S.B.A.)">BS in Business Administration - Financial Management</option>
-                <option value="Bachelor of Science in Entrepreneurship (B.S. Entrep.)">BS in Entrepreneurship (B.S. Entrep.)</option>
+              <optgroup label="Business & Management">
+                <option value="BSBA">BS Business Administration</option>
+                <option value="BSAIS">BS Accounting Information System</option>
+                <option value="BSMA">BS Management Accounting</option>
+                <option value="BSOA">BS Office Administration</option>
               </optgroup>
               <optgroup label="Education">
-                <option value="Bachelor in Secondary Education - English (B.S.Ed.)">Bachelor in Secondary Education - English</option>
-                <option value="Bachelor in Secondary Education - Mathematics (B.S.Ed.)">Bachelor in Secondary Education - Mathematics</option>
-                <option value="Bachelor in Secondary Education - Filipino (B.S.Ed.)">Bachelor in Secondary Education - Filipino</option>
-                <option value="Bachelor in Secondary Education - MAPEH (B.S.Ed.)">Bachelor in Secondary Education - MAPEH</option>
-                <option value="Bachelor in Secondary Education - Social Studies (B.S.Ed.)">Bachelor in Secondary Education - Social Studies</option>
-                <option value="Bachelor in Elementary Education - Content Course (B.E.Ed.)">Bachelor in Elementary Education - Content Course</option>
-                <option value="Bachelor in Elementary Education - Special Education (B.E.Ed.)">Bachelor in Elementary Education - Special Education</option>
-                <option value="Bachelor in Elementary Education - Pre-School Education (B.E.Ed.)">Bachelor in Elementary Education - Pre-School Education</option>
-                <option value="Bachelor of Early Childhood Education (B.E.C.Ed)">Bachelor of Early Childhood Education</option>
-                <option value="Bachelor of Special Needs Education (B.S.N.Ed)">Bachelor of Special Needs Education</option>
-                <option value="Bachelor of Culture and Arts Education (B.C.A.Ed)">Bachelor of Culture and Arts Education</option>
-                <option value="Bachelor of Physical Education (B.P.Ed.)">Bachelor of Physical Education</option>
+                <option value="BEED">Bachelor of Elementary Education</option>
+                <option value="BSED">Bachelor of Secondary Education</option>
               </optgroup>
-              <optgroup label="Computer Science & IT">
-                <option value="Bachelor of Science in Computer Science (B.S.C.S.)">BS in Computer Science (B.S.C.S.)</option>
+              <optgroup label="Computer Studies">
+                <option value="BSCS">BS Computer Science</option>
+                <option value="BSIT">BS Information Technology</option>
               </optgroup>
               <optgroup label="Health Sciences">
-                <option value="Bachelor of Science in Nursing (B.S.N.)">BS in Nursing (B.S.N.)</option>
+                <option value="BSN">BS Nursing</option>
+                <option value="BSMT">BS Medical Technology</option>
+                <option value="BSRad">BS Radiologic Technology</option>
               </optgroup>
-              <optgroup label="Law & Criminology">
-                <option value="Bachelor of Science in Criminology (B.S. Crim.)">BS in Criminology (B.S. Crim.)</option>
+              <optgroup label="Criminal Justice">
+                <option value="BSCrim">BS Criminology</option>
               </optgroup>
-              <optgroup label="Arts & Communication">
-                <option value="Bachelor of Arts in Communication (B.A. Comm)">Bachelor of Arts in Communication</option>
+              <optgroup label="Law">
+                <option value="LLB">Bachelor of Laws</option>
+              </optgroup>
+              <optgroup label="Arts & Sciences">
+                <option value="AB-PolSci">AB Political Science</option>
+                <option value="AB-Psych">AB Psychology</option>
+                <option value="AB-ComArts">AB Communication Arts</option>
+              </optgroup>
+              <optgroup label="Engineering">
+                <option value="BSCE">BS Civil Engineering</option>
+                <option value="BSEE">BS Electrical Engineering</option>
+                <option value="BSME">BS Mechanical Engineering</option>
+              </optgroup>
+              <optgroup label="Hospitality">
+                <option value="BSHM">BS Hospitality Management</option>
+                <option value="BSTM">BS Tourism Management</option>
               </optgroup>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="password">Password *</label>
-          <input type="password" id="password" name="password" minlength="6" placeholder="At least 6 characters" required>
-          <small style="color: #666;">At least 6 characters</small>
+          <label for="password"><i class="fas fa-lock"></i> Password *</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password"
+            placeholder="Create a strong password" 
+            required
+          >
+          <div class="password-requirements">
+            <strong>Password Requirements:</strong>
+            <ul id="passwordChecklist">
+              <li id="length" class="invalid">At least 6 characters</li>
+              <li id="letter" class="invalid">Contains letters</li>
+              <li id="number" class="invalid">Contains numbers</li>
+            </ul>
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="confirm_password">Confirm Password *</label>
-          <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
+          <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password *</label>
+          <input 
+            type="password" 
+            id="confirm_password" 
+            name="confirm_password"
+            placeholder="Re-enter your password" 
+            required
+          >
         </div>
 
-        <button type="submit" class="btn btn-primary" id="registerBtn" style="width: 100%;">
-          Register
+        <button type="submit" class="btn btn-primary" id="registerBtn" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">
+          <i class="fas fa-user-plus"></i> Create Account
         </button>
-
-        <div class="auth-footer">
-          <p>Already have an account? <a href="/html/login.html">Login here</a></p>
-        </div>
       </form>
+
+      <div class="auth-footer">
+        Already have an account? 
+        <a href="/html/login.html">Login here</a>
+      </div>
     </div>
   </div>
 
-  <script type="module" src="../scripts/api.js"></script>
-  <script type="module" src="../scripts/auth.js"></script>
-  <script type="module" src="../scripts/utils.js"></script>
-  <script type="module">
-    import { api } from '../scripts/api.js';
-    import { getCurrentUser } from '../scripts/auth.js';
+  <script src="../scripts/utils.js"></script>
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/auth.js"></script>
+  <script>
+    // Password validation
+    const password = document.getElementById('password');
+    const lengthCheck = document.getElementById('length');
+    const letterCheck = document.getElementById('letter');
+    const numberCheck = document.getElementById('number');
 
-    // Redirect if already logged in
-    try {
-      const user = await getCurrentUser();
-      if (user) {
-        const dashboards = {
-          'admin': 'admin-dashboard.html',
-          'tutor': 'tutor-dashboard.html',
-          'tutee': 'student-dashboard.html'
-        };
-        window.location.href = dashboards[user.role] || 'student-dashboard.html';
+    password.addEventListener('input', function() {
+      const value = this.value;
+
+      // Check length
+      if (value.length >= 6) {
+        lengthCheck.classList.remove('invalid');
+        lengthCheck.classList.add('valid');
+      } else {
+        lengthCheck.classList.remove('valid');
+        lengthCheck.classList.add('invalid');
       }
-    } catch (error) {
-      // User not logged in, continue
-    }
+
+      // Check for letters
+      if (/[a-zA-Z]/.test(value)) {
+        letterCheck.classList.remove('invalid');
+        letterCheck.classList.add('valid');
+      } else {
+        letterCheck.classList.remove('valid');
+        letterCheck.classList.add('invalid');
+      }
+
+      // Check for numbers
+      if (/\d/.test(value)) {
+        numberCheck.classList.remove('invalid');
+        numberCheck.classList.add('valid');
+      } else {
+        numberCheck.classList.remove('valid');
+        numberCheck.classList.add('invalid');
+      }
+    });
 
     // Pre-select role from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const roleParam = urlParams.get('role');
     if (roleParam) {
-      const roleSelect = document.getElementById('role');
-      if (roleParam === 'student') {
-        roleSelect.value = 'tutee';
-      } else if (roleParam === 'tutor') {
-        roleSelect.value = 'tutor';
-      }
+      document.getElementById('role').value = roleParam === 'student' ? 'tutee' : roleParam;
     }
 
-    // Handle registration form submission
+    // Handle registration
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
+      const registerBtn = document.getElementById('registerBtn');
+
+      // Get form data
       const formData = {
         student_id: document.getElementById('student_id').value.trim(),
         full_name: document.getElementById('full_name').value.trim(),
         email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
         role: document.getElementById('role').value,
-        course: document.getElementById('course').value,
         year_level: document.getElementById('year_level').value,
+        course: document.getElementById('course').value,
         password: document.getElementById('password').value,
-        confirm_password: document.getElementById('confirm_password').value,
+        confirm_password: document.getElementById('confirm_password').value
       };
-
-      const errorMessage = document.getElementById('errorMessage');
-      const registerBtn = document.getElementById('registerBtn');
-
-      // Clear previous errors
-      errorMessage.style.display = 'none';
-      errorMessage.textContent = '';
 
       // Validate passwords match
       if (formData.password !== formData.confirm_password) {
         errorMessage.textContent = 'Passwords do not match';
         errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
         return;
       }
 
-      // Validate password length
-      if (formData.password.length < 6) {
-        errorMessage.textContent = 'Password must be at least 6 characters';
+      // Validate password requirements
+      if (formData.password.length < 6 || !/[a-zA-Z]/.test(formData.password) || !/\d/.test(formData.password)) {
+        errorMessage.textContent = 'Password does not meet requirements';
         errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
         return;
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        errorMessage.textContent = 'Please enter a valid email address';
-        errorMessage.style.display = 'block';
-        return;
-      }
-
-      // Disable button
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
       registerBtn.disabled = true;
-      registerBtn.textContent = 'Registering...';
+      registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
 
       try {
-        const response = await api.post('/auth/register', {
-          student_id: formData.student_id,
-          full_name: formData.full_name,
-          email: formData.email,
-          phone: formData.phone,
-          role: formData.role,
-          course: formData.course,
-          year_level: formData.year_level,
-          password: formData.password,
-          status: 'active'
-        });
+        delete formData.confirm_password;
+        
+        const response = await window.API.auth.register(formData);
 
         if (response.success) {
-          // Show success message
-          const successDiv = document.createElement('div');
-          successDiv.className = 'success-message';
-          successDiv.textContent = 'Registration successful! Redirecting to login...';
-          errorMessage.parentNode.insertBefore(successDiv, errorMessage);
+          successMessage.textContent = 'Registration successful! Redirecting to login...';
+          successMessage.style.display = 'block';
           
-          // Redirect to login
+          if (window.utils && window.utils.showToast) {
+            window.utils.showToast('Registration successful! Please login.', 'success');
+          }
+
           setTimeout(() => {
-            window.location.href = `/html/login.html?role=${formData.role === 'tutee' ? 'student' : 'tutor'}`;
+            window.location.href = '/html/login.html?role=' + (formData.role === 'tutee' ? 'student' : formData.role);
           }, 2000);
+        } else {
+          throw new Error(response.message || 'Registration failed');
         }
       } catch (error) {
         console.error('Registration error:', error);
         errorMessage.textContent = error.message || 'Registration failed. Please try again.';
         errorMessage.style.display = 'block';
         registerBtn.disabled = false;
-        registerBtn.textContent = 'Register';
-      }
-    });
-
-    // Real-time password match validation
-    document.getElementById('confirm_password').addEventListener('input', function() {
-      const password = document.getElementById('password').value;
-      const confirmPassword = this.value;
-      
-      if (confirmPassword && password !== confirmPassword) {
-        this.style.borderColor = '#dc3545';
-      } else {
-        this.style.borderColor = '#ddd';
+        registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
       }
     });
   </script>

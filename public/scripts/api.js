@@ -67,6 +67,16 @@ const API = {
     refreshToken: (refreshToken) => apiRequest('/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken })
+    }),
+    
+    forgotPassword: (data) => apiRequest('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+    
+    resetPassword: (data) => apiRequest('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
     })
   },
 
