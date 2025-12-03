@@ -70,3 +70,4 @@ build/
 .env.development
 .env.staging
 .env.test
+.env*.local
