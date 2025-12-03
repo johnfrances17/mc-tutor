@@ -1,13 +1,22 @@
 # MC Tutor - Git Ignore File
 
+# Archives (old code preserved locally)
+_archive_php/
+_archive_docs/
+
 # Encryption Keys - NEVER COMMIT THESE
 config/encryption_key.php
 .env
 .env.local
 .env.production
+server/.env
+server/.env.*
 
 # Database Credentials
 config/database.php
+
+# Old assets (converted to modern)
+assets/
 
 # Uploaded Files (may contain sensitive data)
 uploads/profiles/*

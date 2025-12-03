@@ -1,37 +1,24 @@
 {
   "version": 2,
+  "name": "mc-tutor",
   "builds": [
     {
-      "src": "*.php",
-      "use": "vercel-php@0.7.3"
-    },
-    {
-      "src": "main/**/*.php",
-      "use": "vercel-php@0.7.3"
+      "src": "server/package.json",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)\\.php",
-      "dest": "/$1.php"
+      "src": "/api/(.*)",
+      "dest": "server/src/server.ts"
     },
     {
-      "src": "/main/(.*)",
-      "dest": "/main/$1"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/uploads/(.*)",
-      "dest": "/uploads/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/index.php"
+      "src": "/(.*)",
+      "dest": "client/public/$1"
     }
   ],
-
+  "env": {
+    "NODE_ENV": "production"
+  },
   "regions": ["sin1"]
 }

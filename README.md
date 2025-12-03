@@ -1,9 +1,10 @@
-# 🎓 MC Tutor - Cloud-Based Peer Tutoring Platform
+# 🎓 MC Tutor - Peer Tutoring Platform
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/your-repo/mc-tutor)
-[![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+**Version 2.0.0** - Complete Node.js + TypeScript Migration
+
+A modern, secure web platform connecting students with peer tutors for academic support.
+
+---
 
 ## 📖 Overview
 
@@ -115,155 +116,123 @@ mc-tutor/
 
 ## 🚀 Quick Start
 
-### Prerequisites
+**📖 Complete guide:** [Getting Started](docs/01-GETTING-STARTED.md)
 
-- Node.js v18 or higher
-- XAMPP (Apache server)
-- Supabase account (free tier available)
+### Prerequisites
+- Node.js 18+
+- Supabase account (free)
+- Git
 
 ### Installation
 
-1. **Clone the repository**
 ```bash
-git clone https://github.com/your-repo/mc-tutor.git
+# 1. Clone repository
+git clone https://github.com/YOUR_USERNAME/mc-tutor.git
 cd mc-tutor
-```
 
-2. **Install server dependencies**
-```bash
+# 2. Setup backend
 cd server
 npm install
-```
+cp .env.example .env  # Add your credentials
 
-3. **Generate security keys**
-```bash
-npm run generate-key
-```
-Copy the generated keys to your `.env` file.
-
-4. **Configure environment**
-
-Create `server/.env`:
-```env
-# Server
-PORT=3000
-NODE_ENV=development
-
-# Supabase (from your Supabase dashboard)
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-anon-key
-
-# Security (use generated keys!)
-JWT_SECRET=your-jwt-secret-min-32-chars
-ENCRYPTION_KEY=your-base64-encryption-key
-JWT_EXPIRES_IN=7d
-
-# Storage
-UPLOAD_DIR=./data
-
-# CORS (comma-separated)
-ALLOWED_ORIGINS=http://localhost,http://localhost:3000
-```
-
-5. **Setup database**
-
-In Supabase SQL Editor, run:
-- `schema.sql` - Creates tables
-- `seed.sql` - Adds sample data (optional)
-
-6. **Create storage buckets**
-
-In Supabase Storage:
-- Create `profile-pictures` bucket (public)
-- Create `study-materials` bucket (private)
-
-7. **Start the server**
-```bash
+# 3. Start server
 npm run dev
+
+# 4. Open browser
+# Visit http://localhost:3000
 ```
 
-8. **Start Apache**
-- Open XAMPP Control Panel
-- Click "Start" for Apache
-- Visit `http://localhost/mc-tutor/`
+---
+
+## 📂 Project Structure
+
+```
+mc-tutor/
+├── client/              # Frontend (HTML/CSS/JS)
+│   └── public/         # Web pages
+├── server/             # Backend (Node.js + TypeScript)
+│   └── src/
+│       ├── controllers/  # Business logic
+│       ├── routes/      # API endpoints
+│       └── middleware/  # Auth, validation
+├── docs/               # Documentation
+├── _archive_php/       # Old PHP code (archived)
+└── _archive_docs/      # Old documentation (archived)
+```
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend:**
+- HTML5, CSS3, JavaScript (Vanilla)
+- Responsive design
+- Real-time chat (Socket.IO client)
+
+**Backend:**
+- Node.js 18 + TypeScript 5.3.3
+- Express.js 4.18.2
+- Socket.IO 4.6.0 (WebSocket)
+- Bcrypt (password hashing)
+- JWT (authentication)
+
+**Database:**
+- PostgreSQL (Supabase)
+- Row Level Security (RLS)
+
+**Security:**
+- Helmet.js (security headers)
+- Express-rate-limit (DDoS protection)
+- AES-256-GCM (message encryption)
+
+**Deployment:**
+- Vercel (serverless functions)
+- Supabase (database + storage)
 
 ## 📚 Documentation
 
-- **[Beginner's Guide](BEGINNER_GUIDE.md)** - Complete setup walkthrough
-- **[Security Guide](SECURITY.md)** - Security features and best practices
-- **[API Documentation](#api-endpoints)** - API reference below
+| Guide | Description |
+|-------|-------------|
+| [Getting Started](docs/01-GETTING-STARTED.md) | Local setup (20 min) |
+| [API Reference](docs/03-API-REFERENCE.md) | Complete API docs |
+| [Security Guide](docs/04-SECURITY.md) | Security features |
+| [Troubleshooting](docs/05-TROUBLESHOOTING.md) | Fix common issues |
+| [Architecture](docs/06-ARCHITECTURE.md) | System design |
+| [Deployment](docs/DEPLOYMENT.md) | Deploy to production |
+
+**📖 Full Documentation:** [docs/README.md](docs/README.md)
 
 ## 🔌 API Endpoints
 
-### Authentication
-```
-POST   /api/auth/register      Register new user
-POST   /api/auth/login         Login user
-POST   /api/auth/refresh       Refresh token
-GET    /api/auth/me            Get current user
-POST   /api/auth/logout        Logout user
-```
+**Complete documentation:** [docs/03-API-REFERENCE.md](docs/03-API-REFERENCE.md)
 
-### Users
-```
-GET    /api/users/profile           Get user profile
-PUT    /api/users/profile           Update profile
-POST   /api/users/profile/picture   Upload profile picture
-PUT    /api/users/password          Change password
-GET    /api/users/:studentId        Get user by student ID
-```
+### Authentication: `/api/auth`
+- POST `/register` - Create account
+- POST `/login` - Login
+- POST `/refresh` - Refresh token
+- GET `/me` - Current user
 
-### Sessions
-```
-GET    /api/sessions                Get sessions (filtered by role)
-POST   /api/sessions                Create session (tutee)
-PUT    /api/sessions/:id/confirm    Confirm session (tutor)
-PUT    /api/sessions/:id/complete   Complete session (tutor)
-DELETE /api/sessions/:id/cancel     Cancel session
-GET    /api/sessions/options        Get session options
-POST   /api/sessions/preferences    Save preferences (tutor)
-```
+### Admin: `/api/admin` (Admin only)
+- GET `/users` - List all users (with filters)
+- POST `/users` - Create user
+- PUT `/users/:id` - Update user
+- DELETE `/users/:id` - Delete user
+- POST `/subjects` - Create subject
+- GET `/stats` - System statistics
 
-### Tutors
-```
-GET    /api/tutors/search           Search tutors
-GET    /api/tutors/:id              Get tutor details
-GET    /api/tutors/:id/subjects     Get tutor subjects
-POST   /api/tutors/subjects         Add subject (tutor)
-DELETE /api/tutors/subjects/:id     Remove subject (tutor)
-```
+### Sessions: `/api/sessions`
+- GET `/` - Get sessions (filtered by role)
+- POST `/` - Create session (tutee)
+- PUT `/:id/confirm` - Confirm session (tutor)
+- PUT `/:id/complete` - Complete session
 
-### Materials
-```
-GET    /api/materials               Browse materials
-POST   /api/materials/upload        Upload material (tutor)
-DELETE /api/materials/:id           Delete material (tutor)
-GET    /api/materials/:id/download  Download material
-```
-
-### Chat
-```
-GET    /api/chat/conversations      Get all conversations
-GET    /api/chat/messages/:userId   Get messages with user
-POST   /api/chat/send               Send message
-PUT    /api/chat/read/:userId       Mark messages as read
-GET    /api/chat/unread/:userId     Get unread count
-```
-
-### Feedback
-```
-POST   /api/feedback                Submit feedback (tutee)
-GET    /api/feedback/my             My submitted feedback
-GET    /api/feedback/received       Received feedback (tutor)
-GET    /api/feedback/tutor/:id      Get tutor's feedback
-```
-
-### Notifications
-```
-GET    /api/notifications           Get user notifications
-PUT    /api/notifications/:id/read  Mark as read
-DELETE /api/notifications/:id       Delete notification
-```
+### More Endpoints:
+- **Users:** `/api/users`
+- **Tutors:** `/api/tutors`
+- **Materials:** `/api/materials`
+- **Feedback:** `/api/feedback`
+- **Chat:** `/api/chat`
+- **Notifications:** `/api/notifications`
 
 ## 🛡️ Security Features
 
@@ -293,145 +262,124 @@ DELETE /api/notifications/:id       Delete notification
 
 ## 🧪 Testing
 
-Run the test suite:
+**Test locally:**
 ```bash
-npm test
+# Windows PowerShell
+Invoke-WebRequest -Uri "http://localhost:3000/api/health"
+
+# Mac/Linux
+curl http://localhost:3000/api/health
 ```
 
-Test specific features:
+**Test authentication:**
 ```bash
-# Test authentication
+# Register
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123","studentId":"2021-12345","fullName":"Test User","role":"tutee"}'
+
+# Login
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-
-# Health check
-curl http://localhost:3000/health
+  -d '{"email":"test@example.com","password":"password123","role":"tutee"}'
 ```
-
-## 📊 Performance Optimization
-
-### Backend Optimizations
-- File-based caching for conversations
-- Pagination for large datasets (max 100 items)
-- Connection pooling via Supabase
-- Efficient query filtering
-- Lazy loading of resources
-
-### Frontend Optimizations
-- Minified CSS/JS in production
-- Image optimization
-- Lazy loading for messages
-- Debounced search inputs
-- Cached API responses
-
-## 🔧 Development
-
-### Build for production
-```bash
-npm run build
-npm start
-```
-
-### Run in development mode
-```bash
-npm run dev
-```
-
-### Lint code
-```bash
-npm run lint
-```
-
-### Format code
-```bash
-npm run format
-```
-
-## 🌐 Deployment
-
-### Prerequisites
-- Node.js hosting (Heroku, DigitalOcean, AWS, etc.)
-- Domain with SSL certificate
-- Supabase project
-
-### Steps
-1. Set `NODE_ENV=production` in `.env`
-2. Update `ALLOWED_ORIGINS` with production URLs
-3. Generate new security keys for production
-4. Build the application: `npm run build`
-5. Start with PM2: `pm2 start dist/server.js`
-6. Configure reverse proxy (Nginx)
-7. Enable HTTPS
-8. Setup monitoring and logging
-
-## 📝 Environment Variables
-
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `PORT` | No | Server port | `3000` |
-| `NODE_ENV` | Yes | Environment | `development` / `production` |
-| `SUPABASE_URL` | Yes | Supabase project URL | `https://xxx.supabase.co` |
-| `SUPABASE_KEY` | Yes | Supabase anon key | `eyJhbGc...` |
-| `JWT_SECRET` | Yes | JWT signing secret | `min-32-chars-random` |
-| `ENCRYPTION_KEY` | Yes | AES-256 encryption key | `base64-encoded-32-bytes` |
-| `JWT_EXPIRES_IN` | No | Token expiration | `7d` |
-| `UPLOAD_DIR` | No | File storage path | `./data` |
-| `ALLOWED_ORIGINS` | No | CORS origins | `http://localhost,https://app.com` |
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Style
-- Follow TypeScript best practices
-- Use Prettier for formatting
-- Write meaningful commit messages
-- Add comments for complex logic
-- Update documentation
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- **MC Tutor Team** - Initial development
-
-## 🙏 Acknowledgments
-
-- Supabase for backend infrastructure
-- Socket.IO for real-time features
-- TypeScript community
-- Open source contributors
-
-## 📞 Support
-
-- **Documentation**: [BEGINNER_GUIDE.md](BEGINNER_GUIDE.md)
-- **Security**: [SECURITY.md](SECURITY.md)
-- **Issues**: [GitHub Issues](https://github.com/your-repo/mc-tutor/issues)
-- **Email**: support@mc-tutor.com
-
-## 🗺️ Roadmap
-
-- [ ] Mobile application (React Native)
-- [ ] Video call integration
-- [ ] AI-powered tutor matching
-- [ ] Payment integration
-- [ ] Advanced analytics dashboard
-- [ ] Multi-language support
-- [ ] Progressive Web App (PWA)
-- [ ] Offline mode support
 
 ---
 
-**Made with ❤️ by the MC Tutor Team**
+## 🚀 Deployment
+
+**Deploy to Vercel in 5 minutes:**
+
+1. Setup Supabase database
+2. Push code to GitHub
+3. Connect to Vercel
+4. Add environment variables
+5. Deploy!
+
+**📖 Full deployment guide:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
+## 📝 Environment Variables
+
+Create `server/.env`:
+
+```env
+# Database
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Security
+JWT_SECRET=your-secret-key-here
+ENCRYPTION_KEY=your-base64-key-here
+
+# Server
+PORT=3000
+NODE_ENV=development
+```
+
+**🔑 Generate keys:**
+```bash
+# JWT Secret
+openssl rand -base64 32
+
+# Encryption Key
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+---
+
+## 🆘 Troubleshooting
+
+**Common Issues:**
+
+| Problem | Solution |
+|---------|----------|
+| "Cannot connect to database" | Check SUPABASE_URL and key in .env |
+| "Port 3000 already in use" | Kill process or use different port |
+| "Token expired" | Login again |
+| "Cannot find module" | Run `npm install` in server/ |
+
+**📖 Full troubleshooting:** [docs/05-TROUBLESHOOTING.md](docs/05-TROUBLESHOOTING.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add feature'`)
+4. Push to branch (`git push origin feature/amazing`)
+5. Open Pull Request
+
+---
+
+## 📄 License
+
+This project is for educational purposes.
+
+---
+
+## 📞 Support
+
+- **Documentation:** [docs/README.md](docs/README.md)
+- **Troubleshooting:** [docs/05-TROUBLESHOOTING.md](docs/05-TROUBLESHOOTING.md)
+- **Issues:** Create a GitHub issue
+
+---
+
+## 📊 Version History
+
+**v2.0.0** (December 2025)
+- ✅ Complete migration to Node.js + TypeScript
+- ✅ Modern REST API with 10 controllers
+- ✅ Real-time chat with Socket.IO
+- ✅ Enhanced security (Helmet, rate limiting)
+- ✅ Admin panel with full CRUD
+- ✅ Vercel deployment ready
+- ✅ Comprehensive documentation
+
+**v1.0.0** (Initial)
+- PHP-based application
+
+---
+
+**Made with ❤️ for peer learning**
 
 *Last Updated: December 2025*
-*Version: 2.0.0*

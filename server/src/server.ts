@@ -69,6 +69,7 @@ import materialRoutes from './routes/materialRoutes';
 import feedbackRoutes from './routes/feedbackRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import chatRoutes from './routes/chatRoutes';
+import adminRoutes from './routes/adminRoutes';
 import { apiLimiter } from './middleware/rateLimiter';
 
 // Apply general rate limiting to all API routes
@@ -84,6 +85,7 @@ app.use('/api/materials', materialRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/api', (_req, res) => {
   res.json({

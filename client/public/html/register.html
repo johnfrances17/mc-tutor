@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - MC Tutor</title>
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>MC Tutor</h1>
+        <p>Join Our Tutoring Community</p>
+      </div>
+
+      <form id="registerForm" class="auth-form">
+        <h2>Register</h2>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div class="form-group">
+          <label for="student_id">Student ID *</label>
+          <input type="text" id="student_id" name="student_id" required>
+        </div>
+
+        <div class="form-group">
+          <label for="full_name">Full Name *</label>
+          <input type="text" id="full_name" name="full_name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number *</label>
+          <input type="tel" id="phone" name="phone" required>
+        </div>
+
+        <div class="form-group">
+          <label for="role">I want to be a *</label>
+          <select id="role" name="role" required>
+            <option value="">Select role</option>
+            <option value="tutee">Student (Looking for tutoring)</option>
+            <option value="tutor">Tutor (Provide tutoring)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="course">Course *</label>
+          <select id="course" name="course" required>
+            <option value="">Select course</option>
+            <option value="BSIT">BSIT</option>
+            <option value="BSCS">BSCS</option>
+            <option value="BSIS">BSIS</option>
+            <option value="ACT">ACT</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="year_level">Year Level *</label>
+          <select id="year_level" name="year_level" required>
+            <option value="">Select year level</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password *</label>
+          <input type="password" id="password" name="password" required minlength="6">
+          <small>At least 6 characters</small>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password *</label>
+          <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="registerBtn">
+          Register
+        </button>
+
+        <div class="auth-footer">
+          <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/auth.js"></script>
+  <script src="../scripts/utils.js"></script>
+  <script>
+    // Redirect if already logged in
+    if (api.isAuthenticated()) {
+      const role = api.getUserRole();
+      auth.redirectToDashboard(role);
+    }
+
+    // Handle registration form submission
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        student_id: document.getElementById('student_id').value,
+        full_name: document.getElementById('full_name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        role: document.getElementById('role').value,
+        course: document.getElementById('course').value,
+        year_level: parseInt(document.getElementById('year_level').value),
+        password: document.getElementById('password').value,
+        confirm_password: document.getElementById('confirm_password').value,
+      };
+
+      const errorMessage = document.getElementById('errorMessage');
+      const registerBtn = document.getElementById('registerBtn');
+
+      // Clear previous errors
+      errorMessage.style.display = 'none';
+      errorMessage.textContent = '';
+
+      // Validate passwords match
+      if (formData.password !== formData.confirm_password) {
+        errorMessage.textContent = 'Passwords do not match';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      // Validate email
+      if (!utils.isValidEmail(formData.email)) {
+        errorMessage.textContent = 'Invalid email address';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      // Disable button
+      registerBtn.disabled = true;
+      registerBtn.textContent = 'Registering...';
+
+      try {
+        const response = await auth.register(formData);
+
+        if (response.success) {
+          utils.showToast('Registration successful!', 'success');
+          
+          // Redirect to dashboard
+          setTimeout(() => {
+            auth.redirectToDashboard(formData.role);
+          }, 500);
+        }
+      } catch (error) {
+        errorMessage.textContent = error.message || 'Registration failed. Please try again.';
+        errorMessage.style.display = 'block';
+        registerBtn.disabled = false;
+        registerBtn.textContent = 'Register';
+      }
+    });
+  </script>
+</body>
+</html>
