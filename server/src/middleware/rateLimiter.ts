@@ -13,6 +13,9 @@ export const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy headers (for Vercel/Nginx)
+  skipFailedRequests: true, // Don't count failed requests
+  skipSuccessfulRequests: false,
 });
 
 /**

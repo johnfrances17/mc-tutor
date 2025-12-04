@@ -69,7 +69,7 @@ export interface Database {
       users: {
         Row: {
           user_id: number;
-          student_id: string;
+          school_id: string;
           email: string;
           password: string;
           full_name: string;

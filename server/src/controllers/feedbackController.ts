@@ -84,7 +84,7 @@ export const getTutorFeedback = async (req: AuthRequest, res: Response, next: Ne
       .from('feedback')
       .select(`
         *,
-        tutee:users!feedback_tutee_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!feedback_tutee_id_fkey(school_id, full_name, profile_picture),
         session:sessions(session_date, subject:subjects(subject_code, subject_name))
       `)
       .eq('tutor_id', tutorId)
@@ -150,7 +150,7 @@ export const getReceivedFeedback = async (req: AuthRequest, res: Response, next:
       .from('feedback')
       .select(`
         *,
-        tutee:users!feedback_tutee_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!feedback_tutee_id_fkey(school_id, full_name, profile_picture),
         session:sessions(session_date, subject:subjects(subject_code, subject_name))
       `)
       .eq('tutor_id', tutorId)

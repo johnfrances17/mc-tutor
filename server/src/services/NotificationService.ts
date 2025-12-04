@@ -3,7 +3,7 @@ import { ensureDirectoryExists, readJsonFile, writeJsonFile } from '../utils/fil
 
 export interface Notification {
   notification_id: number;
-  student_id: string;
+  school_id: string;
   title: string;
   message: string;
   type: 'session_confirmed' | 'session_cancelled' | 'session_completed' | 'new_message' | 'feedback_received' | 'material_uploaded' | 'session_reminder' | 'general';
@@ -13,7 +13,7 @@ export interface Notification {
 }
 
 interface NotificationFile {
-  student_id: string;
+  school_id: string;
   notifications: Notification[];
   last_updated: string;
 }
@@ -51,7 +51,7 @@ export class NotificationService {
 
     // Create new notification file
     const newFile: NotificationFile = {
-      student_id: studentId,
+      school_id: studentId,
       notifications: [],
       last_updated: new Date().toISOString(),
     };
@@ -65,7 +65,7 @@ export class NotificationService {
    */
   private saveNotifications(data: NotificationFile): void {
     data.last_updated = new Date().toISOString();
-    const filePath = this.getNotificationFilePath(data.student_id);
+    const filePath = this.getNotificationFilePath(data.school_id);
     writeJsonFile(filePath, data);
   }
 
@@ -89,7 +89,7 @@ export class NotificationService {
 
     const notification: Notification = {
       notification_id: nextId,
-      student_id: studentId,
+      school_id: studentId,
       title,
       message,
       type,
