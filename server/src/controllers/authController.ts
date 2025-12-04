@@ -80,11 +80,11 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   try {
     const { email, password, role } = req.body;
 
-    // Validate required fields
-    if (!email || !password || !role) {
+    // Validate required fields (role is now optional)
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Email, password, and role are required' },
+        error: { message: 'Email and password are required' },
       });
     }
 
@@ -97,8 +97,8 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       });
     }
 
-    // Validate role
-    if (!['tutor', 'tutee', 'admin'].includes(role)) {
+    // Validate role if provided (for backward compatibility)
+    if (role && !['tutor', 'tutee', 'admin'].includes(role)) {
       return res.status(400).json({
         success: false,
         error: { message: 'Invalid role' },

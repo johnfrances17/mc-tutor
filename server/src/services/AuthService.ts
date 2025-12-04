@@ -17,7 +17,7 @@ interface RegisterData {
 interface LoginData {
   email: string;
   password: string;
-  role: 'tutor' | 'tutee' | 'admin';
+  role?: 'tutor' | 'tutee' | 'admin'; // Optional for backward compatibility
 }
 
 interface AuthResponse {
@@ -153,17 +153,22 @@ export class AuthService {
       throw createError('Please use your Mabini Colleges email address', 400);
     }
 
-    // Find user by email and role
-    const { data: user, error } = await supabase
+    // Build query - if role is provided, filter by it (backward compatibility)
+    let query = supabase
       .from('users')
       .select('*')
       .eq('email', data.email)
-      .eq('role', data.role)
-      .eq('status', 'active')
-      .single();
+      .eq('status', 'active');
+    
+    // Only filter by role if it's provided (for backward compatibility)
+    if (data.role) {
+      query = query.eq('role', data.role);
+    }
+    
+    const { data: user, error } = await query.single();
 
     if (error || !user) {
-      throw createError('Invalid email or password, or wrong role selected', 401);
+      throw createError('Invalid email or password', 401);
     }
 
     // Verify password

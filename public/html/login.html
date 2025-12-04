@@ -225,45 +225,9 @@
       </div>
 
       <div class="login-body">
-        <!-- Role Selection -->
-        <div id="roleSelection" class="role-selection">
-          <h2>Choose Your Role</h2>
-          
-          <div class="role-cards">
-            <div class="role-card" onclick="selectRole('student')">
-              <div class="icon">📚</div>
-              <h3>Student</h3>
-              <p>I need help with my subjects and want to find tutors to guide me</p>
-            </div>
-            
-            <div class="role-card" onclick="selectRole('tutor')">
-              <div class="icon">🎓</div>
-              <h3>Tutor</h3>
-              <p>I want to share my knowledge and help fellow students succeed</p>
-            </div>
-
-            <div class="role-card" onclick="selectRole('admin')">
-              <div class="icon">👨‍💼</div>
-              <h3>Admin</h3>
-              <p>Manage platform, users, and oversee tutoring activities</p>
-            </div>
-          </div>
-
-          <div class="auth-footer">
-            Don't have an account? 
-            <a href="/html/register.html">Register here</a>
-          </div>
-        </div>
-
-        <!-- Login Form -->
-        <div id="loginForm" class="login-form">
-          <button class="back-btn" onclick="backToRoleSelection()">
-            <i class="fas fa-arrow-left"></i> Back to role selection
-          </button>
-
-          <h2 class="form-title">
-            <span id="roleLabel">Student</span> Login
-          </h2>
+        <!-- Unified Login Form (No Role Selection) -->
+        <div id="loginForm" class="login-form active">
+          <h2 class="form-title">Login</h2>
 
           <form id="loginFormElement">
             <div id="errorMessage" class="error-message" style="display: none;"></div>
@@ -309,7 +273,9 @@
 
           <div class="auth-footer">
             Don't have an account? 
-            <a href="/html/register.html" id="registerLink">Register here</a>
+            <a href="/html/register.html">Register here</a>
+            <br>
+            <a href="/html/admin-login.html" style="font-size: 12px; color: #999; margin-top: 10px; display: inline-block;">Staff Access</a>
           </div>
         </div>
       </div>
@@ -320,8 +286,6 @@
   <script src="../scripts/api.js"></script>
   <script src="../scripts/auth.js"></script>
   <script>
-    let selectedRole = '';
-
     // Toggle password visibility
     function togglePassword(fieldId, button) {
       const input = document.getElementById(fieldId);
@@ -351,40 +315,7 @@
       }
     })();
 
-    // Role selection
-    function selectRole(role) {
-      // Redirect admin to separate admin login page
-      if (role === 'admin') {
-        window.location.href = '/html/admin-login.html';
-        return;
-      }
-      
-      selectedRole = role;
-      document.getElementById('roleSelection').style.display = 'none';
-      document.getElementById('loginForm').classList.add('active');
-      
-      // Set role label
-      const roleLabels = {
-        'student': 'Student',
-        'tutor': 'Tutor'
-      };
-      document.getElementById('roleLabel').textContent = roleLabels[role] || 'Student';
-      
-      // Update register link
-      const registerLink = document.getElementById('registerLink');
-      registerLink.href = `/html/register.html?role=${role}`;
-    }
-
-    // Back to role selection
-    function backToRoleSelection() {
-      document.getElementById('loginForm').classList.remove('active');
-      document.getElementById('roleSelection').style.display = 'block';
-      selectedRole = '';
-      document.getElementById('loginFormElement').reset();
-      document.getElementById('errorMessage').style.display = 'none';
-    }
-
-    // Handle login
+    // Handle login (unified - no role selection needed)
     document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -405,10 +336,11 @@
       loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
       try {
+        // No role parameter - backend auto-detects from database
         const response = await window.API.auth.login({
           email: email,
-          password: password,
-          role: selectedRole === 'student' ? 'tutee' : selectedRole
+          password: password
+          // role is omitted - backend will auto-detect
         });
 
         if (response.success && response.data) {
@@ -419,6 +351,7 @@
           }
           
           setTimeout(() => {
+            // Backend returns user with their actual role
             window.auth.redirectToDashboard(response.data.user.role);
           }, 500);
         } else {
@@ -432,13 +365,6 @@
         loginBtn.innerHTML = 'Login';
       }
     });
-
-    // Check for role parameter in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const roleParam = urlParams.get('role');
-    if (roleParam && (roleParam === 'student' || roleParam === 'tutor')) {
-      selectRole(roleParam);
-    }
   </script>
 </body>
 </html>
