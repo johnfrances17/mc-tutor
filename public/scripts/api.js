@@ -32,17 +32,39 @@ async function apiRequest(endpoint, options = {}) {
     ...options
   };
 
+  const url = `${API_BASE_URL}${endpoint}`;
+  console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    const data = await response.json();
+    const response = await fetch(url, config);
+    
+    console.log(`📡 Response status: ${response.status} ${response.statusText}`);
+    
+    // Try to parse JSON response
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      console.error('❌ JSON parse error:', parseError);
+      throw new Error('Invalid response from server');
+    }
+
+    console.log('📦 Response data:', data);
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Request failed');
+      const errorMessage = data.error?.message || data.message || 'Request failed';
+      console.error(`❌ Request failed: ${errorMessage}`);
+      throw new Error(errorMessage);
     }
 
     return data;
   } catch (error) {
-    console.error('API Request Error:', error);
+    console.error('❌ API Request Error:', {
+      endpoint,
+      url,
+      error: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
