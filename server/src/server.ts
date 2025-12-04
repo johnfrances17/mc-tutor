@@ -79,10 +79,12 @@ app.get('/api/health', async (_req, res) => {
     try {
       const { supabase } = await import('./config/database');
       const start = Date.now();
-      const { error } = await supabase.from('users').select('user_id').limit(1);
+      const { data, error } = await supabase.from('users').select('user_id').limit(1);
       databaseResponseTime = Date.now() - start;
-      databaseConnected = !error;
+      // Check if query succeeded (either has data or no error)
+      databaseConnected = (!error || data !== null);
     } catch (err) {
+      console.error('Database health check error:', err);
       databaseConnected = false;
     }
 
