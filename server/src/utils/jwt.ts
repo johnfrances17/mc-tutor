@@ -6,14 +6,15 @@ interface TokenPayload {
   email: string;
   role: string;
   full_name: string;
+  type?: string; // Optional type field for special tokens like password_reset
 }
 
 /**
  * Generate JWT access token
  */
-export const generateToken = (payload: TokenPayload): string => {
+export const generateToken = (payload: TokenPayload | any, customExpiry?: string): string => {
   const jwtSecret = process.env.JWT_SECRET;
-  const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
+  const expiresIn = customExpiry || process.env.JWT_EXPIRES_IN || '7d';
 
   if (!jwtSecret) {
     throw new Error('JWT_SECRET is not defined');

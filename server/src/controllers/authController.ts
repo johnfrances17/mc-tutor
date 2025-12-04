@@ -178,3 +178,62 @@ export const logout = async (_req: AuthRequest, res: Response, next: NextFunctio
     return next(error);
     }
 };
+
+/**
+ * Request password reset
+ * POST /api/auth/forgot-password
+ */
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Email is required' },
+      });
+    }
+
+    const result = await authService.requestPasswordReset(email);
+
+    res.json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Reset password with token
+ * POST /api/auth/reset-password
+ */
+export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { token, password, confirm_password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Token and password are required' },
+      });
+    }
+
+    if (password !== confirm_password) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Passwords do not match' },
+      });
+    }
+
+    const result = await authService.resetPassword(token, password);
+
+    res.json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};

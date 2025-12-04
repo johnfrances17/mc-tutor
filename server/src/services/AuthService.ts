@@ -225,4 +225,98 @@ export class AuthService {
       throw createError('Invalid refresh token', 401);
     }
   }
+
+  /**
+   * Request password reset - sends email with reset link
+   */
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
+    // Find user by email
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('user_id, student_id, email, full_name, status')
+      .eq('email', email)
+      .eq('status', 'active')
+      .single();
+
+    // Always return success to prevent email enumeration
+    if (error || !user) {
+      return { message: 'If your email is registered, you will receive a password reset link' };
+    }
+
+    // Generate reset token (valid for 1 hour)
+    const resetToken = generateToken(
+      { user_id: user.user_id, email: user.email, type: 'password_reset' },
+      '1h'
+    );
+
+    // Create reset link
+    const resetLink = `${process.env.FRONTEND_URL || 'https://mc-tutor.vercel.app'}/html/reset-password.html?token=${resetToken}`;
+
+    // Send reset email
+    try {
+      const { emailService } = await import('./emailService');
+      await emailService.sendPasswordReset(user.email, resetLink, user.full_name);
+    } catch (emailError) {
+      console.error('Failed to send reset email:', emailError);
+      // Don't throw - still return success
+    }
+
+    return { message: 'If your email is registered, you will receive a password reset link' };
+  }
+
+  /**
+   * Reset password using reset token
+   */
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    // Validate password
+    if (newPassword.length < 6) {
+      throw createError('Password must be at least 6 characters', 400);
+    }
+
+    // Verify reset token
+    try {
+      const { verifyToken } = await import('../utils/jwt');
+      const payload = verifyToken(token);
+
+      if (payload.type !== 'password_reset') {
+        throw createError('Invalid reset token', 401);
+      }
+
+      // Verify user still exists and is active
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('user_id, email, status')
+        .eq('user_id', payload.user_id)
+        .eq('email', payload.email)
+        .eq('status', 'active')
+        .single();
+
+      if (error || !user) {
+        throw createError('Invalid or expired reset token', 401);
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update password
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ 
+          password: hashedPassword,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.user_id);
+
+      if (updateError) {
+        throw createError('Failed to reset password', 500);
+      }
+
+      return { message: 'Password reset successful. You can now login with your new password.' };
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('jwt')) {
+        throw createError('Invalid or expired reset token', 401);
+      }
+      throw error;
+    }
+  }
 }
