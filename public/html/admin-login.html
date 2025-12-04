@@ -263,13 +263,13 @@
           </div>
 
           <button type="submit" class="btn-primary" id="loginBtn">
-            <i class="fas fa-sign-in-alt"></i> Login as Administrator
+            Login as Administrator
           </button>
         </form>
 
         <div class="security-notice">
           <i class="fas fa-exclamation-triangle"></i>
-          <strong>Security Notice:</strong> All admin login attempts are logged and monitored for security purposes.
+          All admin login attempts are logged and monitored for security purposes.
         </div>
 
         <div class="auth-footer">
@@ -337,7 +337,7 @@
         errorMessage.textContent = error.message || 'Invalid admin credentials. Please try again.';
         errorMessage.style.display = 'block';
         loginBtn.disabled = false;
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login as Administrator';
+        loginBtn.innerHTML = 'Login as Administrator';
       }
     });
   </script>

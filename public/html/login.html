@@ -25,7 +25,7 @@
       background: white;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 900px;
+      max-width: 500px;
       width: 100%;
       overflow: hidden;
     }
@@ -272,7 +272,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%; padding: 15px; font-size: 16px;">
-              <i class="fas fa-sign-in-alt"></i> Login
+              Login
             </button>
           </form>
 
@@ -375,7 +375,7 @@
         errorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
         errorMessage.style.display = 'block';
         loginBtn.disabled = false;
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+        loginBtn.innerHTML = 'Login';
       }
     });
 
