@@ -6,6 +6,41 @@
     <title>Tutor Dashboard - MC Tutor</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        #logoutBtn { color: #dc3545 !important; }
+        #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+        
+        /* Page header styling */
+        .page-header {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 0 20px;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .page-header p {
+            color: #6b7280;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .floating-message-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer;
+            transition: all 0.3s ease; z-index: 1000; text-decoration: none;
+            color: white; font-size: 24px;
+        }
+        .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6); }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -16,12 +51,20 @@
                 <a href="/html/my-subjects.html" class="nav-link">My Subjects</a>
                 <a href="/html/tutor-sessions.html" class="nav-link">Sessions</a>
                 <a href="/html/upload-materials.html" class="nav-link">Materials</a>
-                <a href="/html/messenger.html" class="nav-link">Messages</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
     </nav>
+
+    <a href="/html/messenger.html" class="floating-message-btn" title="Messages">
+        <i class="fas fa-comment-dots"></i>
+    </a>
+
+    <div class="page-header">
+        <h1>Tutor Dashboard</h1>
+        <p>Manage your tutoring sessions and students</p>
+    </div>
 
     <div class="container">
         <!-- Stats Cards -->
