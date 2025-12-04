@@ -379,6 +379,7 @@
 
     <div class="container" style="max-width: 1400px; padding-top: 0;">
         <div class="messenger-container">
+            <!-- Conversations Sidebar -->
             <div class="conversations-sidebar">
                 <div class="sidebar-header">
                     <div class="search-box">
@@ -390,6 +391,7 @@
                 </div>
             </div>
 
+            <!-- Chat Area -->
             <div class="chat-area" id="chatArea">
                 <div class="empty-chat">
                     <div class="empty-chat-icon">💬</div>
@@ -405,7 +407,7 @@
     <script type="module" src="../scripts/socket.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
-        import { getCurrentUser } from '../scripts/auth.js';
+        import { getCurrentUser, redirectToDashboard } from '../scripts/auth.js';
         import { showToast, formatTime, escapeHtml } from '../scripts/utils.js';
         import socketManager from '../scripts/socket.js';
 
@@ -414,11 +416,12 @@
         let conversations = [];
         let messages = [];
         let refreshInterval = null;
+        let typingIndicatorTimeout = null;
 
-        // Logout handler
+        // Logout handler - direct implementation
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
+            logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('Logout clicked!');
@@ -439,6 +442,7 @@
                     return;
                 }
 
+                // Load messenger data
                 const token = localStorage.getItem('token');
                 if (token) {
                     socketManager.connect(token);
@@ -447,7 +451,8 @@
 
                 await loadConversations();
 
-                refreshInterval = setInterval(async function() {
+                // Fallback polling (only if socket not connected)
+                refreshInterval = setInterval(async () => {
                     if (!socketManager.isSocketConnected()) {
                         await loadConversations();
                         if (currentConversation) {
@@ -462,36 +467,59 @@
             }
         }
 
-        // Setup Socket.IO handlers
+        // Setup Socket.IO event handlers
         function setupSocketHandlers() {
-            socketManager.on('message_received', function(data) {
+            // New message received
+            socketManager.on('message_received', (data) => {
+                // Add message to current conversation if it matches
                 if (currentConversation && 
                     (data.senderId === currentConversation.other_user_id || 
                      data.receiverId === currentConversation.other_user_id)) {
                     appendMessage(data);
                     
+                    // Mark as read if conversation is open
                     if (data.senderId === currentConversation.other_user_id) {
                         socketManager.markAsRead(currentConversation.other_user_id);
                     }
                 }
+
+                // Update conversation list
                 loadConversations();
             });
 
-            socketManager.on('typing', function(data) {
+            // Typing indicator
+            socketManager.on('typing', (data) => {
                 if (currentConversation && data.userId === currentConversation.other_user_id) {
                     showTypingIndicator(data.isTyping);
                 }
             });
 
-            socketManager.on('user_status', function(data) {
+            // User status updates
+            socketManager.on('user_status', (data) => {
                 updateUserStatus(data.userId, data.status);
             });
 
-            socketManager.on('connected', function() {
+        // Open conversation
+        async function openConversation(conversation) {
+            // Leave previous conversation room
+            if (currentConversation && socketManager.isSocketConnected()) {
+                socketManager.leaveConversation(currentConversation.other_user_id);
+            }
+
+            currentConversation = conversation;
+            
+            // Join new conversation room
+            if (socketManager.isSocketConnected()) {
+                socketManager.joinConversation(conversation.other_user_id);
+            }ata.fromName}`, 'info');
+            });
+
+            // Connection status
+            socketManager.on('connected', () => {
                 console.log('Real-time chat enabled');
             });
 
-            socketManager.on('disconnected', function() {
+            socketManager.on('disconnected', () => {
                 console.log('Real-time chat disabled, using fallback polling');
             });
         }
@@ -509,27 +537,26 @@
                     return;
                 }
 
-                container.innerHTML = conversations.map(function(conv) {
-                    return '<div class="conversation-item ' + 
-                        (conv.unread_count > 0 ? 'unread' : '') + ' ' + 
-                        (currentConversation && currentConversation.other_user_id === conv.other_user_id ? 'active' : '') + 
-                        '" data-user-id="' + conv.other_user_id + '">' +
-                        '<div class="conversation-avatar">' + conv.other_user_name.charAt(0) + '</div>' +
-                        '<div class="conversation-info">' +
-                        '<div class="conversation-name">' +
-                        '<span>' + conv.other_user_name + '</span>' +
-                        '<span class="conversation-time">' + formatTime(conv.last_message_time) + '</span>' +
-                        '</div>' +
-                        '<div class="conversation-preview">' + (conv.last_message || 'No messages yet') + '</div>' +
-                        (conv.unread_count > 0 ? '<span class="unread-badge">' + conv.unread_count + '</span>' : '') +
-                        '</div>' +
-                        '</div>';
-                }).join('');
+                container.innerHTML = conversations.map(conv => `
+                    <div class="conversation-item ${conv.unread_count > 0 ? 'unread' : ''} ${currentConversation?.other_user_id === conv.other_user_id ? 'active' : ''}" 
+                         data-user-id="${conv.other_user_id}">
+                        <div class="conversation-avatar">${conv.other_user_name.charAt(0)}</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">
+                                <span>${conv.other_user_name}</span>
+                                <span class="conversation-time">${formatTime(conv.last_message_time)}</span>
+                            </div>
+                            <div class="conversation-preview">${conv.last_message || 'No messages yet'}</div>
+                            ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
 
-                document.querySelectorAll('.conversation-item').forEach(function(item) {
-                    item.addEventListener('click', function() {
+                // Add click handlers
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.addEventListener('click', () => {
                         const userId = item.dataset.userId;
-                        const conversation = conversations.find(function(c) { return c.other_user_id === userId; });
+                        const conversation = conversations.find(c => c.other_user_id === userId);
                         openConversation(conversation);
                     });
                 });
@@ -541,67 +568,65 @@
 
         // Open conversation
         async function openConversation(conversation) {
-            if (currentConversation && socketManager.isSocketConnected()) {
-                socketManager.leaveConversation(currentConversation.other_user_id);
-            }
-
             currentConversation = conversation;
             
-            if (socketManager.isSocketConnected()) {
-                socketManager.joinConversation(conversation.other_user_id);
-            }
-            
-            document.querySelectorAll('.conversation-item').forEach(function(item) {
+            // Update active state
+            document.querySelectorAll('.conversation-item').forEach(item => {
                 item.classList.remove('active');
                 if (item.dataset.userId === conversation.other_user_id) {
                     item.classList.add('active');
                 }
             });
 
+            // Show chat area
             const chatArea = document.getElementById('chatArea');
             chatArea.classList.add('active');
             
-            chatArea.innerHTML = 
-                '<div class="chat-header">' +
-                '<div class="chat-header-info">' +
-                '<div class="conversation-avatar">' + conversation.other_user_name.charAt(0) + '</div>' +
-                '<div>' +
-                '<div class="chat-header-name">' + conversation.other_user_name + '</div>' +
-                '<div class="chat-header-status">' + conversation.other_user_id + '</div>' +
-                '</div>' +
-                '</div>' +
-                '<button class="btn btn-sm" onclick="backToConversations()">← Back</button>' +
-                '</div>' +
-                '<div class="chat-messages" id="chatMessages">' +
-                '<div class="loading-spinner"></div>' +
-                '</div>' +
-                '<div class="chat-input-area">' +
-                '<form class="chat-input-form" id="messageForm">' +
-                '<textarea class="chat-input" id="messageInput" placeholder="Type a message..." rows="1"></textarea>' +
-                '<button type="submit" class="chat-send-btn">➤</button>' +
-                '</form>' +
-                '</div>';
+            // Build chat header
+            chatArea.innerHTML = `
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <div class="conversation-avatar">${conversation.other_user_name.charAt(0)}</div>
+                        <div>
+                            <div class="chat-header-name">${conversation.other_user_name}</div>
+                            <div class="chat-header-status">${conversation.other_user_id}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm" onclick="backToConversations()">← Back</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="loading-spinner"></div>
+                </div>
+                <div class="chat-input-area">
+                    <form class="chat-input-form" id="messageForm">
+                        <textarea class="chat-input" id="messageInput" placeholder="Type a message..." rows="1"></textarea>
+                        <button type="submit" class="chat-send-btn">➤</button>
+                    </form>
+                </div>
+            `;
 
+            // Load messages
             await loadMessages(conversation.other_user_id);
 
+            // Setup form handler
             document.getElementById('messageForm').addEventListener('submit', handleSendMessage);
 
+            // Auto-resize textarea
             const textarea = document.getElementById('messageInput');
             textarea.addEventListener('input', function() {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
             });
 
-            await api.put('/chat/mark-read/' + conversation.other_user_id);
+            // Mark as read
+            await api.put(`/chat/mark-read/${conversation.other_user_id}`);
             await loadConversations();
         }
 
         // Load messages
-        async function loadMessages(otherUserId, scrollToBottom) {
-            if (scrollToBottom === undefined) scrollToBottom = true;
-            
+        async function loadMessages(otherUserId, scrollToBottom = true) {
             try {
-                const response = await api.get('/chat/messages/' + otherUserId);
+                const response = await api.get(`/chat/messages/${otherUserId}`);
                 messages = response.data || [];
 
                 const container = document.getElementById('chatMessages');
@@ -610,27 +635,6 @@
                     container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">No messages yet. Start the conversation!</p>';
                     return;
                 }
-
-                container.innerHTML = messages.map(function(msg) {
-                    const isSent = msg.sender_student_id === currentUser.school_id;
-                    return '<div class="message ' + (isSent ? 'sent' : 'received') + '">' +
-                        '<div class="message-avatar">' + (isSent ? currentUser.full_name.charAt(0) : currentConversation.other_user_name.charAt(0)) + '</div>' +
-                        '<div class="message-content">' +
-                        '<div class="message-bubble">' + escapeHtml(msg.message) + '</div>' +
-                        '<div class="message-time">' + formatTime(msg.created_at) + '</div>' +
-                        '</div>' +
-                        '</div>';
-                }).join('');
-
-                if (scrollToBottom) {
-                    container.scrollTop = container.scrollHeight;
-                }
-
-            } catch (error) {
-                console.error('Load messages error:', error);
-            }
-        }
-
         // Send message
         async function handleSendMessage(e) {
             e.preventDefault();
@@ -641,8 +645,10 @@
             if (!message) return;
 
             try {
+                // Send via Socket.IO if connected, otherwise use API
                 if (socketManager.isSocketConnected()) {
                     await socketManager.sendMessage(currentConversation.other_user_id, message);
+                    socketManager.stopTyping(currentConversation.other_user_id);
                 } else {
                     await api.post('/chat/send', {
                         receiver_student_id: currentConversation.other_user_id,
@@ -661,7 +667,7 @@
             }
         }
 
-        // Append message
+        // Append message to chat (for real-time updates)
         function appendMessage(msgData) {
             const container = document.getElementById('chatMessages');
             if (!container) return;
@@ -669,14 +675,15 @@
             const isSent = msgData.senderId === currentUser.school_id;
             const senderName = isSent ? currentUser.full_name : currentConversation.other_user_name;
             
-            const messageHTML = 
-                '<div class="message ' + (isSent ? 'sent' : 'received') + '">' +
-                '<div class="message-avatar">' + senderName.charAt(0) + '</div>' +
-                '<div class="message-content">' +
-                '<div class="message-bubble">' + escapeHtml(msgData.message) + '</div>' +
-                '<div class="message-time">' + formatTime(msgData.timestamp) + '</div>' +
-                '</div>' +
-                '</div>';
+            const messageHTML = `
+                <div class="message ${isSent ? 'sent' : 'received'}">
+                    <div class="message-avatar">${senderName.charAt(0)}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${escapeHtml(msgData.message)}</div>
+                        <div class="message-time">${formatTime(msgData.timestamp)}</div>
+                    </div>
+                </div>
+            `;
 
             container.insertAdjacentHTML('beforeend', messageHTML);
             container.scrollTop = container.scrollHeight;
@@ -685,35 +692,67 @@
         // Show typing indicator
         function showTypingIndicator(isTyping) {
             const container = document.getElementById('chatMessages');
-            if (!container) return;
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            if (socketManager.isSocketConnected()) {
+                socketManager.disconnect();
+            }
+        });
 
-            const existing = container.querySelector('.typing-indicator');
-            if (existing) existing.remove();
-
-            if (isTyping) {
-                const indicatorHTML = 
-                    '<div class="typing-indicator">' +
-                    '<div class="typing-dot"></div>' +
-                    '<div class="typing-dot"></div>' +
-                    '<div class="typing-dot"></div>' +
-                    '</div>';
+        // Initialize on load
+        initMessenger();) {
+                const indicatorHTML = `
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                `;
                 container.insertAdjacentHTML('beforeend', indicatorHTML);
                 container.scrollTop = container.scrollHeight;
             }
         }
 
-        // Update user status
+        // Update user online/offline status
         function updateUserStatus(userId, status) {
-            const conversationItem = document.querySelector('[data-user-id="' + userId + '"]');
+            const conversationItem = document.querySelector(`[data-user-id="${userId}"]`);
             if (conversationItem) {
                 const indicator = conversationItem.querySelector('.status-indicator') || 
                     document.createElement('span');
-                indicator.className = 'status-indicator ' + status;
+                indicator.className = `status-indicator ${status}`;
                 indicator.title = status === 'online' ? 'Online' : 'Offline';
                 
                 if (!conversationItem.querySelector('.status-indicator')) {
                     conversationItem.querySelector('.conversation-avatar').appendChild(indicator);
                 }
+            }
+        }/ Send message
+        async function handleSendMessage(e) {
+            e.preventDefault();
+            
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            try {
+                await api.post('/chat/send', {
+                    receiver_student_id: currentConversation.other_user_id,
+                    message: message
+                });
+
+                input.value = '';
+                input.style.height = 'auto';
+                
+                await loadMessages(currentConversation.other_user_id);
+                await loadConversations();
+
+            } catch (error) {
+                console.error('Send message error:', error);
+                showToast('Failed to send message', 'error');
             }
         }
 
@@ -723,24 +762,18 @@
         };
 
         // Search conversations
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const query = e.target.value.toLowerCase();
-                document.querySelectorAll('.conversation-item').forEach(function(item) {
-                    const name = item.querySelector('.conversation-name').textContent.toLowerCase();
-                    item.style.display = name.includes(query) ? 'flex' : 'none';
-                });
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                const name = item.querySelector('.conversation-name').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
             });
-        }
+        });
 
         // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
+        window.addEventListener('beforeunload', () => {
             if (refreshInterval) {
                 clearInterval(refreshInterval);
-            }
-            if (socketManager.isSocketConnected()) {
-                socketManager.disconnect();
             }
         });
 
