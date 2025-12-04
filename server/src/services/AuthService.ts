@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { supabase } from '../config/database';
+import { supabase, supabaseAdmin } from '../config/database';
 import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { createError } from '../middleware/errorHandler';
 
@@ -52,27 +52,33 @@ export class AuthService {
       throw createError('Password must be at least 6 characters', 400);
     }
 
-    // Check if email or student ID already exists
-    const { data: existingUser } = await supabase
+    // Check if email already exists (using admin client to bypass RLS)
+    const { data: existingEmail } = await supabaseAdmin
       .from('users')
-      .select('user_id, email, student_id')
-      .or(`email.eq.${data.email},student_id.eq.${data.student_id}`)
-      .single();
+      .select('user_id, email')
+      .eq('email', data.email)
+      .maybeSingle();
 
-    if (existingUser) {
-      if (existingUser.email === data.email) {
-        throw createError('Email already exists', 400);
-      }
-      if (existingUser.student_id === data.student_id) {
-        throw createError('Student ID already exists', 400);
-      }
+    if (existingEmail) {
+      throw createError('Email already exists', 400);
+    }
+
+    // Check if student ID already exists (using admin client to bypass RLS)
+    const { data: existingStudentId } = await supabaseAdmin
+      .from('users')
+      .select('user_id, student_id')
+      .eq('student_id', data.student_id)
+      .maybeSingle();
+
+    if (existingStudentId) {
+      throw createError('Student ID already exists', 400);
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Insert new user
-    const { data: newUser, error: insertError } = await supabase
+    // Insert new user (using admin client to bypass RLS)
+    const { data: newUser, error: insertError } = await supabaseAdmin
       .from('users')
       .insert({
         student_id: data.student_id,
@@ -89,8 +95,23 @@ export class AuthService {
       .single();
 
     if (insertError || !newUser) {
-      console.error('Insert error:', insertError);
-      throw createError('Failed to create user', 500);
+      console.error('Insert error details:', {
+        error: insertError,
+        message: insertError?.message,
+        details: insertError?.details,
+        hint: insertError?.hint,
+        code: insertError?.code
+      });
+      
+      // Provide more specific error messages
+      if (insertError?.code === '23505') {
+        throw createError('Email or Student ID already exists', 400);
+      }
+      if (insertError?.code === '42501') {
+        throw createError('Database permission error. Please contact support.', 500);
+      }
+      
+      throw createError(insertError?.message || 'Failed to create user', 500);
     }
 
     // Generate tokens
