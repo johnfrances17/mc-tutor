@@ -14,24 +14,18 @@
         .page-header {
             max-width: 1200px;
             margin: 40px auto 0;
-            padding: 0 20px;
+            padding: 0 20px 20px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            border-bottom: 2px solid #e5e7eb;
         }
         
-        .page-header-text h1 {
+        .page-header h1 {
             font-size: 2rem;
             font-weight: 700;
             color: #2d3748;
-            margin-bottom: 8px;
-        }
-        
-        .page-header-text p {
-            color: #6b7280;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e5e7eb;
+            margin: 0;
         }
         
         .floating-message-btn {
@@ -65,11 +59,8 @@
     </a>
 
     <div class="page-header">
-        <div class="page-header-text">
-            <h1>Study Materials</h1>
-            <p>Download study resources shared by tutors</p>
-        </div>
-        <button class="btn btn-primary" id="uploadBtn" style="display: none;">
+        <h1>Study Materials</h1>
+        <button class="btn btn-primary" id="uploadBtn" style="display: none; margin-left: auto;">
             📤 Upload Material
         </button>
     </div>
@@ -167,32 +158,46 @@
         let currentPage = 1;
         let itemsPerPage = 12;
 
-        // Logout handler - direct implementation (MUST be outside initPage)\n        document.getElementById('logoutBtn').addEventListener('click', (e) => {\n            e.preventDefault();\n            e.stopPropagation();\n            console.log('Logout clicked!');\n            localStorage.clear();\n            sessionStorage.clear();\n            window.location.replace('/html/login.html?logout=true');\n            return false;\n        });\n\n        // Initialize page\n        async function initPage() {
-            try {
-                currentUser = await getCurrentUser();
-                
-                if (!currentUser) {
-                    window.location.href = '/html/login.html';
-                    return;
-                }
-
-                // Show upload button for tutors
-                if (currentUser.role === 'tutor') {
-                    document.getElementById('uploadBtn').style.display = 'block';
-                }
-
-                await Promise.all([
-                    loadSubjects(),
-                    loadMaterials()
-                ]);
-
-                setupEventListeners();
-
-            } catch (error) {
-                console.error('Init error:', error);
-                showToast('Failed to load page', 'error');
-            }
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/login.html?logout=true');
+                return false;
+            });
         }
+
+        // Initialize page\n        async function initPage() {
+        try {
+            currentUser = await getCurrentUser();
+            
+            if (!currentUser) {
+                window.location.href = '/html/login.html';
+                return;
+            }
+
+            // Show upload button for tutors
+            if (currentUser.role === 'tutor') {
+                document.getElementById('uploadBtn').style.display = 'block';
+            }
+
+            await Promise.all([
+                loadSubjects(),
+                loadMaterials()
+            ]);
+
+            setupEventListeners();
+
+        } catch (error) {
+            console.error('Init error:', error);
+            showToast('Failed to load page', 'error');
+        }
+    }
 
         // Load subjects
         async function loadSubjects() {

@@ -174,16 +174,19 @@
         let itemsPerPage = 10;
         let selectedTutor = null;
 
-        // Logout handler - direct implementation (MUST be outside initPage to work immediately)
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Logout clicked!');
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.replace('/html/login.html?logout=true');
-            return false;
-        });
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/login.html?logout=true');
+                return false;
+            });
+        }
 
         // Initialize page
         async function initPage() {

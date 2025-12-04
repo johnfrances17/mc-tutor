@@ -179,6 +179,20 @@
 
         let currentUser = null;
 
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/login.html?logout=true');
+                return false;
+            });
+        }
+
         // Initialize dashboard
         async function initDashboard() {
             try {
