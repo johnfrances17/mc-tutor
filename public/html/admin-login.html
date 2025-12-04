@@ -43,16 +43,6 @@
       font-weight: 700;
     }
 
-    .admin-login-header .admin-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      margin-top: 8px;
-      font-weight: 600;
-    }
-
     .admin-login-header p {
       margin: 0;
       font-size: 16px;
@@ -195,6 +185,25 @@
       margin-right: 8px;
     }
 
+    .auth-footer {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+      color: #666;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    .auth-footer a {
+      color: #1e3a8a;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 768px) {
       .admin-login-body {
         padding: 25px;
@@ -210,11 +219,8 @@
   <div class="admin-login-hero">
     <div class="admin-login-container">
       <div class="admin-login-header">
-        <h1><i class="fas fa-shield-alt"></i> MC Tutor</h1>
-        <div class="admin-badge">
-          <i class="fas fa-user-shield"></i> Administrator Access
-        </div>
-        <p style="margin-top: 15px;">Cloud-Based Peer Tutoring Platform</p>
+        <h1><i class="fas fa-graduation-cap"></i> MC Tutor</h1>
+        <p>Cloud-Based Peer Tutoring Platform</p>
         <p class="institution">Mabini College Inc.</p>
       </div>
 
@@ -264,6 +270,11 @@
         <div class="security-notice">
           <i class="fas fa-exclamation-triangle"></i>
           <strong>Security Notice:</strong> All admin login attempts are logged and monitored for security purposes.
+        </div>
+
+        <div class="auth-footer">
+          Not an administrator? 
+          <a href="/html/login.html">Back to login</a>
         </div>
       </div>
     </div>
