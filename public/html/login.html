@@ -286,6 +286,14 @@
   <script src="../scripts/api.js"></script>
   <script src="../scripts/auth.js"></script>
   <script>
+    // Clear any stale authentication on login page load
+    // This ensures users start fresh when they come to login
+    if (window.location.search.includes('logout=true')) {
+      localStorage.clear();
+      // Remove the logout param from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
     // Toggle password visibility
     function togglePassword(fieldId, button) {
       const input = document.getElementById(fieldId);

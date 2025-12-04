@@ -139,7 +139,7 @@ async function handleLogout() {
     console.error('Logout error:', error);
   } finally {
     clearSession();
-    window.location.href = '/html/login.html';
+    window.location.href = '/html/login.html?logout=true';
   }
 }
 
