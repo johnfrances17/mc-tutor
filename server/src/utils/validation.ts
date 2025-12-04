@@ -6,10 +6,11 @@
 
 /**
  * Validate email format
- * Example: john@example.com
+ * Only accepts @mabinicolleges.edu.ph emails
+ * Example: john.doe@mabinicolleges.edu.ph
  */
 export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
   return emailRegex.test(email);
 };
 

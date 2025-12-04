@@ -41,10 +41,10 @@ export class AuthService {
    * Register a new user
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validate email format - only Mabini Colleges emails allowed
+    const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
     if (!emailRegex.test(data.email)) {
-      throw createError('Invalid email format', 400);
+      throw createError('Only @mabinicolleges.edu.ph email addresses are allowed', 400);
     }
 
     // Validate password strength

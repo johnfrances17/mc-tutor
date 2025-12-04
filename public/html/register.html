@@ -149,7 +149,9 @@
             type="email" 
             id="email" 
             name="email"
-            placeholder="e.g., student@example.com" 
+            pattern="[a-zA-Z0-9._%+-]+@mabinicolleges\.edu\.ph$"
+            title="Please use your Mabini Colleges email (@mabinicolleges.edu.ph)"
+            placeholder="your.name@mabinicolleges.edu.ph" 
             required
           >
         </div>
@@ -299,10 +301,20 @@
       const registerBtn = document.getElementById('registerBtn');
 
       // Get form data
+      const email = document.getElementById('email').value.trim();
+      
+      // Validate email domain
+      if (!email.endsWith('@mabinicolleges.edu.ph')) {
+        errorMessage.textContent = 'Please use your Mabini Colleges email (@mabinicolleges.edu.ph)';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        return;
+      }
+      
       const formData = {
         student_id: document.getElementById('student_id').value.trim(),
         full_name: document.getElementById('full_name').value.trim(),
-        email: document.getElementById('email').value.trim(),
+        email: email,
         phone: document.getElementById('phone').value.trim(),
         role: document.getElementById('role').value,
         year_level: document.getElementById('year_level').value,
