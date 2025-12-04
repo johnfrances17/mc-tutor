@@ -74,8 +74,16 @@ export class AuthService {
       throw createError('School ID already exists', 400);
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    // Hash password - use consistent bcrypt configuration
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+    
+    console.log('🔐 Registration password hash:', {
+      originalLength: data.password.length,
+      hashLength: hashedPassword.length,
+      hashPrefix: hashedPassword.substring(0, 7),
+      saltRounds: saltRounds
+    });
 
     // Insert new user (using admin client to bypass RLS)
     const { data: newUser, error: insertError } = await supabaseAdmin
@@ -202,7 +210,24 @@ export class AuthService {
       storedHashPrefix: user.password.substring(0, 7)
     });
     
-    const isValidPassword = await bcrypt.compare(data.password, user.password);
+    // Ensure password is a string and not undefined
+    if (!data.password || typeof data.password !== 'string') {
+      console.log('❌ Invalid password type:', typeof data.password);
+      throw createError('Invalid password', 401);
+    }
+    
+    if (!user.password || typeof user.password !== 'string') {
+      console.log('❌ Invalid stored hash type:', typeof user.password);
+      throw createError('Invalid stored password hash', 500);
+    }
+    
+    let isValidPassword = false;
+    try {
+      isValidPassword = await bcrypt.compare(data.password, user.password);
+    } catch (bcryptError) {
+      console.error('❌ Bcrypt comparison error:', bcryptError);
+      throw createError('Password verification failed', 500);
+    }
     
     console.log('🔐 Password comparison result:', {
       isValid: isValidPassword,
