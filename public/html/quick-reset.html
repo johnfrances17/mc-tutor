@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Password Reset - MC Tutor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .message.error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+    .message.success {
+      background: #efe;
+      color: #3c3;
+      border: 1px solid #cfc;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+    .info {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-bottom: 25px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Quick Password Reset</h1>
+    <p class="subtitle">Reset your password quickly and securely</p>
+    
+    <div class="info">
+      <strong>Note:</strong> This will immediately reset your password to the new value you provide.
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <form id="resetForm">
+      <div class="form-group">
+        <label for="email">📧 Your Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="your.email@mabinicolleges.edu.ph"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="newPassword">🔑 New Password</label>
+        <input 
+          type="password" 
+          id="newPassword" 
+          placeholder="Enter new password (min 6 characters)"
+          minlength="6"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">✅ Confirm Password</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          placeholder="Re-enter new password"
+          minlength="6"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        Reset Password
+      </button>
+    </form>
+
+    <div class="back-link">
+      <a href="login.html">← Back to Login</a>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000/api'
+      : '/api';
+
+    function showMessage(text, type = 'error') {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.display = 'block';
+      
+      setTimeout(() => {
+        messageEl.style.display = 'none';
+      }, 5000);
+    }
+
+    document.getElementById('resetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const submitBtn = document.getElementById('submitBtn');
+
+      // Validate email domain
+      if (!email.endsWith('@mabinicolleges.edu.ph') && email !== 'admin@mabinicolleges.edu.ph') {
+        showMessage('Please use your Mabini Colleges email', 'error');
+        return;
+      }
+
+      // Validate passwords match
+      if (newPassword !== confirmPassword) {
+        showMessage('Passwords do not match', 'error');
+        return;
+      }
+
+      // Validate password length
+      if (newPassword.length < 6) {
+        showMessage('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Resetting...';
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/quick-reset`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            newPassword: newPassword
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage('✅ Password reset successful! Redirecting to login...', 'success');
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+        } else {
+          showMessage(data.error?.message || data.message || 'Reset failed', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Reset Password';
+        }
+      } catch (error) {
+        showMessage('Error: ' + error.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Reset Password';
+      }
+    });
+  </script>
+</body>
+</html>

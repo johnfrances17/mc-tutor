@@ -248,3 +248,77 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     return next(error);
   }
 };
+
+/**
+ * Quick password reset (for debugging/admin use)
+ * POST /api/auth/quick-reset
+ */
+export const quickPasswordReset = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Email and new password are required' },
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Password must be at least 6 characters' },
+      });
+    }
+
+    // Use the auth service reset method
+    const bcrypt = require('bcryptjs');
+    const { supabaseAdmin } = require('../config/database');
+    
+    // Verify user exists
+    const { data: user, error: fetchError } = await supabaseAdmin
+      .from('users')
+      .select('user_id, email, full_name')
+      .eq('email', email)
+      .eq('status', 'active')
+      .single();
+
+    if (fetchError || !user) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'User not found' },
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({ 
+        password: hashedPassword,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', user.user_id);
+
+    if (updateError) {
+      return res.status(500).json({
+        success: false,
+        error: { message: 'Failed to reset password' },
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Password reset successful',
+      data: {
+        email: user.email,
+        full_name: user.full_name
+      }
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
