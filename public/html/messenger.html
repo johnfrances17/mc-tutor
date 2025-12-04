@@ -25,7 +25,6 @@
             color: #2d3748;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #e5e7eb;
         }
 
         .messenger-container {
@@ -545,32 +544,15 @@
                         <div class="conversation-info">
                             <div class="conversation-name">
                                 <span>${conv.other_user_name}</span>
-            // Auto-resize textarea
-            const textarea = document.getElementById('messageInput');
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-                
-                // Trigger typing indicator
-                if (socketManager.isSocketConnected() && this.value.trim()) {
-                    socketManager.startTyping(currentConversation.other_user_id);
-                }
-            });
+                                <span class="conversation-time">${formatTime(conv.last_message_time)}</span>
+                            </div>
+                            <div class="conversation-preview">${conv.last_message || 'No messages yet'}</div>
+                            ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
 
-            // Stop typing on blur
-            textarea.addEventListener('blur', () => {
-                if (socketManager.isSocketConnected()) {
-                    socketManager.stopTyping(currentConversation.other_user_id);
-                }
-            });
-
-            // Mark as read
-            await api.put(`/chat/mark-read/${conversation.other_user_id}`);
-            if (socketManager.isSocketConnected()) {
-                socketManager.markAsRead(conversation.other_user_id);
-            }
-            await loadConversations();
-        }       // Add click handlers
+                // Add click handlers
                 document.querySelectorAll('.conversation-item').forEach(item => {
                     item.addEventListener('click', () => {
                         const userId = item.dataset.userId;
