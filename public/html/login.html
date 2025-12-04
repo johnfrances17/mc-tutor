@@ -168,6 +168,31 @@
       margin-bottom: 15px;
     }
 
+    .password-toggle {
+      position: relative;
+    }
+
+    .password-toggle input {
+      padding-right: 45px;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 5px;
+    }
+
+    .password-toggle-btn:hover {
+      color: #5568d3;
+    }
+
     @media (max-width: 768px) {
       .login-body {
         padding: 25px;
@@ -256,13 +281,18 @@
 
             <div class="form-group">
               <label for="password"><i class="fas fa-lock"></i> Password</label>
-              <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                placeholder="Enter your account password" 
-                required
-              >
+              <div class="password-toggle">
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  placeholder="Enter your account password" 
+                  required
+                >
+                <button type="button" class="password-toggle-btn" onclick="togglePassword('password', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
             </div>
 
             <div style="text-align: right; margin-bottom: 20px;">
@@ -290,6 +320,22 @@
   <script src="../scripts/auth.js"></script>
   <script>
     let selectedRole = '';
+
+    // Toggle password visibility
+    function togglePassword(fieldId, button) {
+      const input = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
 
     // Check if already logged in
     (function() {
