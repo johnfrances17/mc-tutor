@@ -88,6 +88,15 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       });
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Please use your Mabini Colleges email address' },
+      });
+    }
+
     // Validate role
     if (!['tutor', 'tutee', 'admin'].includes(role)) {
       return res.status(400).json({

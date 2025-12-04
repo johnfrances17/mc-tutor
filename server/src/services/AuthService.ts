@@ -17,7 +17,7 @@ interface RegisterData {
 interface LoginData {
   email: string;
   password: string;
-  role: 'tutor' | 'tutee';
+  role: 'tutor' | 'tutee' | 'admin';
 }
 
 interface AuthResponse {
@@ -147,6 +147,12 @@ export class AuthService {
    * Login user
    */
   async login(data: LoginData): Promise<AuthResponse> {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
+    if (!emailRegex.test(data.email)) {
+      throw createError('Please use your Mabini Colleges email address', 400);
+    }
+
     // Find user by email and role
     const { data: user, error } = await supabase
       .from('users')

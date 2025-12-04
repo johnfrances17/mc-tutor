@@ -70,7 +70,7 @@
     .role-cards {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
+      gap: 12px;
       margin-bottom: 25px;
     }
 
@@ -78,7 +78,7 @@
       background: #f8f9fa;
       border: 3px solid #e0e0e0;
       border-radius: 16px;
-      padding: 25px 20px;
+      padding: 30px 15px;
       cursor: pointer;
       transition: all 0.3s ease;
       text-align: center;
@@ -269,12 +269,13 @@
             <div id="errorMessage" class="error-message" style="display: none;"></div>
 
             <div class="form-group">
-              <label for="student_id"><i class="fas fa-id-card"></i> Student ID</label>
+              <label for="email"><i class="fas fa-envelope"></i> Email</label>
               <input 
-                type="text" 
-                id="student_id" 
-                name="student_id" 
-                placeholder="Enter your 6-digit student ID" 
+                type="email" 
+                id="email" 
+                name="email" 
+                pattern="[a-zA-Z0-9._%+-]+@mabinicolleges\.edu\.ph$"
+                placeholder="Enter your Mabini Colleges email" 
                 required
               >
             </div>
@@ -387,10 +388,17 @@
     document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const studentId = document.getElementById('student_id').value.trim();
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const errorMessage = document.getElementById('errorMessage');
       const loginBtn = document.getElementById('loginBtn');
+
+      // Validate email domain
+      if (!email.endsWith('@mabinicolleges.edu.ph')) {
+        errorMessage.textContent = 'Please use your Mabini Colleges email (@mabinicolleges.edu.ph)';
+        errorMessage.style.display = 'block';
+        return;
+      }
 
       errorMessage.style.display = 'none';
       loginBtn.disabled = true;
@@ -398,7 +406,7 @@
 
       try {
         const response = await window.API.auth.login({
-          student_id: studentId,
+          email: email,
           password: password,
           role: selectedRole === 'student' ? 'tutee' : selectedRole
         });
