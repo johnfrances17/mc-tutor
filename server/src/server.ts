@@ -79,10 +79,11 @@ app.get('/api/health', async (_req, res) => {
     try {
       const { supabase } = await import('./config/database');
       const start = Date.now();
-      const { data, error } = await supabase.from('users').select('user_id').limit(1);
+      // Use subjects table instead of users (less likely to have RLS issues)
+      const { data, error } = await supabase.from('subjects').select('subject_id').limit(1);
       databaseResponseTime = Date.now() - start;
       // Check if query succeeded (either has data or no error)
-      databaseConnected = (!error || data !== null);
+      databaseConnected = !error;
     } catch (err) {
       console.error('Database health check error:', err);
       databaseConnected = false;
