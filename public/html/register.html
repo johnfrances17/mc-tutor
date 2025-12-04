@@ -12,7 +12,7 @@
       padding: 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 20px;
     }
 
     .register-container {
@@ -26,14 +26,14 @@
 
     .register-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 40px;
+      padding: 25px;
       text-align: center;
       color: white;
     }
 
     .register-header h1 {
-      margin: 0 0 8px 0;
-      font-size: 36px;
+      margin: 0 0 5px 0;
+      font-size: 28px;
       font-weight: 700;
     }
 
@@ -50,28 +50,32 @@
     }
 
     .register-body {
-      padding: 50px;
+      padding: 30px;
     }
 
     .register-body h2 {
       text-align: center;
       color: #333;
-      font-size: 28px;
-      margin: 0 0 30px 0;
+      font-size: 24px;
+      margin: 0 0 20px 0;
       font-weight: 600;
     }
 
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
     }
 
     .password-requirements {
       background: #f8f9fa;
       border-left: 4px solid #667eea;
-      padding: 15px;
-      margin-top: 10px;
+      padding: 10px;
+      margin-top: 5px;
       border-radius: 5px;
       font-size: 13px;
       color: #666;
@@ -94,9 +98,28 @@
       color: #dc3545;
     }
 
+    .auth-footer {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .auth-footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 768px) {
       .register-body {
-        padding: 30px 25px;
+        padding: 25px;
       }
 
       .form-row {
