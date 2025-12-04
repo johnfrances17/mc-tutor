@@ -272,7 +272,6 @@ export const quickPasswordReset = async (req: Request, res: Response, next: Next
     }
 
     // Use the auth service reset method
-    const bcrypt = require('bcryptjs');
     const { supabaseAdmin } = require('../config/database');
     
     // Verify user exists
@@ -290,14 +289,14 @@ export const quickPasswordReset = async (req: Request, res: Response, next: Next
       });
     }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // ⚠️ Store password in PLAIN TEXT (not secure!)
+    const plainPassword = newPassword;
 
     // Update password
     const { error: updateError } = await supabaseAdmin
       .from('users')
       .update({ 
-        password: hashedPassword,
+        password: plainPassword,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', user.user_id);

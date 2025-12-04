@@ -74,15 +74,11 @@ export class AuthService {
       throw createError('School ID already exists', 400);
     }
 
-    // Hash password - use consistent bcrypt configuration
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+    // ⚠️ WARNING: Storing password in PLAIN TEXT (not secure!)
+    const plainPassword = data.password;
     
-    console.log('🔐 Registration password hash:', {
-      originalLength: data.password.length,
-      hashLength: hashedPassword.length,
-      hashPrefix: hashedPassword.substring(0, 7),
-      saltRounds: saltRounds
+    console.log('⚠️  Storing password in PLAIN TEXT:', {
+      passwordLength: data.password.length
     });
 
     // Insert new user (using admin client to bypass RLS)
@@ -91,7 +87,7 @@ export class AuthService {
       .insert({
         school_id: data.school_id,
         email: data.email,
-        password: hashedPassword,
+        password: plainPassword,
         full_name: data.full_name,
         role: data.role,
         phone: data.phone,
@@ -203,35 +199,20 @@ export class AuthService {
       hashLength: user.password?.length
     });
 
-    // Verify password
-    console.log('🔍 Comparing password...', {
+    // ⚠️ WARNING: Comparing PLAIN TEXT passwords (not secure!)
+    console.log('⚠️  Comparing PLAIN TEXT passwords:', {
       providedPasswordLength: data.password.length,
-      storedHashLength: user.password.length,
-      storedHashPrefix: user.password.substring(0, 7)
+      storedPasswordLength: user.password.length
     });
     
-    // Ensure password is a string and not undefined
-    if (!data.password || typeof data.password !== 'string') {
-      console.log('❌ Invalid password type:', typeof data.password);
-      throw createError('Invalid password', 401);
-    }
-    
-    if (!user.password || typeof user.password !== 'string') {
-      console.log('❌ Invalid stored hash type:', typeof user.password);
-      throw createError('Invalid stored password hash', 500);
-    }
-    
-    let isValidPassword = false;
-    try {
-      isValidPassword = await bcrypt.compare(data.password, user.password);
-    } catch (bcryptError) {
-      console.error('❌ Bcrypt comparison error:', bcryptError);
-      throw createError('Password verification failed', 500);
-    }
+    // Direct string comparison (no hashing)
+    const isValidPassword = data.password === user.password;
     
     console.log('🔐 Password comparison result:', {
       isValid: isValidPassword,
-      email: data.email
+      email: data.email,
+      provided: data.password,
+      stored: user.password
     });
     
     if (!isValidPassword) {
