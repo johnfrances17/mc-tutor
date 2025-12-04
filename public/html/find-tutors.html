@@ -63,7 +63,6 @@
 
     <div class="page-header">
         <h1>Find Tutors</h1>
-        <p>Search for qualified tutors and book your sessions</p>
     </div>
 
     <div class="container">
@@ -174,6 +173,17 @@
         let currentPage = 1;
         let itemsPerPage = 10;
         let selectedTutor = null;
+
+        // Logout handler - direct implementation (MUST be outside initPage to work immediately)
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Logout clicked!');
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.replace('/html/login.html?logout=true');
+            return false;
+        });
 
         // Initialize page
         async function initPage() {
@@ -457,17 +467,6 @@
             document.getElementById('searchBtn').addEventListener('click', () => {
                 currentPage = 1;
                 loadTutors();
-            });
-
-            // Logout handler - direct implementation
-            document.getElementById('logoutBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
-                return false;
             });
 
             // Close modal on outside click

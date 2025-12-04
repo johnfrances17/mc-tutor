@@ -63,7 +63,6 @@
 
     <div class="page-header">
         <h1>My Profile</h1>
-        <p>Manage your account information</p>
     </div>
 
     <div class="container" style="max-width: 900px;">
@@ -224,6 +223,17 @@
         let currentUser = null;
         let originalProfile = {};
         let isEditMode = false;
+
+        // Logout handler - direct implementation (MUST be outside initPage)
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Logout clicked!');
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.replace('/html/login.html?logout=true');
+            return false;
+        });
 
         // Initialize page
         async function initPage() {
@@ -399,17 +409,6 @@
                 document.getElementById('phone').value = originalProfile.phone || '';
                 document.getElementById('course').value = originalProfile.course || '';
                 document.getElementById('yearLevel').value = originalProfile.year_level || '';
-            });
-
-            // Logout handler - direct implementation
-            document.getElementById('logoutBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
-                return false;
             });
         }
 

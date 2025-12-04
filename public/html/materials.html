@@ -167,8 +167,7 @@
         let currentPage = 1;
         let itemsPerPage = 12;
 
-        // Initialize page
-        async function initPage() {
+        // Logout handler - direct implementation (MUST be outside initPage)\n        document.getElementById('logoutBtn').addEventListener('click', (e) => {\n            e.preventDefault();\n            e.stopPropagation();\n            console.log('Logout clicked!');\n            localStorage.clear();\n            sessionStorage.clear();\n            window.location.replace('/html/login.html?logout=true');\n            return false;\n        });\n\n        // Initialize page\n        async function initPage() {
             try {
                 currentUser = await getCurrentUser();
                 
@@ -446,17 +445,6 @@
             });
 
             document.getElementById('uploadBtn')?.addEventListener('click', openUploadModal);
-
-            // Logout handler - direct implementation
-            document.getElementById('logoutBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
-                return false;
-            });
 
             document.getElementById('uploadModal')?.addEventListener('click', (e) => {
                 if (e.target.id === 'uploadModal') {
