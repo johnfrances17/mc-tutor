@@ -99,15 +99,121 @@
     <script src="../scripts/utils.js"></script>
     <script src="../scripts/api.js"></script>
     <script src="../scripts/auth.js"></script>
-    <script src="../scripts/app.js"></script>
     <script type="module">
-        import { logout } from '../scripts/auth.js';
+        import { logout, getCurrentUser } from '../scripts/auth.js';
+        import { api } from '../scripts/api.js';
+        
+        let currentUser = null;
+        
+        // Initialize dashboard
+        async function initDashboard() {
+            try {
+                currentUser = await getCurrentUser();
+                
+                if (!currentUser) {
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+                
+                if (currentUser.role !== 'tutee') {
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+                
+                // Load dashboard data
+                await loadStats();
+                await loadUpcomingSessions();
+                await loadMaterials();
+            } catch (error) {
+                console.error('Dashboard init error:', error);
+            }
+        }
+        
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await api.get('/sessions/my-sessions?role=tutee');
+                if (response.success && response.data) {
+                    const sessions = response.data;
+                    
+                    document.querySelector('#totalSessions .number').textContent = sessions.length;
+                    document.querySelector('#pendingSessions .number').textContent = 
+                        sessions.filter(s => s.status === 'pending').length;
+                    document.querySelector('#confirmedSessions .number').textContent = 
+                        sessions.filter(s => s.status === 'confirmed').length;
+                    document.querySelector('#completedSessions .number').textContent = 
+                        sessions.filter(s => s.status === 'completed').length;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Load upcoming sessions
+        async function loadUpcomingSessions() {
+            const container = document.getElementById('upcomingSessionsList');
+            try {
+                const response = await api.get('/sessions/my-sessions?role=tutee&status=confirmed');
+                if (response.success && response.data) {
+                    const sessions = response.data;
+                    
+                    if (sessions.length === 0) {
+                        container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/html/find-tutors.html">Find a tutor</a> to get started!</p>';
+                        return;
+                    }
+                    
+                    container.innerHTML = sessions.slice(0, 5).map(session => `
+                        <div class="session-item">
+                            <div class="session-info">
+                                <h4>${session.subject_name || 'Subject'}</h4>
+                                <p>Tutor: ${session.tutor_name || 'N/A'}</p>
+                                <p>Date: ${new Date(session.session_date).toLocaleDateString()}</p>
+                                <p>Time: ${session.session_time || 'TBD'}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                container.innerHTML = '<p class="text-muted">Failed to load sessions</p>';
+            }
+        }
+        
+        // Load materials
+        async function loadMaterials() {
+            const container = document.getElementById('recentMaterialsList');
+            try {
+                const response = await api.get('/materials?limit=5');
+                if (response.success && response.data) {
+                    const materials = response.data;
+                    
+                    if (materials.length === 0) {
+                        container.innerHTML = '<p class="text-muted">No materials available yet</p>';
+                        return;
+                    }
+                    
+                    container.innerHTML = materials.map(material => `
+                        <div class="material-item">
+                            <h4>${material.title}</h4>
+                            <p>${material.description || ''}</p>
+                            <a href="${material.file_url}" target="_blank" class="btn btn-sm btn-primary">Download</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading materials:', error);
+                container.innerHTML = '<p class="text-muted">Failed to load materials</p>';
+            }
+        }
         
         // Logout handler
         document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
             e.preventDefault();
             await logout();
         });
+        
+        // Initialize on load
+        initDashboard();
     </script>
 </body>
 </html>
