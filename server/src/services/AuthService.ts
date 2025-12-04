@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { supabase, supabaseAdmin } from '../config/database';
 import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { createError } from '../middleware/errorHandler';
@@ -372,14 +371,14 @@ export class AuthService {
         throw createError('Invalid or expired reset token', 401);
       }
 
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      // ⚠️ Store password in PLAIN TEXT (not secure!)
+      const plainPassword = newPassword;
 
       // Update password
       const { error: updateError } = await supabase
         .from('users')
         .update({ 
-          password: hashedPassword,
+          password: plainPassword,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', user.user_id);

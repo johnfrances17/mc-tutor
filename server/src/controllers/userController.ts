@@ -170,21 +170,20 @@ export const changePassword = async (req: AuthRequest, res: Response, next: Next
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Verify current password
-    const bcrypt = require('bcryptjs');
-    const isValid = await bcrypt.compare(current_password, user.password_hash);
+    // ⚠️ Verify current password in PLAIN TEXT (not secure!)
+    const isValid = current_password === user.password_hash;
 
     if (!isValid) {
       return res.status(401).json({ success: false, message: 'Current password is incorrect' });
     }
 
-    // Hash new password
-    const newHash = await bcrypt.hash(new_password, 10);
+    // ⚠️ Store new password in PLAIN TEXT (not secure!)
+    const plainPassword = new_password;
 
     // Update password
     const { error } = await supabase
       .from('users')
-      .update({ password_hash: newHash })
+      .update({ password_hash: plainPassword })
       .eq('user_id', userId);
 
     if (error) {

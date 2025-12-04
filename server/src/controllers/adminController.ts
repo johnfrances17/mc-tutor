@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../config/database';
 import { validatePagination, sanitizeInput, isValidEmail, isValidRole } from '../utils/validation';
-import bcrypt from 'bcryptjs';
 
 /**
  * ADMIN CONTROLLER
@@ -140,8 +139,8 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       }
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // ⚠️ Store password in PLAIN TEXT (not secure!)
+    const plainPassword = password;
 
     // Create user
     const { data: newUser, error } = await supabase
@@ -149,7 +148,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       .insert({
         school_id: sanitizeInput(school_id),
         email: sanitizeInput(email),
-        password: hashedPassword,
+        password: plainPassword,
         full_name: sanitizeInput(full_name),
         role,
         phone: phone ? sanitizeInput(phone) : null,
@@ -299,12 +298,12 @@ export const resetUserPassword = async (req: Request, res: Response, next: NextF
       });
     }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(new_password, 10);
+    // ⚠️ Store password in PLAIN TEXT (not secure!)
+    const plainPassword = new_password;
 
     const { error } = await supabase
       .from('users')
-      .update({ password: hashedPassword })
+      .update({ password: plainPassword })
       .eq('user_id', id);
 
     if (error) {
