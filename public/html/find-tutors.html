@@ -139,13 +139,13 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = 'login.html';
+                    window.location.href = '/html/login.html';
                     return;
                 }
 
                 if (currentUser.role !== 'tutee') {
                     showToast('This page is for students only', 'error');
-                    setTimeout(() => window.location.href = 'index.html', 2000);
+                    setTimeout(() => window.location.href = '/html/index.html', 2000);
                     return;
                 }
 
@@ -381,7 +381,7 @@
                 
                 // Redirect to sessions page after 2 seconds
                 setTimeout(() => {
-                    window.location.href = 'my-sessions.html';
+                    window.location.href = '/html/my-sessions.html';
                 }, 2000);
 
             } catch (error) {

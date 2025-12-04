@@ -235,7 +235,7 @@
         if (data.success) {
           showMessage('✅ Password reset successful! Redirecting to login...', 'success');
           setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = '/html/login.html';
           }, 2000);
         } else {
           showMessage(data.error?.message || data.message || 'Reset failed', 'error');

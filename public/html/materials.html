@@ -128,19 +128,19 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = 'login.html';
+                    window.location.href = '/html/login.html';
                     return;
                 }
 
                 // Set dashboard link
                 const dashboardLink = document.getElementById('dashboardLink');
                 if (currentUser.role === 'tutor') {
-                    dashboardLink.href = 'tutor-dashboard.html';
+                    dashboardLink.href = '/html/tutor-dashboard.html';
                     document.getElementById('uploadBtn').style.display = 'block';
                 } else if (currentUser.role === 'tutee') {
-                    dashboardLink.href = 'student-dashboard.html';
+                    dashboardLink.href = '/html/student-dashboard.html';
                 } else if (currentUser.role === 'admin') {
-                    dashboardLink.href = 'admin-dashboard.html';
+                    dashboardLink.href = '/html/admin-dashboard.html';
                 }
 
                 await Promise.all([
