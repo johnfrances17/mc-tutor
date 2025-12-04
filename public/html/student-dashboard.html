@@ -139,8 +139,9 @@
     <script src="../scripts/api.js"></script>
     <script src="../scripts/auth.js"></script>
     <script type="module">
-        import { logout, getCurrentUser } from '../scripts/auth.js';
-        import { api } from '../scripts/api.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
         
         let currentUser = null;
         
@@ -245,18 +246,15 @@
             }
         }
         
-        // Logout handler - prevent default and ensure clean logout
+        // Logout handler - direct implementation
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', async (e) => {
+            logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
-                // Clear session immediately
+                console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                
-                // Force redirect without hash
                 window.location.replace('/html/login.html?logout=true');
                 return false;
             });

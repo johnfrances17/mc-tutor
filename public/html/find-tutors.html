@@ -139,7 +139,7 @@
     <script type="module" src="../scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
-        import { logout, getCurrentUser } from '../scripts/auth.js';
+        import { getCurrentUser } from '../scripts/auth.js';
         import { showToast, generateStars, debounce } from '../scripts/utils.js';
 
         let currentUser = null;
@@ -434,10 +434,15 @@
                 loadTutors();
             });
 
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            // Logout handler - direct implementation
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
                 e.preventDefault();
-                await logout();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/login.html?logout=true');
+                return false;
             });
 
             // Close modal on outside click

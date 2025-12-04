@@ -385,7 +385,7 @@
     <script type="module" src="../scripts/socket.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
-        import { logout, getCurrentUser, redirectToDashboard } from '../scripts/auth.js';
+        import { getCurrentUser, redirectToDashboard } from '../scripts/auth.js';
         import { showToast, formatTime, escapeHtml } from '../scripts/utils.js';
         import socketManager from '../scripts/socket.js';
 
@@ -752,9 +752,15 @@
         });
 
         // Logout handler
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        // Logout handler - direct implementation
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            await logout();
+            e.stopPropagation();
+            console.log('Logout clicked!');
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.replace('/html/login.html?logout=true');
+            return false;
         });
 
         // Cleanup on page unload

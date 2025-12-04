@@ -193,8 +193,8 @@
     <script type="module" src="../scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
-        import { logout, getCurrentUser } from '../scripts/auth.js';
-        import { showToast, formatDate } from '../scripts/utils.js';
+        import { getCurrentUser } from '../scripts/auth.js';
+        import { showToast } from '../scripts/utils.js';
 
         let currentUser = null;
         let originalProfile = {};
@@ -376,9 +376,15 @@
                 document.getElementById('yearLevel').value = originalProfile.year_level || '';
             });
 
-            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            // Logout handler - direct implementation
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
                 e.preventDefault();
-                await logout();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/login.html?logout=true');
+                return false;
             });
         }
 
