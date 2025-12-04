@@ -21,12 +21,12 @@ export const getSessions = async (req: AuthRequest, res: Response, next: NextFun
     );
 
     let query = supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!tutoring_sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!tutoring_sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
       `, { count: 'exact' });
 
     // Filter by role
@@ -89,7 +89,7 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
 
     // Create session
     const { data, error } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .insert({
         tutee_id: tuteeId,
         tutor_id,
@@ -105,8 +105,8 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!tutoring_sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!tutoring_sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
       `)
       .single();
 
@@ -135,7 +135,7 @@ export const confirmSession = async (req: AuthRequest, res: Response, next: Next
 
     // Check if session exists and user is the tutor
     const { data: session } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .select('*')
       .eq('session_id', id)
       .eq('tutor_id', userId)
@@ -151,14 +151,14 @@ export const confirmSession = async (req: AuthRequest, res: Response, next: Next
 
     // Update session
     const { data, error } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .update({ status: 'confirmed' })
       .eq('session_id', id)
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!tutoring_sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!tutoring_sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
       `)
       .single();
 
@@ -183,7 +183,7 @@ export const cancelSession = async (req: AuthRequest, res: Response, next: NextF
 
     // Check if session exists and user is involved
     const { data: session } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .select('*')
       .eq('session_id', id)
       .or(`tutor_id.eq.${userId},tutee_id.eq.${userId}`)
@@ -199,7 +199,7 @@ export const cancelSession = async (req: AuthRequest, res: Response, next: NextF
 
     // Update session
     const { data, error } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .update({
         status: 'cancelled',
         cancellation_reason: reason || null,
@@ -208,8 +208,8 @@ export const cancelSession = async (req: AuthRequest, res: Response, next: NextF
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!tutoring_sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!tutoring_sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
       `)
       .single();
 
@@ -233,7 +233,7 @@ export const completeSession = async (req: AuthRequest, res: Response, next: Nex
 
     // Check if session exists and user is the tutor
     const { data: session } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .select('*')
       .eq('session_id', id)
       .eq('tutor_id', userId)
@@ -249,14 +249,14 @@ export const completeSession = async (req: AuthRequest, res: Response, next: Nex
 
     // Update session
     const { data, error } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .update({ status: 'completed' })
       .eq('session_id', id)
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!tutoring_sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!tutoring_sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
       `)
       .single();
 

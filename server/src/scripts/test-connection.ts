@@ -38,9 +38,9 @@ async function testConnection() {
     }
 
     // Test 3: Check sessions table
-    console.log('\nTest 3: Checking tutoring_sessions table...');
+    console.log('\nTest 3: Checking sessions table...');
     const { count: sessionCount, error: sessionsError } = await supabase
-      .from('tutoring_sessions')
+      .from('sessions')
       .select('*', { count: 'exact', head: true });
 
     if (sessionsError) {

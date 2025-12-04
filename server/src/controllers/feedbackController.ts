@@ -20,8 +20,8 @@ export const submitFeedback = async (req: AuthRequest, res: Response, next: Next
 
     // Verify session exists and user is the tutee
     const { data: session } = await supabase
-      .from('tutoring_sessions')
-      .select('*, tutor:users!tutoring_sessions_tutor_id_fkey(student_id, full_name)')
+      .from('sessions')
+      .select('*, tutor:users!sessions_tutor_id_fkey(student_id, full_name)')
       .eq('session_id', session_id)
       .eq('tutee_id', tuteeId)
       .single();
@@ -85,10 +85,10 @@ export const getTutorFeedback = async (req: AuthRequest, res: Response, next: Ne
       .select(`
         *,
         tutee:users!feedback_tutee_id_fkey(student_id, full_name, profile_picture),
-        session:tutoring_sessions(session_date, subject:subjects(subject_code, subject_name))
+        session:sessions(session_date, subject:subjects(subject_code, subject_name))
       `)
       .eq('tutor_id', tutorId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false});
 
     if (error) {
       return res.status(400).json({ success: false, message: 'Failed to fetch feedback' });
@@ -124,7 +124,7 @@ export const getMyFeedback = async (req: AuthRequest, res: Response, next: NextF
       .select(`
         *,
         tutor:users!feedback_tutor_id_fkey(student_id, full_name, profile_picture),
-        session:tutoring_sessions(session_date, subject:subjects(subject_code, subject_name))
+        session:sessions(session_date, subject:subjects(subject_code, subject_name))
       `)
       .eq('tutee_id', tuteeId)
       .order('created_at', { ascending: false });
@@ -151,7 +151,7 @@ export const getReceivedFeedback = async (req: AuthRequest, res: Response, next:
       .select(`
         *,
         tutee:users!feedback_tutee_id_fkey(student_id, full_name, profile_picture),
-        session:tutoring_sessions(session_date, subject:subjects(subject_code, subject_name))
+        session:sessions(session_date, subject:subjects(subject_code, subject_name))
       `)
       .eq('tutor_id', tutorId)
       .order('created_at', { ascending: false });
