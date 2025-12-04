@@ -291,8 +291,11 @@
   <div class="container">
     <div class="header">
       <h1><i class="fas fa-server"></i> System Status</h1>
-      <p>Real-time monitoring of MC Tutor platform services • Auto-refresh every 10s</p>
+      <p>Real-time monitoring of MC Tutor platform services</p>
       <p style="font-size: 14px; margin-top: 5px;">Last updated: <span id="last-updated">-</span></p>
+      <button onclick="checkAllServices()" class="btn btn-primary" style="margin-top: 10px; padding: 10px 20px;">
+        <i class="fas fa-sync-alt"></i> Refresh Status
+      </button>
     </div>
 
     <div class="status-grid">
@@ -441,12 +444,22 @@
   <script src="../scripts/api.js"></script>
   <script>
     let startTime;
-    let autoRefreshInterval;
 
     // Update last updated timestamp
     function updateTimestamp() {
       const now = new Date();
       document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+    }
+    
+    // Check all services function
+    async function checkAllServices() {
+      updateTimestamp();
+      await Promise.all([
+        checkVercelStatus(),
+        checkSupabaseStatus(),
+        checkAPIStatus(),
+        checkEmailStatus()
+      ]);
     }
 
     // Check Vercel status
@@ -647,31 +660,7 @@
 
     // Run all checks on load
     window.addEventListener('load', async () => {
-      updateTimestamp();
-      await Promise.all([
-        checkVercelStatus(),
-        checkSupabaseStatus(),
-        checkAPIStatus(),
-        checkEmailStatus()
-      ]);
-    });
-
-    // Auto-refresh every 10 seconds
-    autoRefreshInterval = setInterval(async () => {
-      updateTimestamp();
-      await Promise.all([
-        checkVercelStatus(),
-        checkSupabaseStatus(),
-        checkAPIStatus(),
-        checkEmailStatus()
-      ]);
-    }, 10000);
-
-    // Clear interval on page unload
-    window.addEventListener('beforeunload', () => {
-      if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-      }
+      await checkAllServices();
     });
   </script>
 </body>
