@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '../config/database';
+import { supabaseAdmin } from '../config/database';
 import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { createError } from '../middleware/errorHandler';
 
@@ -166,8 +166,8 @@ export class AuthService {
       }
     }
 
-    // Build query - if role is provided, filter by it (backward compatibility)
-    let query = supabase
+    // Build query - USE ADMIN CLIENT to bypass RLS
+    let query = supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', data.email)
@@ -221,8 +221,8 @@ export class AuthService {
 
     console.log('✅ Login successful for:', data.email);
 
-    // Update last active
-    await supabase
+    // Update last active - USE ADMIN CLIENT
+    await supabaseAdmin
       .from('users')
       .update({ last_active: new Date().toISOString() })
       .eq('user_id', user.user_id);
@@ -260,7 +260,7 @@ export class AuthService {
    * Get user by ID
    */
   async getUserById(userId: number) {
-    const { data: user, error } = await supabase
+    const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('user_id, school_id, email, full_name, role, phone, year_level, course, profile_picture, created_at, updated_at')
       .eq('user_id', userId)
@@ -283,7 +283,7 @@ export class AuthService {
       const payload = verifyToken(refreshToken);
 
       // Verify user still exists and is active
-      const { data: user, error } = await supabase
+      const { data: user, error } = await supabaseAdmin
         .from('users')
         .select('user_id, status')
         .eq('user_id', payload.user_id)
@@ -306,8 +306,8 @@ export class AuthService {
    * Request password reset - sends email with reset link
    */
   async requestPasswordReset(email: string): Promise<{ message: string }> {
-    // Find user by email
-    const { data: user, error } = await supabase
+    // Find user by email - USE ADMIN CLIENT
+    const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('user_id, school_id, email, full_name, status')
       .eq('email', email)
@@ -358,8 +358,8 @@ export class AuthService {
         throw createError('Invalid reset token', 401);
       }
 
-      // Verify user still exists and is active
-      const { data: user, error } = await supabase
+      // Verify user still exists and is active - USE ADMIN CLIENT
+      const { data: user, error } = await supabaseAdmin
         .from('users')
         .select('user_id, email, status')
         .eq('user_id', payload.user_id)
@@ -374,8 +374,8 @@ export class AuthService {
       // ⚠️ Store password in PLAIN TEXT (not secure!)
       const plainPassword = newPassword;
 
-      // Update password
-      const { error: updateError } = await supabase
+      // Update password - USE ADMIN CLIENT
+      const { error: updateError } = await supabaseAdmin
         .from('users')
         .update({ 
           password: plainPassword,
