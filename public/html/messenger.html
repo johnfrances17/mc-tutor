@@ -341,9 +341,12 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="nav-brand">MC Tutor</a>
+            <a href="/html/student-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="#" id="dashboardLink" class="nav-link">Dashboard</a>
+                <a href="/html/student-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/find-tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/html/my-sessions.html" class="nav-link">My Sessions</a>
+                <a href="/html/materials.html" class="nav-link">Materials</a>
                 <a href="/html/messenger.html" class="nav-link active">Messages</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
@@ -403,17 +406,7 @@
                     return;
                 }
 
-                // Set dashboard link
-                const dashboardLink = document.getElementById('dashboardLink');
-                if (currentUser.role === 'tutor') {
-                    dashboardLink.href = '/html/tutor-dashboard.html';
-                } else if (currentUser.role === 'tutee') {
-                    dashboardLink.href = '/html/student-dashboard.html';
-                } else if (currentUser.role === 'admin') {
-                    dashboardLink.href = '/html/admin-dashboard.html';
-                }
-
-                // Connect to Socket.IO
+                // Load messenger data
                 const token = localStorage.getItem('token');
                 if (token) {
                     socketManager.connect(token);
