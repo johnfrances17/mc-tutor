@@ -534,7 +534,7 @@
         if (data.services?.email) {
           const email = data.services.email;
           const isConfigured = email.configured;
-          const isCorrectEmail = email.user === 'mctutor2025@gmail.com';
+          const isCorrectEmail = email.user === 'iiscythrix@gmail.com';
 
           document.getElementById('email-provider').textContent = email.provider || 'NodeMailer';
           document.getElementById('email-user').textContent = email.user || 'Not configured';
@@ -545,9 +545,10 @@
           if (isConfigured && isCorrectEmail) {
             document.getElementById('email-status').innerHTML = '<i class="fas fa-check-circle"></i> Configured';
             document.getElementById('email-status').className = 'status-badge online';
-          } else if (isConfigured && !isCorrectEmail) {
-            document.getElementById('email-status').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Wrong Email';
-            document.getElementById('email-status').className = 'status-badge offline';
+          } else if (isConfigured) {
+            // Email is configured, just show as configured (removed "wrong email" check)
+            document.getElementById('email-status').innerHTML = '<i class="fas fa-check-circle"></i> Configured';
+            document.getElementById('email-status').className = 'status-badge online';
           } else {
             document.getElementById('email-status').innerHTML = '<i class="fas fa-times-circle"></i> Not Configured';
             document.getElementById('email-status').className = 'status-badge offline';
