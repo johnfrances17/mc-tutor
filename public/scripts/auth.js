@@ -143,6 +143,9 @@ async function handleLogout() {
   }
 }
 
+// Alias for compatibility
+const logout = handleLogout;
+
 /**
  * Handle registration form submission
  * @param {Event} event - Form submit event
@@ -245,6 +248,7 @@ if (typeof window !== 'undefined') {
     redirectToDashboard,
     handleLogin,
     handleLogout,
+    logout: handleLogout, // Export as both names for compatibility
     handleRegister
   };
 }
