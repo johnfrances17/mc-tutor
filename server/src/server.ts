@@ -80,7 +80,7 @@ app.get('/api/health', async (_req, res) => {
       const { supabase } = await import('./config/database');
       const start = Date.now();
       // Use subjects table instead of users (less likely to have RLS issues)
-      const { data, error } = await supabase.from('subjects').select('subject_id').limit(1);
+      const { error } = await supabase.from('subjects').select('subject_id').limit(1);
       databaseResponseTime = Date.now() - start;
       // Check if query succeeded (either has data or no error)
       databaseConnected = !error;
