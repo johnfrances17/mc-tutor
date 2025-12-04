@@ -245,7 +245,7 @@
                 type="text" 
                 id="student_id" 
                 name="student_id" 
-                placeholder="Enter your 6-digit student ID (e.g., 235613)" 
+                placeholder="Enter your 6-digit student ID" 
                 required
               >
             </div>
@@ -302,6 +302,12 @@
 
     // Role selection
     function selectRole(role) {
+      // Redirect admin to separate admin login page
+      if (role === 'admin') {
+        window.location.href = '/html/admin-login.html';
+        return;
+      }
+      
       selectedRole = role;
       document.getElementById('roleSelection').style.display = 'none';
       document.getElementById('loginForm').classList.add('active');
@@ -309,19 +315,13 @@
       // Set role label
       const roleLabels = {
         'student': 'Student',
-        'tutor': 'Tutor',
-        'admin': 'Admin'
+        'tutor': 'Tutor'
       };
       document.getElementById('roleLabel').textContent = roleLabels[role] || 'Student';
       
-      // Update register link (admin shouldn't have register link)
+      // Update register link
       const registerLink = document.getElementById('registerLink');
-      if (role === 'admin') {
-        registerLink.parentElement.style.display = 'none';
-      } else {
-        registerLink.parentElement.style.display = 'block';
-        registerLink.href = `/html/register.html?role=${role}`;
-      }
+      registerLink.href = `/html/register.html?role=${role}`;
     }
 
     // Back to role selection

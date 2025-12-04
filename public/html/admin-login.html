@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - MC Tutor</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .admin-login-hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .admin-login-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .admin-login-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+      padding: 40px;
+      text-align: center;
+      color: white;
+    }
+
+    .admin-login-header h1 {
+      margin: 0 0 8px 0;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    .admin-login-header .admin-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .admin-login-header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .admin-login-header .institution {
+      margin-top: 5px;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .admin-login-body {
+      padding: 50px;
+    }
+
+    .admin-login-body h2 {
+      text-align: center;
+      color: #333;
+      font-size: 28px;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+    }
+
+    .admin-login-description {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .form-group label i {
+      margin-right: 8px;
+      color: #1e3a8a;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+
+    .error-message {
+      background: #fee;
+      color: #c33;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+      border-left: 4px solid #c33;
+    }
+
+    .success-message {
+      background: #efe;
+      color: #3c3;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+      border-left: 4px solid #3c3;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #1e3a8a;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 30px;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      gap: 12px;
+      color: #312e81;
+    }
+
+    .security-notice {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin-top: 30px;
+      border-radius: 5px;
+      font-size: 13px;
+      color: #92400e;
+    }
+
+    .security-notice i {
+      margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .admin-login-body {
+        padding: 30px;
+      }
+
+      .admin-login-header h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-login-hero">
+    <div class="admin-login-container">
+      <div class="admin-login-header">
+        <h1><i class="fas fa-shield-alt"></i> MC Tutor</h1>
+        <div class="admin-badge">
+          <i class="fas fa-user-shield"></i> Administrator Access
+        </div>
+        <p style="margin-top: 15px;">Cloud-Based Peer Tutoring Platform</p>
+        <p class="institution">Mabini College Inc.</p>
+      </div>
+
+      <div class="admin-login-body">
+        <a href="/html/login.html" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to role selection
+        </a>
+
+        <h2>Admin Login</h2>
+        <p class="admin-login-description">
+          Access restricted to authorized administrators only
+        </p>
+
+        <form id="adminLoginForm">
+          <div id="errorMessage" class="error-message"></div>
+          <div id="successMessage" class="success-message"></div>
+
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Admin Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email"
+              pattern="[a-zA-Z0-9._%+-]+@mabinicolleges\.edu\.ph$"
+              title="Please use your Mabini Colleges admin email"
+              placeholder="Enter your admin email address"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password"
+              placeholder="Enter your admin password"
+              required
+            >
+          </div>
+
+          <button type="submit" class="btn-primary" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Login as Administrator
+          </button>
+        </form>
+
+        <div class="security-notice">
+          <i class="fas fa-exclamation-triangle"></i>
+          <strong>Security Notice:</strong> All admin login attempts are logged and monitored for security purposes.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../scripts/utils.js"></script>
+  <script src="../scripts/api.js"></script>
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
+      const loginBtn = document.getElementById('loginBtn');
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      // Validate email domain
+      if (!email.endsWith('@mabinicolleges.edu.ph')) {
+        errorMessage.textContent = 'Please use your Mabini Colleges admin email (@mabinicolleges.edu.ph)';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        return;
+      }
+
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+      try {
+        const response = await window.API.auth.login({
+          email: email,
+          password: password,
+          role: 'admin'
+        });
+
+        if (response.success) {
+          successMessage.textContent = 'Login successful! Redirecting to admin dashboard...';
+          successMessage.style.display = 'block';
+
+          if (window.utils && window.utils.showToast) {
+            window.utils.showToast('Welcome, Administrator!', 'success');
+          }
+
+          // Store auth data
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+
+          setTimeout(() => {
+            window.location.href = '/html/admin-dashboard.html';
+          }, 1500);
+        } else {
+          throw new Error(response.message || 'Login failed');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorMessage.textContent = error.message || 'Invalid admin credentials. Please try again.';
+        errorMessage.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login as Administrator';
+      }
+    });
+  </script>
+</body>
+</html>
