@@ -60,7 +60,7 @@
                     <div class="row" style="gap: 20px;">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Student ID</label>
+                                <label>School ID</label>
                                 <input type="text" id="studentId" class="form-control" readonly>
                             </div>
                         </div>
@@ -217,7 +217,7 @@
                 originalProfile = { ...currentUser };
 
                 // Populate form
-                document.getElementById('studentId').value = currentUser.student_id || '';
+                document.getElementById('studentId').value = currentUser.school_id || '';
                 document.getElementById('fullName').value = currentUser.full_name || '';
                 document.getElementById('email').value = currentUser.email || '';
                 document.getElementById('phone').value = currentUser.phone || '';

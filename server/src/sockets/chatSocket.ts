@@ -39,18 +39,18 @@ export function initializeSocketIO(io: Server) {
 
   io.on('connection', (socket) => {
     const user = socket.data.user;
-    console.log(`✅ User connected: ${user.full_name} (${user.student_id})`);
+    console.log(`✅ User connected: ${user.full_name} (${user.school_id})`);
 
     // Add user to active users
-    activeUsers.set(user.student_id, {
-      userId: user.student_id,
+    activeUsers.set(user.school_id, {
+      userId: user.school_id,
       socketId: socket.id,
       fullName: user.full_name
     });
 
     // Broadcast online status to all connected users
     io.emit('user_online', {
-      userId: user.student_id,
+      userId: user.school_id,
       fullName: user.full_name,
       timestamp: new Date()
     });
@@ -64,16 +64,16 @@ export function initializeSocketIO(io: Server) {
 
     // Handle joining a conversation room
     socket.on('join_conversation', (data: { otherUserId: string }) => {
-      const conversationId = [user.student_id, data.otherUserId].sort().join('-');
+      const conversationId = [user.school_id, data.otherUserId].sort().join('-');
       socket.join(conversationId);
-      console.log(`👥 User ${user.student_id} joined conversation: ${conversationId}`);
+      console.log(`👥 User ${user.school_id} joined conversation: ${conversationId}`);
     });
 
     // Handle leaving a conversation room
     socket.on('leave_conversation', (data: { otherUserId: string }) => {
-      const conversationId = [user.student_id, data.otherUserId].sort().join('-');
+      const conversationId = [user.school_id, data.otherUserId].sort().join('-');
       socket.leave(conversationId);
-      console.log(`👋 User ${user.student_id} left conversation: ${conversationId}`);
+      console.log(`👋 User ${user.school_id} left conversation: ${conversationId}`);
     });
 
     // Handle sending a message
@@ -87,18 +87,18 @@ export function initializeSocketIO(io: Server) {
 
         // Save message to database/file
         const savedMessage = await chatService.sendMessage(
-          user.student_id,
+          user.school_id,
           receiverId,
           message,
           encrypt
         );
 
-        const conversationId = [user.student_id, receiverId].sort().join('-');
+        const conversationId = [user.school_id, receiverId].sort().join('-');
 
         // Emit to all users in the conversation room
         io.to(conversationId).emit('new_message', {
           id: savedMessage.message.message_id,
-          senderId: user.student_id,
+          senderId: user.school_id,
           senderName: user.full_name,
           receiverId: receiverId,
           message: savedMessage.message.message,
@@ -110,7 +110,7 @@ export function initializeSocketIO(io: Server) {
         const receiverSocket = activeUsers.get(receiverId);
         if (receiverSocket) {
           io.to(receiverSocket.socketId).emit('message_notification', {
-            from: user.student_id,
+            from: user.school_id,
             fromName: user.full_name,
             preview: message.substring(0, 50),
             timestamp: savedMessage.message.timestamp
@@ -125,7 +125,7 @@ export function initializeSocketIO(io: Server) {
           );
         }
 
-        console.log(`💬 Message sent from ${user.student_id} to ${receiverId}`);
+        console.log(`💬 Message sent from ${user.school_id} to ${receiverId}`);
       } catch (error) {
         console.error('Send message error:', error);
         socket.emit('message_error', {
@@ -139,7 +139,7 @@ export function initializeSocketIO(io: Server) {
       const receiverSocket = activeUsers.get(data.receiverId);
       if (receiverSocket) {
         io.to(receiverSocket.socketId).emit('user_typing', {
-          userId: user.student_id,
+          userId: user.school_id,
           userName: user.full_name,
           isTyping: true
         });
@@ -150,7 +150,7 @@ export function initializeSocketIO(io: Server) {
       const receiverSocket = activeUsers.get(data.receiverId);
       if (receiverSocket) {
         io.to(receiverSocket.socketId).emit('user_typing', {
-          userId: user.student_id,
+          userId: user.school_id,
           userName: user.full_name,
           isTyping: false
         });
@@ -160,16 +160,16 @@ export function initializeSocketIO(io: Server) {
     // Handle marking messages as read
     socket.on('mark_read', async (data: { otherUserId: string }) => {
       try {
-        await chatService.markAsRead(user.student_id, data.otherUserId);
+        await chatService.markAsRead(user.school_id, data.otherUserId);
         
-        const conversationId = [user.student_id, data.otherUserId].sort().join('-');
+        const conversationId = [user.school_id, data.otherUserId].sort().join('-');
         io.to(conversationId).emit('messages_read', {
-          readerId: user.student_id,
+          readerId: user.school_id,
           conversationId: conversationId,
           timestamp: new Date()
         });
 
-        console.log(`✅ Messages marked as read: ${user.student_id} ← ${data.otherUserId}`);
+        console.log(`✅ Messages marked as read: ${user.school_id} ← ${data.otherUserId}`);
       } catch (error) {
         console.error('Mark read error:', error);
       }
@@ -209,14 +209,14 @@ export function initializeSocketIO(io: Server) {
 
     // Handle disconnect
     socket.on('disconnect', () => {
-      console.log(`❌ User disconnected: ${user.full_name} (${user.student_id})`);
+      console.log(`❌ User disconnected: ${user.full_name} (${user.school_id})`);
       
       // Remove from active users
-      activeUsers.delete(user.student_id);
+      activeUsers.delete(user.school_id);
 
       // Broadcast offline status
       io.emit('user_offline', {
-        userId: user.student_id,
+        userId: user.school_id,
         fullName: user.full_name,
         timestamp: new Date()
       });
@@ -250,3 +250,4 @@ export function getOnlineUsers(): string[] {
 export function isUserOnline(userId: string): boolean {
   return activeUsers.has(userId);
 }
+

@@ -11,7 +11,7 @@ const authService = new AuthService();
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const {
-      student_id,
+      school_id,
       email,
       password,
       confirm_password,
@@ -23,7 +23,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     } = req.body;
 
     // Validate required fields
-    if (!student_id || !email || !password || !full_name || !role || !phone || !year_level || !course) {
+    if (!school_id || !email || !password || !full_name || !role || !phone || !year_level || !course) {
       return res.status(400).json({
         success: false,
         error: { message: 'All fields are required' },
@@ -47,7 +47,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 
     const result = await authService.register({
-      student_id,
+      school_id,
       email,
       password,
       full_name,
@@ -88,13 +88,15 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        error: { message: 'Please use your Mabini Colleges email address' },
-      });
+    // Validate email format (skip for admin role)
+    if (role !== 'admin') {
+      const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          error: { message: 'Please use your Mabini Colleges email address' },
+        });
+      }
     }
 
     // Validate role if provided (for backward compatibility)

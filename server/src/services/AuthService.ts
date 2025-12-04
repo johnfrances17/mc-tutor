@@ -4,7 +4,7 @@ import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { createError } from '../middleware/errorHandler';
 
 interface RegisterData {
-  student_id: string;
+  school_id: string;
   email: string;
   password: string;
   full_name: string;
@@ -23,7 +23,7 @@ interface LoginData {
 interface AuthResponse {
   user: {
     user_id: number;
-    student_id: string;
+    school_id: string;
     email: string;
     full_name: string;
     role: string;
@@ -41,7 +41,7 @@ export class AuthService {
    * Register a new user
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    // Validate email format - only Mabini Colleges emails allowed
+    // Validate email format - only Mabini Colleges emails allowed for students/tutors
     const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
     if (!emailRegex.test(data.email)) {
       throw createError('Only @mabinicolleges.edu.ph email addresses are allowed', 400);
@@ -63,15 +63,15 @@ export class AuthService {
       throw createError('Email already exists', 400);
     }
 
-    // Check if student ID already exists (using admin client to bypass RLS)
-    const { data: existingStudentId } = await supabaseAdmin
+    // Check if school ID already exists (using admin client to bypass RLS)
+    const { data: existingSchoolId } = await supabaseAdmin
       .from('users')
-      .select('user_id, student_id')
-      .eq('student_id', data.student_id)
+      .select('user_id, school_id')
+      .eq('school_id', data.school_id)
       .maybeSingle();
 
-    if (existingStudentId) {
-      throw createError('Student ID already exists', 400);
+    if (existingSchoolId) {
+      throw createError('School ID already exists', 400);
     }
 
     // Hash password
@@ -81,7 +81,7 @@ export class AuthService {
     const { data: newUser, error: insertError } = await supabaseAdmin
       .from('users')
       .insert({
-        student_id: data.student_id,
+        school_id: data.school_id,
         email: data.email,
         password: hashedPassword,
         full_name: data.full_name,
@@ -105,7 +105,7 @@ export class AuthService {
       
       // Provide more specific error messages
       if (insertError?.code === '23505') {
-        throw createError('Email or Student ID already exists', 400);
+        throw createError('Email or School ID already exists', 400);
       }
       if (insertError?.code === '42501') {
         throw createError('Database permission error. Please contact support.', 500);
@@ -117,7 +117,7 @@ export class AuthService {
     // Generate tokens
     const tokenPayload = {
       user_id: newUser.user_id,
-      student_id: newUser.student_id,
+      school_id: newUser.school_id,
       email: newUser.email,
       role: newUser.role,
       full_name: newUser.full_name,
@@ -129,7 +129,7 @@ export class AuthService {
     return {
       user: {
         user_id: newUser.user_id,
-        student_id: newUser.student_id,
+        school_id: newUser.school_id,
         email: newUser.email,
         full_name: newUser.full_name,
         role: newUser.role,
@@ -147,10 +147,12 @@ export class AuthService {
    * Login user
    */
   async login(data: LoginData): Promise<AuthResponse> {
-    // Validate email format
-    const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
-    if (!emailRegex.test(data.email)) {
-      throw createError('Please use your Mabini Colleges email address', 400);
+    // Validate email format (skip for admin role)
+    if (data.role !== 'admin') {
+      const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
+      if (!emailRegex.test(data.email)) {
+        throw createError('Please use your Mabini Colleges email address', 400);
+      }
     }
 
     // Build query - if role is provided, filter by it (backward compatibility)
@@ -186,7 +188,7 @@ export class AuthService {
     // Generate tokens
     const tokenPayload = {
       user_id: user.user_id,
-      student_id: user.student_id,
+      school_id: user.school_id,
       email: user.email,
       role: user.role,
       full_name: user.full_name,
@@ -198,7 +200,7 @@ export class AuthService {
     return {
       user: {
         user_id: user.user_id,
-        student_id: user.student_id,
+        school_id: user.school_id,
         email: user.email,
         full_name: user.full_name,
         role: user.role,
@@ -218,7 +220,7 @@ export class AuthService {
   async getUserById(userId: number) {
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, student_id, email, full_name, role, phone, year_level, course, profile_picture, created_at, updated_at')
+      .select('user_id, school_id, email, full_name, role, phone, year_level, course, profile_picture, created_at, updated_at')
       .eq('user_id', userId)
       .eq('status', 'active')
       .single();
@@ -265,7 +267,7 @@ export class AuthService {
     // Find user by email
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, student_id, email, full_name, status')
+      .select('user_id, school_id, email, full_name, status')
       .eq('email', email)
       .eq('status', 'active')
       .single();

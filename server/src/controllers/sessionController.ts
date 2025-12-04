@@ -25,8 +25,8 @@ export const getSessions = async (req: AuthRequest, res: Response, next: NextFun
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(school_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(school_id, full_name, profile_picture)
       `, { count: 'exact' });
 
     // Filter by role
@@ -105,8 +105,8 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(school_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(school_id, full_name, profile_picture)
       `)
       .single();
 
@@ -157,8 +157,8 @@ export const confirmSession = async (req: AuthRequest, res: Response, next: Next
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(school_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(school_id, full_name, profile_picture)
       `)
       .single();
 
@@ -208,8 +208,8 @@ export const cancelSession = async (req: AuthRequest, res: Response, next: NextF
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(school_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(school_id, full_name, profile_picture)
       `)
       .single();
 
@@ -255,8 +255,8 @@ export const completeSession = async (req: AuthRequest, res: Response, next: Nex
       .select(`
         *,
         subject:subjects(subject_code, subject_name),
-        tutor:users!sessions_tutor_id_fkey(student_id, full_name, profile_picture),
-        tutee:users!sessions_tutee_id_fkey(student_id, full_name, profile_picture)
+        tutor:users!sessions_tutor_id_fkey(school_id, full_name, profile_picture),
+        tutee:users!sessions_tutee_id_fkey(school_id, full_name, profile_picture)
       `)
       .single();
 
@@ -298,7 +298,7 @@ export const getSessionOptions = async (req: AuthRequest, res: Response, next: N
  */
 export const saveSessionPreferences = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const tutorStudentId = req.user!.student_id;
+    const tutorStudentId = req.user!.school_id;
     const {
       subject_code,
       session_type,
@@ -333,3 +333,4 @@ export const saveSessionPreferences = async (req: AuthRequest, res: Response, ne
     return next(error);
     }
 };
+

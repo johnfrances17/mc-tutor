@@ -25,7 +25,7 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
           subject_id,
           user:users!tutor_subjects_tutor_id_fkey(
             user_id,
-            student_id,
+            school_id,
             full_name,
             email,
             course,
@@ -65,7 +65,7 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
     // Otherwise, search all tutors
     let query = supabase
       .from('users')
-      .select('user_id, student_id, full_name, email, course, year_level, profile_picture, bio', {
+      .select('user_id, school_id, full_name, email, course, year_level, profile_picture, bio', {
         count: 'exact',
       })
       .eq('role', 'tutor');
@@ -112,7 +112,7 @@ export const getTutorById = async (req: Request, res: Response, next: NextFuncti
     // Get tutor info
     const { data: tutor, error: tutorError } = await supabase
       .from('users')
-      .select('user_id, student_id, full_name, email, course, year_level, profile_picture, bio')
+      .select('user_id, school_id, full_name, email, course, year_level, profile_picture, bio')
       .eq('user_id', id)
       .eq('role', 'tutor')
       .single();

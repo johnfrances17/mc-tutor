@@ -128,7 +128,7 @@ export class ChatService {
     const { data: sender } = await supabase
       .from('users')
       .select('full_name')
-      .eq('student_id', senderStudentId)
+      .eq('school_id', senderStudentId)
       .single();
 
     // Encrypt message if needed
@@ -241,8 +241,8 @@ export class ChatService {
         // Get other user info
         const { data: otherUser } = await supabase
           .from('users')
-          .select('user_id, student_id, full_name, role, profile_picture')
-          .eq('student_id', otherStudentId)
+          .select('user_id, school_id, full_name, role, profile_picture')
+          .eq('school_id', otherStudentId)
           .single();
 
         // Get last message

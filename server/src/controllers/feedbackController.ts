@@ -21,7 +21,7 @@ export const submitFeedback = async (req: AuthRequest, res: Response, next: Next
     // Verify session exists and user is the tutee
     const { data: session } = await supabase
       .from('sessions')
-      .select('*, tutor:users!sessions_tutor_id_fkey(student_id, full_name)')
+      .select('*, tutor:users!sessions_tutor_id_fkey(school_id, full_name)')
       .eq('session_id', session_id)
       .eq('tutee_id', tuteeId)
       .single();
@@ -123,7 +123,7 @@ export const getMyFeedback = async (req: AuthRequest, res: Response, next: NextF
       .from('feedback')
       .select(`
         *,
-        tutor:users!feedback_tutor_id_fkey(student_id, full_name, profile_picture),
+        tutor:users!feedback_tutor_id_fkey(school_id, full_name, profile_picture),
         session:sessions(session_date, subject:subjects(subject_code, subject_name))
       `)
       .eq('tutee_id', tuteeId)

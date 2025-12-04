@@ -238,7 +238,7 @@
                             <h4 class="tutor-name">${tutor.full_name}</h4>
                             <div class="tutor-meta">
                                 <span>📚 ${tutor.course || 'N/A'}</span>
-                                <span>🆔 ${tutor.student_id}</span>
+                                <span>🆔 ${tutor.school_id}</span>
                                 ${tutor.average_rating ? `
                                     <span class="tutor-rating">
                                         ${generateStars(tutor.average_rating)}
@@ -247,7 +247,7 @@
                                 ` : ''}
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="openBookModal('${tutor.student_id}', '${tutor.full_name}')">
+                        <button class="btn btn-primary" onclick="openBookModal('${tutor.school_id}', '${tutor.full_name}')">
                             📅 Book Session
                         </button>
                     </div>
@@ -324,7 +324,7 @@
 
         // Open book modal
         window.openBookModal = async function(tutorId, tutorName) {
-            selectedTutor = allTutors.find(t => t.student_id === tutorId);
+            selectedTutor = allTutors.find(t => t.school_id === tutorId);
             if (!selectedTutor) return;
 
             document.getElementById('tutorNameDisplay').value = tutorName;
@@ -368,7 +368,7 @@
 
             try {
                 await api.post('/sessions', {
-                    tutor_student_id: selectedTutor.student_id,
+                    tutor_student_id: selectedTutor.school_id,
                     subject_id: parseInt(subjectId),
                     session_type: sessionType,
                     session_date: date,

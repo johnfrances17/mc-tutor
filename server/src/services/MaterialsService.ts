@@ -125,8 +125,8 @@ export class MaterialsService {
   private async getTutorInfo(tutorStudentId: string) {
     const { data, error } = await supabase
       .from('users')
-      .select('student_id, full_name, email, profile_picture')
-      .eq('student_id', tutorStudentId)
+      .select('school_id, full_name, email, profile_picture')
+      .eq('school_id', tutorStudentId)
       .eq('role', 'tutor')
       .single();
 

@@ -258,7 +258,7 @@
                                             onclick="downloadMaterial('${material.id}', '${material.filename}')">
                                         ⬇️ Download
                                     </button>
-                                    ${currentUser.role === 'tutor' && material.tutor_student_id === currentUser.student_id ? 
+                                    ${currentUser.role === 'tutor' && material.tutor_student_id === currentUser.school_id ? 
                                         `<button class="btn btn-sm btn-danger" onclick="deleteMaterial('${material.id}')">Delete</button>` : ''
                                     }
                                 </div>

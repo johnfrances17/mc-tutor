@@ -4,7 +4,7 @@ import { Request } from 'express';
 export interface AuthRequest extends Request {
   user?: {
     user_id: number;
-    student_id: string;
+    school_id: string;
     email: string;
     role: string;
     full_name: string;

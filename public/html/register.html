@@ -174,12 +174,12 @@
         <div id="successMessage" class="success-message" style="display: none;"></div>
 
         <div class="form-group">
-          <label for="student_id"><i class="fas fa-id-card"></i> Student ID *</label>
+          <label for="school_id"><i class="fas fa-id-card"></i> School ID *</label>
           <input 
             type="text" 
-            id="student_id" 
-            name="student_id"
-            placeholder="Enter your 6-digit student ID" 
+            id="school_id" 
+            name="school_id"
+            placeholder="Enter your 6-digit school ID" 
             required
           >
         </div>
@@ -393,7 +393,7 @@
       }
       
       const formData = {
-        student_id: document.getElementById('student_id').value.trim(),
+        school_id: document.getElementById('school_id').value.trim(),
         full_name: document.getElementById('full_name').value.trim(),
         email: email,
         phone: document.getElementById('phone').value.trim(),

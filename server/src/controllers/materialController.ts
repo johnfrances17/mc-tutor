@@ -45,7 +45,7 @@ export const getMaterials = async (req: AuthRequest, res: Response, next: NextFu
  */
 export const uploadMaterial = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tutorStudentId = req.user!.student_id;
+    const tutorStudentId = req.user!.school_id;
     const { subject_id, title, description } = req.body;
 
     if (!req.file) {
@@ -102,7 +102,7 @@ export const uploadMaterial = async (req: AuthRequest, res: Response, next: Next
  */
 export const deleteMaterial = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tutorStudentId = req.user!.student_id;
+    const tutorStudentId = req.user!.school_id;
     const { id } = req.params;
     const { subject_id } = req.query;
 

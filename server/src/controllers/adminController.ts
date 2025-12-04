@@ -25,7 +25,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 
     let query = supabase
       .from('users')
-      .select('user_id, student_id, full_name, email, phone, role, course, year_level, status, created_at, last_active', { count: 'exact' });
+      .select('user_id, school_id, full_name, email, phone, role, course, year_level, status, created_at, last_active', { count: 'exact' });
 
     // Apply filters
     if (role && typeof role === 'string') {
@@ -37,7 +37,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     }
 
     if (search && typeof search === 'string') {
-      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,student_id.ilike.%${search}%`);
+      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,school_id.ilike.%${search}%`);
     }
 
     // Pagination and sorting
@@ -74,7 +74,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, student_id, full_name, email, phone, role, course, year_level, profile_picture, bio, status, created_at, updated_at, last_active')
+      .select('user_id, school_id, full_name, email, phone, role, course, year_level, profile_picture, bio, status, created_at, updated_at, last_active')
       .eq('user_id', id)
       .single();
 
@@ -95,7 +95,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const {
-      student_id,
+      school_id,
       email,
       password,
       full_name,
@@ -107,7 +107,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     } = req.body;
 
     // Validate required fields
-    if (!student_id || !email || !password || !full_name || !role) {
+    if (!school_id || !email || !password || !full_name || !role) {
       return res.status(400).json({
         success: false,
         message: 'Student ID, email, password, full name, and role are required',
@@ -127,13 +127,13 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     // Check if student_id or email already exists
     const { data: existing } = await supabase
       .from('users')
-      .select('student_id, email')
-      .or(`student_id.eq.${student_id},email.eq.${email}`)
+      .select('school_id, email')
+      .or(`school_id.eq.${school_id},email.eq.${email}`)
       .single();
 
     if (existing) {
-      if (existing.student_id === student_id) {
-        return res.status(400).json({ success: false, message: 'Student ID already exists' });
+      if (existing.school_id === school_id) {
+        return res.status(409).json({ success: false, message: 'School ID already exists' });
       }
       if (existing.email === email) {
         return res.status(400).json({ success: false, message: 'Email already exists' });
@@ -147,7 +147,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     const { data: newUser, error } = await supabase
       .from('users')
       .insert({
-        student_id: sanitizeInput(student_id),
+        school_id: sanitizeInput(school_id),
         email: sanitizeInput(email),
         password: hashedPassword,
         full_name: sanitizeInput(full_name),
@@ -157,7 +157,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         course: course ? sanitizeInput(course) : null,
         status,
       })
-      .select('user_id, student_id, full_name, email, role, phone, year_level, course, status, created_at')
+      .select('user_id, school_id, full_name, email, role, phone, year_level, course, status, created_at')
       .single();
 
     if (error) {
@@ -183,7 +183,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
   try {
     const { id } = req.params;
     const {
-      student_id,
+      school_id,
       full_name,
       email,
       phone,
@@ -197,7 +197,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     // Build update object (only include provided fields)
     const updateData: any = {};
 
-    if (student_id) updateData.student_id = sanitizeInput(student_id);
+    if (school_id) updateData.school_id = sanitizeInput(school_id);
     if (full_name) updateData.full_name = sanitizeInput(full_name);
     if (email) {
       if (!isValidEmail(email)) {
@@ -225,7 +225,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       .from('users')
       .update(updateData)
       .eq('user_id', id)
-      .select('user_id, student_id, full_name, email, phone, role, course, year_level, status, updated_at')
+      .select('user_id, school_id, full_name, email, phone, role, course, year_level, status, updated_at')
       .single();
 
     if (error || !data) {

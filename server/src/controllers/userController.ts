@@ -15,7 +15,7 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, student_id, full_name, email, phone, role, course, year_level, profile_picture, bio, created_at')
+      .select('user_id, school_id, full_name, email, phone, role, course, year_level, profile_picture, bio, created_at')
       .eq('user_id', userId)
       .single();
 
@@ -68,7 +68,7 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
 export const uploadProfilePicture = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
     const userId = req.user!.user_id;
-    const studentId = req.user!.student_id;
+    const studentId = req.user!.school_id;
 
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
@@ -125,8 +125,8 @@ export const getUserByStudentId = async (req: Request, res: Response, next: Next
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, student_id, full_name, email, role, course, year_level, profile_picture, bio')
-      .eq('student_id', studentId)
+      .select('user_id, school_id, full_name, email, role, course, year_level, profile_picture, bio')
+      .eq('school_id', studentId)
       .single();
 
     if (error || !user) {

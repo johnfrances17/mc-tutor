@@ -5,7 +5,7 @@ import { createError } from './errorHandler';
 
 interface JWTPayload {
   user_id: number;
-  student_id: string;
+  school_id: string;
   email: string;
   role: string;
   full_name: string;
@@ -45,7 +45,7 @@ export const authMiddleware = async (
     // Attach user to request
     req.user = {
       user_id: decoded.user_id,
-      student_id: decoded.student_id,
+      school_id: decoded.school_id,
       email: decoded.email,
       role: decoded.role,
       full_name: decoded.full_name,
@@ -109,7 +109,7 @@ export const optionalAuthMiddleware = async (
         const decoded = jwt.verify(token, jwtSecret) as JWTPayload;
         req.user = {
           user_id: decoded.user_id,
-          student_id: decoded.student_id,
+          school_id: decoded.school_id,
           email: decoded.email,
           role: decoded.role,
           full_name: decoded.full_name,

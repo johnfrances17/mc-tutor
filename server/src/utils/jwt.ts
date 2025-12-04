@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 interface TokenPayload {
   user_id: number;
-  student_id: string;
+  school_id: string;
   email: string;
   role: string;
   full_name: string;

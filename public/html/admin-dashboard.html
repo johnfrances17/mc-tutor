@@ -340,8 +340,8 @@
                 // Calculate tutor stats
                 const tutorStats = await Promise.all(tutors.slice(0, 10).map(async tutor => {
                     try {
-                        const sessions = allSessions.filter(s => s.tutor_id === tutor.student_id);
-                        const feedback = await api.get(`/feedback/tutor/${tutor.student_id}`);
+                        const sessions = allSessions.filter(s => s.tutor_id === tutor.school_id);
+                        const feedback = await api.get(`/feedback/tutor/${tutor.school_id}`);
                         
                         return {
                             ...tutor,
