@@ -67,13 +67,51 @@ import { apiLimiter } from './middleware/rateLimiter';
 app.use('/api', apiLimiter);
 
 // Health check endpoint
-app.get('/api/health', (_req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    version: '2.0.0'
-  });
+app.get('/api/health', async (_req, res) => {
+  try {
+    // Check email configuration
+    const emailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+    const emailUser = process.env.EMAIL_USER || 'Not configured';
+    
+    // Test database connection
+    let databaseConnected = false;
+    let databaseResponseTime = 0;
+    try {
+      const { supabase } = await import('./config/database');
+      const start = Date.now();
+      const { error } = await supabase.from('users').select('user_id').limit(1);
+      databaseResponseTime = Date.now() - start;
+      databaseConnected = !error;
+    } catch (err) {
+      databaseConnected = false;
+    }
+
+    res.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '2.0.0',
+      services: {
+        database: {
+          connected: databaseConnected,
+          responseTime: databaseResponseTime + 'ms'
+        },
+        email: {
+          configured: emailConfigured,
+          provider: 'Gmail (NodeMailer)',
+          user: emailUser,
+          host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+          port: process.env.EMAIL_PORT || '587'
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      timestamp: new Date().toISOString(),
+      error: 'Health check failed'
+    });
+  }
 });
 
 // API Routes
