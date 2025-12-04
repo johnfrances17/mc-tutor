@@ -147,10 +147,18 @@ export class AuthService {
    * Login user
    */
   async login(data: LoginData): Promise<AuthResponse> {
+    console.log('🔐 Login attempt:', {
+      email: data.email,
+      role: data.role,
+      passwordLength: data.password?.length,
+      timestamp: new Date().toISOString()
+    });
+
     // Validate email format (skip for admin role)
     if (data.role !== 'admin') {
       const emailRegex = /^[^\s@]+@mabinicolleges\.edu\.ph$/i;
       if (!emailRegex.test(data.email)) {
+        console.log('❌ Email validation failed:', data.email);
         throw createError('Please use your Mabini Colleges email address', 400);
       }
     }
@@ -170,14 +178,43 @@ export class AuthService {
     const { data: user, error } = await query.single();
 
     if (error || !user) {
+      console.log('❌ User not found:', {
+        email: data.email,
+        error: error?.message,
+        code: error?.code
+      });
       throw createError('Invalid email or password', 401);
     }
 
+    console.log('✅ User found:', {
+      user_id: user.user_id,
+      email: user.email,
+      school_id: user.school_id,
+      role: user.role,
+      hashPrefix: user.password?.substring(0, 7),
+      hashLength: user.password?.length
+    });
+
     // Verify password
+    console.log('🔍 Comparing password...', {
+      providedPasswordLength: data.password.length,
+      storedHashLength: user.password.length,
+      storedHashPrefix: user.password.substring(0, 7)
+    });
+    
     const isValidPassword = await bcrypt.compare(data.password, user.password);
+    
+    console.log('🔐 Password comparison result:', {
+      isValid: isValidPassword,
+      email: data.email
+    });
+    
     if (!isValidPassword) {
+      console.log('❌ Password validation failed for:', data.email);
       throw createError('Invalid email or password', 401);
     }
+
+    console.log('✅ Login successful for:', data.email);
 
     // Update last active
     await supabase
