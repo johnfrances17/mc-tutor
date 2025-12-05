@@ -140,7 +140,7 @@
     </nav>
 
     <!-- Floating Message Button -->
-    <a href="/html/messenger.html" class="floating-message-btn" title="Messages">
+    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comments"></i>
     </a>
 
@@ -153,7 +153,7 @@
             <button class="btn btn-secondary" onclick="exportData()">
                 <i class="fas fa-download"></i> Export Data
             </button>
-            <a href="/html/manage-users.html?action=create" class="btn btn-primary">
+            <a href="/html/admin/admin-manage-users.html?action=create" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Add User
             </a>
         </div>
@@ -203,7 +203,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>Recent User Registrations</h3>
-                        <a href="/html/manage-users.html" class="text-primary">View all</a>
+                        <a href="/html/admin/admin-manage-users.html" class="text-primary">View all</a>
                     </div>
                     <div class="card-body" id="recentUsersList">
                         <div class="loading-spinner"></div>
@@ -420,7 +420,7 @@
                                     <span>${formatDate(user.created_at || new Date())}</span>
                                 </div>
                             </div>
-                            <a href="/html/manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
+                            <a href="/html/admin/admin-manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
                         </div>
                     `).join('');
                 }
@@ -517,7 +517,7 @@
                                         <td>${tutor.completedSessions}</td>
                                         <td>${tutor.avgRating}</td>
                                         <td>
-                                            <a href="/html/manage-users.html?id=${tutor.school_id}" class="btn btn-sm">View</a>
+                                            <a href="/html/admin/admin-manage-users.html?id=${tutor.school_id}" class="btn btn-sm">View</a>
                                         </td>
                                     </tr>
                                 `).join('')}

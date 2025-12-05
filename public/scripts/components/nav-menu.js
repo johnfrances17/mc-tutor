@@ -67,27 +67,27 @@ class NavigationMenu {
   getMenuItemsForRole(role) {
     const menus = {
       admin: [
-        { label: 'Dashboard', url: '/html/admin-dashboard.html' },
+        { label: 'Dashboard', url: '/html/admin/admin-dashboard.html' },
         { label: 'Manage Users', url: '/main/admin/manage_users.php' },
         { label: 'Manage Subjects', url: '/main/admin/manage_subjects.php' },
         { label: 'View Sessions', url: '/main/admin/view_sessions.php' },
         { label: 'View Materials', url: '/main/admin/view_materials.php' }
       ],
       tutor: [
-        { label: 'Dashboard', url: '/html/tutor-dashboard.html' },
+        { label: 'Dashboard', url: '/html/tutor/tutor-dashboard.html' },
         { label: 'My Sessions', url: '/main/tutor/my_sessions.php' },
         { label: 'My Subjects', url: '/main/tutor/my_subjects.php' },
         { label: 'Upload Materials', url: '/main/tutor/upload_materials.php' },
         { label: 'My Feedback', url: '/main/tutor/my_feedback.php' },
-        { label: 'Messages', url: '/html/messenger.html' }
+        { label: 'Messages', url: '/html/shared/messenger.html' }
       ],
       tutee: [
-        { label: 'Dashboard', url: '/html/student-dashboard.html' },
-        { label: 'Find Tutors', url: '/html/find-tutors.html' },
+        { label: 'Dashboard', url: '/html/tutee/student-dashboard.html' },
+        { label: 'Find Tutors', url: '/html/tutee/student-find-tutors.html' },
         { label: 'My Sessions', url: '/main/student/my_sessions.php' },
-        { label: 'Study Materials', url: '/html/materials.html' },
+        { label: 'Study Materials', url: '/html/shared/materials.html' },
         { label: 'My Feedback', url: '/main/student/my_feedback.php' },
-        { label: 'Messages', url: '/html/messenger.html' }
+        { label: 'Messages', url: '/html/shared/messenger.html' }
       ]
     };
     
@@ -96,9 +96,9 @@ class NavigationMenu {
   
   getDashboardUrl() {
     const dashboards = {
-      admin: '/html/admin-dashboard.html',
-      tutor: '/html/tutor-dashboard.html',
-      tutee: '/html/student-dashboard.html'
+      admin: '/html/admin/admin-dashboard.html',
+      tutor: '/html/tutor/tutor-dashboard.html',
+      tutee: '/html/tutee/student-dashboard.html'
     };
     
     return dashboards[this.user.role] || '/html/index.html';
