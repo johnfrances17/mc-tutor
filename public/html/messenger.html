@@ -415,19 +415,48 @@
         let messages = [];
         let refreshInterval = null;
 
-        // Logout handler
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
-                return false;
-            });
+        // Update navigation based on user role
+        async function updateNavigation() {
+            const user = await getCurrentUser();
+            if (user) {
+                const dashboards = {
+                    admin: '/html/admin/admin-dashboard.html',
+                    tutor: '/html/tutor/tutor-dashboard.html',
+                    tutee: '/html/tutee/student-dashboard.html'
+                };
+                const dashboardUrl = dashboards[user.role];
+                
+                // Update dashboard links
+                document.querySelectorAll('a[href*="dashboard"]').forEach(link => {
+                    if (!link.href.includes('auth')) {
+                        link.href = dashboardUrl;
+                    }
+                });
+                
+                const navBrand = document.querySelector('.nav-brand');
+                if (navBrand) navBrand.href = dashboardUrl;
+                
+                attachLogoutHandler();
+            }
         }
+
+        // Logout handler
+        function attachLogoutHandler() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Logout clicked!');
+                    localStorage.clear();
+                    window.location.replace('/html/auth/login.html');
+                    return false;
+                });
+            }
+        }
+
+        // Initial nav update
+        updateNavigation();
 
         // Initialize messenger
         async function initMessenger() {

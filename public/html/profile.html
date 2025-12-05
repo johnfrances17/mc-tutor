@@ -224,19 +224,70 @@
         let originalProfile = {};
         let isEditMode = false;
 
-        // Logout handler - direct implementation
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
-                return false;
-            });
+        // Update navigation based on user role
+        async function updateNavigation() {
+            const user = await getCurrentUser();
+            if (user) {
+                const dashboards = {
+                    admin: '/html/admin/admin-dashboard.html',
+                    tutor: '/html/tutor/tutor-dashboard.html',
+                    tutee: '/html/tutee/student-dashboard.html'
+                };
+                const dashboardUrl = dashboards[user.role];
+                
+                // Update all dashboard links
+                document.querySelectorAll('a[href*="dashboard"]').forEach(link => {
+                    if (!link.href.includes('auth')) {
+                        link.href = dashboardUrl;
+                    }
+                });
+                
+                // Update nav brand
+                const navBrand = document.querySelector('.nav-brand');
+                if (navBrand) navBrand.href = dashboardUrl;
+                
+                // Update nav links based on role
+                const navLinks = document.querySelector('.nav-links');
+                if (navLinks && user.role === 'admin') {
+                    navLinks.innerHTML = `
+                        <a href="${dashboardUrl}" class="nav-link">Dashboard</a>
+                        <a href="/html/admin/admin-manage-sessions.html" class="nav-link">Manage Sessions</a>
+                        <a href="/html/admin/admin-manage-users.html" class="nav-link">Manage Users</a>
+                        <a href="/html/profile.html" class="nav-link active">Profile</a>
+                        <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                    `;
+                } else if (user.role === 'tutor') {
+                    navLinks.innerHTML = `
+                        <a href="${dashboardUrl}" class="nav-link">Dashboard</a>
+                        <a href="/html/tutor/tutor-sessions.html" class="nav-link">My Sessions</a>
+                        <a href="/html/materials.html" class="nav-link">Materials</a>
+                        <a href="/html/profile.html" class="nav-link active">Profile</a>
+                        <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                    `;
+                }
+                // Re-attach logout handler after updating nav
+                attachLogoutHandler();
+            }
         }
+
+        // Logout handler - direct implementation
+        function attachLogoutHandler() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Logout clicked!');
+                    localStorage.clear();
+                    window.location.replace('/html/auth/login.html');
+                    return false;
+                });
+            }
+        }
+
+        // Initial load
+        updateNavigation();
+        attachLogoutHandler();
 
         // Initialize page
         async function initPage() {
