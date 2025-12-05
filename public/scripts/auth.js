@@ -12,15 +12,51 @@ function isLoggedIn() {
 }
 
 /**
- * Get current user from localStorage
+ * Get current user from localStorage (synchronous)
  * @returns {object|null}
  */
-function getCurrentUser() {
+function getCurrentUserSync() {
   try {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
     console.error('Error parsing user data:', error);
+    return null;
+  }
+}
+
+/**
+ * Get current user from backend API with validation (async)
+ * Validates token and returns fresh user data
+ * @returns {Promise<object|null>}
+ */
+async function getCurrentUser() {
+  try {
+    // Check if token exists
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No token found, user not logged in');
+      return null;
+    }
+
+    // Validate token with backend
+    const response = await window.API.auth.getCurrentUser();
+    
+    if (response.success && response.data && response.data.user) {
+      // Update localStorage with fresh user data
+      const user = response.data.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      return user;
+    } else {
+      // Invalid token, clear session
+      console.log('Token validation failed, clearing session');
+      clearSession();
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    // On error (network, 401, etc), clear session
+    clearSession();
     return null;
   }
 }
@@ -75,12 +111,12 @@ function redirectToDashboard(role) {
 }
 
 /**
- * Check if user has required role
+ * Check if user has required role (synchronous)
  * @param {string|string[]} allowedRoles - Role(s) allowed
  * @returns {boolean}
  */
 function hasRole(allowedRoles) {
-  const user = getCurrentUser();
+  const user = getCurrentUserSync();
   if (!user) return false;
   
   const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
@@ -88,7 +124,27 @@ function hasRole(allowedRoles) {
 }
 
 /**
- * Redirect if user doesn't have required role
+ * Redirect if user doesn't have required role (async)
+ * @param {string|string[]} allowedRoles - Role(s) allowed
+ * @returns {Promise<boolean>}
+ */
+async function requireRole(allowedRoles) {
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    window.location.href = '/html/login.html';
+    return false;
+  }
+  
+  const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+  if (!roles.includes(user.role)) {
+    alert('You do not have permission to access this page');
+    redirectToDashboard(user.role);
+    return false;
+  }
+  
+  return true;
+}* Redirect if user doesn't have required role
  * @param {string|string[]} allowedRoles - Role(s) allowed
  */
 function requireRole(allowedRoles) {
@@ -179,42 +235,37 @@ async function handleRegister(event) {
       alert('Registration successful! Please login.');
       window.location.href = '/html/login.html';
     } else {
-      alert(response.message || 'Registration failed');
-    }
-  } catch (error) {
-    alert(error.message || 'Registration failed. Please try again.');
-  }
-}
-
 /**
- * Initialize authentication on page load
+ * Initialize authentication on page load (async)
  */
-function initAuth() {
+async function initAuth() {
   // Check if on login/register page
   const path = window.location.pathname;
-  const isAuthPage = path.includes('/login.html') || path.includes('/register.html') || path.includes('/index.html');
+  const isAuthPage = path.includes('/login.html') || path.includes('/register.html') || path.includes('/index.html') || path.includes('/forgot-password.html') || path.includes('/reset-password.html');
   
   // If logged in and on auth page, redirect to dashboard
   if (isLoggedIn() && isAuthPage) {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     if (user) {
       redirectToDashboard(user.role);
+      return;
     }
   }
   
   // Setup logout buttons
-  const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn');
+  const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn, #logoutBtn');
   logoutButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (confirm('Are you sure you want to logout?')) {
-        handleLogout();
-      }
+      e.stopPropagation();
+      console.log('Logout clicked!');
+      handleLogout();
+      return false;
     });
   });
   
-  // Display user info if logged in
-  const user = getCurrentUser();
+  // Display user info if logged in (use sync for display only)
+  const user = getCurrentUserSync();
   if (user) {
     const userNameElements = document.querySelectorAll('[data-user-name]');
     userNameElements.forEach(el => {
@@ -226,23 +277,33 @@ function initAuth() {
       el.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
     });
   }
-}
-
-// Auto-initialize on page load
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAuth);
-} else {
-  initAuth();
-}
-
+}   });
+    
+    const userRoleElements = document.querySelectorAll('[data-user-role]');
+    userRoleElements.forEach(el => {
+      el.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+    });
+  }
 // Export functions for use in other scripts
 if (typeof window !== 'undefined') {
   window.auth = {
     isLoggedIn,
     getCurrentUser,
+    getCurrentUserSync,
+    hasRoleAsync,
     saveSession,
     clearSession,
     requireAuth,
+    requireRole,
+    hasRole,
+    redirectToDashboard,
+    handleLogin,
+    handleLogout,
+    logout: handleLogout, // Export as both names for compatibility
+    handleRegister,
+    initAuth
+  };
+}   requireAuth,
     requireRole,
     hasRole,
     redirectToDashboard,

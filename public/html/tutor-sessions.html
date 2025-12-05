@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tutoring Sessions - MC Tutor</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        #logoutBtn { color: #dc3545 !important; }
+        #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+        
+        .page-header {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 0 20px 20px;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+        }
+        
+        .floating-message-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+        }
+        .floating-message-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .sessions-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .session-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .session-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .session-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .session-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item i {
+            color: #667eea;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-confirmed { background: #d1fae5; color: #065f46; }
+        .status-completed { background: #e0e7ff; color: #3730a3; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/html/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
+            <div class="nav-links">
+                <a href="/html/tutor-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/tutor-sessions.html" class="nav-link active">Sessions</a>
+                <a href="/html/materials.html" class="nav-link">Materials</a>
+                <a href="/html/profile.html" class="nav-link">Profile</a>
+                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <a href="/html/messenger.html" class="floating-message-btn" title="Messages">
+        <i class="fas fa-comment-dots"></i>
+    </a>
+
+    <div class="page-header">
+        <h1>My Tutoring Sessions</h1>
+    </div>
+
+    <div class="sessions-container">
+        <div class="tabs">
+            <button class="tab active" data-filter="all">All</button>
+            <button class="tab" data-filter="pending">Pending</button>
+            <button class="tab" data-filter="confirmed">Confirmed</button>
+            <button class="tab" data-filter="completed">Completed</button>
+        </div>
+
+        <div id="sessionsContainer">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading sessions...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/api.js"></script>
+    <script type="module" src="../scripts/auth.js"></script>
+    <script type="module" src="../scripts/utils.js"></script>
+    <script type="module">
+        import { getCurrentUser } from '../scripts/auth.js';
+        import { showToast, formatDate, formatTime } from '../scripts/utils.js';
+
+        const api = window.API;
+        let currentUser = null;
+        let allSessions = [];
+        let currentFilter = 'all';
+
+        // Logout handler
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/login.html?logout=true');
+                return false;
+            });
+        }
+
+        // Initialize
+        async function init() {
+            try {
+                currentUser = await getCurrentUser();
+                if (!currentUser || currentUser.role !== 'tutor') {
+                    showToast('Access denied. Tutors only.', 'error');
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+
+                await loadSessions();
+                setupEventListeners();
+            } catch (error) {
+                console.error('Init error:', error);
+                showToast('Failed to load page', 'error');
+            }
+        }
+
+        // Load sessions
+        async function loadSessions() {
+            try {
+                const response = await api.sessions.getMySessions();
+                allSessions = response.sessions || [];
+                renderSessions();
+            } catch (error) {
+                console.error('Load sessions error:', error);
+                showToast('Failed to load sessions', 'error');
+                document.getElementById('sessionsContainer').innerHTML = 
+                    '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Failed to load sessions</p></div>';
+            }
+        }
+
+        // Render sessions
+        function renderSessions() {
+            const container = document.getElementById('sessionsContainer');
+            const filtered = currentFilter === 'all' ? 
+                allSessions : 
+                allSessions.filter(function(s) { return s.status === currentFilter; });
+
+            if (filtered.length === 0) {
+                container.innerHTML = 
+                    '<div class="empty-state">' +
+                    '<i class="fas fa-calendar-times"></i>' +
+                    '<p>No ' + (currentFilter === 'all' ? '' : currentFilter + ' ') + 'sessions found</p>' +
+                    '</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(function(session) {
+                return '<div class="session-card">' +
+                    '<div class="session-header">' +
+                    '<div class="session-title">' + session.subject_name + '</div>' +
+                    '<span class="status-badge status-' + session.status + '">' + 
+                    session.status.charAt(0).toUpperCase() + session.status.slice(1) + 
+                    '</span>' +
+                    '</div>' +
+                    '<div class="session-info">' +
+                    '<div class="info-item"><i class="fas fa-user"></i> Student: ' + session.tutee_name + '</div>' +
+                    '<div class="info-item"><i class="fas fa-calendar"></i> ' + formatDate(session.session_date) + '</div>' +
+                    '<div class="info-item"><i class="fas fa-clock"></i> ' + session.start_time + ' - ' + session.end_time + '</div>' +
+                    '<div class="info-item"><i class="fas fa-' + (session.session_type === 'online' ? 'video' : 'map-marker-alt') + '"></i> ' + 
+                    session.session_type.charAt(0).toUpperCase() + session.session_type.slice(1) + '</div>' +
+                    '</div>' +
+                    (session.location ? '<div class="info-item"><i class="fas fa-location-dot"></i> ' + session.location + '</div>' : '') +
+                    (session.notes ? '<div style="margin-top: 12px; padding: 12px; background: #f9fafb; border-radius: 6px;"><strong>Notes:</strong> ' + session.notes + '</div>' : '') +
+                    renderActions(session) +
+                    '</div>';
+            }).join('');
+        }
+
+        // Render actions based on status
+        function renderActions(session) {
+            if (session.status === 'pending') {
+                return '<div class="session-actions">' +
+                    '<button class="btn btn-success" onclick="confirmSession(' + session.session_id + ')"><i class="fas fa-check"></i> Confirm</button>' +
+                    '<button class="btn btn-danger" onclick="declineSession(' + session.session_id + ')"><i class="fas fa-times"></i> Decline</button>' +
+                    '<button class="btn btn-primary" onclick="messageStudent(\'' + session.tutee_id + '\')"><i class="fas fa-comment"></i> Message</button>' +
+                    '</div>';
+            } else if (session.status === 'confirmed') {
+                return '<div class="session-actions">' +
+                    '<button class="btn btn-success" onclick="completeSession(' + session.session_id + ')"><i class="fas fa-check-circle"></i> Mark Complete</button>' +
+                    '<button class="btn btn-danger" onclick="cancelSession(' + session.session_id + ')"><i class="fas fa-ban"></i> Cancel</button>' +
+                    '<button class="btn btn-primary" onclick="messageStudent(\'' + session.tutee_id + '\')"><i class="fas fa-comment"></i> Message</button>' +
+                    '</div>';
+            } else if (session.status === 'completed') {
+                return '<div class="session-actions">' +
+                    '<button class="btn btn-primary" onclick="messageStudent(\'' + session.tutee_id + '\')"><i class="fas fa-comment"></i> Message</button>' +
+                    '</div>';
+            }
+            return '';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+                    tab.classList.add('active');
+                    currentFilter = tab.dataset.filter;
+                    renderSessions();
+                });
+            });
+        }
+
+        // Action functions
+        window.confirmSession = async function(sessionId) {
+            if (!confirm('Confirm this tutoring session?')) return;
+            
+            try {
+                const response = await api.sessions.confirmSession(sessionId);
+                if (response.success) {
+                    showToast('Session confirmed successfully', 'success');
+                    await loadSessions();
+                }
+            } catch (error) {
+                console.error('Confirm error:', error);
+                showToast(error.message || 'Failed to confirm session', 'error');
+            }
+        };
+
+        window.declineSession = async function(sessionId) {
+            const reason = prompt('Reason for declining (optional):');
+            
+            try {
+                const response = await api.sessions.cancelSession(sessionId, { reason: reason || 'Declined by tutor' });
+                if (response.success) {
+                    showToast('Session declined', 'success');
+                    await loadSessions();
+                }
+            } catch (error) {
+                console.error('Decline error:', error);
+                showToast(error.message || 'Failed to decline session', 'error');
+            }
+        };
+
+        window.completeSession = async function(sessionId) {
+            if (!confirm('Mark this session as completed?')) return;
+            
+            try {
+                const response = await api.sessions.completeSession(sessionId);
+                if (response.success) {
+                    showToast('Session marked as complete', 'success');
+                    await loadSessions();
+                }
+            } catch (error) {
+                console.error('Complete error:', error);
+                showToast(error.message || 'Failed to complete session', 'error');
+            }
+        };
+
+        window.cancelSession = async function(sessionId) {
+            const reason = prompt('Reason for cancellation:');
+            if (!reason) return;
+            
+            try {
+                const response = await api.sessions.cancelSession(sessionId, { reason });
+                if (response.success) {
+                    showToast('Session cancelled', 'success');
+                    await loadSessions();
+                }
+            } catch (error) {
+                console.error('Cancel error:', error);
+                showToast(error.message || 'Failed to cancel session', 'error');
+            }
+        };
+
+        window.messageStudent = function(studentId) {
+            window.location.href = '/html/messenger.html?user=' + studentId;
+        };
+
+        init();
+    </script>
+</body>
+</html>
