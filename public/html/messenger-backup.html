@@ -361,11 +361,11 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/student-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutee/dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/student-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/find-tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/my-sessions.html" class="nav-link">My Sessions</a>
+                <a href="/html/tutee/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/tutee/find_tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/html/tutee/my_sessions.html" class="nav-link">My Sessions</a>
                 <a href="/html/materials.html" class="nav-link">Materials</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
@@ -427,7 +427,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
+                window.location.replace('/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -438,7 +438,7 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = '/html/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
 

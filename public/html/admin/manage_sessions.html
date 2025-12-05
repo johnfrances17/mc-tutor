@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Sessions - MC Tutor Admin</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -168,10 +168,10 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
+            <a href="/html/admin/dashboard.html" class="nav-brand">MC Tutor Admin</a>
             <div class="nav-links">
-                <a href="/html/admin-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/manage-sessions.html" class="nav-link active">Sessions</a>
+                <a href="/html/admin/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/admin/manage_sessions.html" class="nav-link active">Sessions</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
@@ -253,9 +253,9 @@
         </div>
     </div>
 
-    <script type="module" src="../scripts/api.js"></script>
-    <script type="module" src="../scripts/auth.js"></script>
-    <script type="module" src="../scripts/utils.js"></script>
+    <script type="module" src="../../scripts/api.js"></script>
+    <script type="module" src="../../scripts/auth.js"></script>
+    <script type="module" src="../../scripts/utils.js"></script>
     <script type="module">
         import { getCurrentUser } from '../scripts/auth.js';
         import { showToast, formatDate } from '../scripts/utils.js';
@@ -274,7 +274,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
+                window.location.replace('/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -285,7 +285,7 @@
                 currentUser = await getCurrentUser();
                 if (!currentUser || currentUser.role !== 'admin') {
                     showToast('Access denied. Admins only.', 'error');
-                    window.location.href = '/html/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
 

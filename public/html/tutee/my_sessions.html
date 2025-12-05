@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Sessions - MC Tutor</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -180,11 +180,11 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/student-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutee/dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/student-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/find-tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/my-sessions.html" class="nav-link active">My Sessions</a>
+                <a href="/html/tutee/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/tutee/find_tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/html/tutee/my_sessions.html" class="nav-link active">My Sessions</a>
                 <a href="/html/materials.html" class="nav-link">Materials</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
@@ -216,9 +216,9 @@
         </div>
     </div>
 
-    <script type="module" src="../scripts/api.js"></script>
-    <script type="module" src="../scripts/auth.js"></script>
-    <script type="module" src="../scripts/utils.js"></script>
+    <script type="module" src="../../scripts/api.js"></script>
+    <script type="module" src="../../scripts/auth.js"></script>
+    <script type="module" src="../../scripts/utils.js"></script>
     <script type="module">
         import { getCurrentUser } from '../scripts/auth.js';
         import { showToast, formatDate, formatTime } from '../scripts/utils.js';
@@ -239,7 +239,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
+                window.location.replace('/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -249,7 +249,7 @@
             try {
                 currentUser = await getCurrentUser();
                 if (!currentUser || currentUser.role !== 'tutee') {
-                    window.location.href = '/html/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
 
@@ -291,7 +291,7 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-check"></i>
                         <p>No ${currentFilter === 'all' ? '' : currentFilter} sessions found</p>
-                        <a href="/html/find-tutors.html" class="btn btn-primary" style="margin-top: 20px;">
+                        <a href="/html/tutee/find_tutors.html" class="btn btn-primary" style="margin-top: 20px;">
                             <i class="fas fa-search"></i> Find a Tutor
                         </a>
                     </div>

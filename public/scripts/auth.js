@@ -89,7 +89,7 @@ function clearSession() {
  */
 function requireAuth() {
   if (!isLoggedIn()) {
-    window.location.href = '/html/login.html';
+    window.location.href = '/html/auth/login.html';
     return false;
   }
   return true;
@@ -101,12 +101,12 @@ function requireAuth() {
  */
 function redirectToDashboard(role) {
   const dashboards = {
-    admin: '/html/admin-dashboard.html',
-    tutor: '/html/tutor-dashboard.html',
-    tutee: '/html/student-dashboard.html'
+    admin: '/html/admin/dashboard.html',
+    tutor: '/html/tutor/dashboard.html',
+    tutee: '/html/tutee/dashboard.html'
   };
   
-  const dashboard = dashboards[role] || '/html/student-dashboard.html';
+  const dashboard = dashboards[role] || '/html/tutee/dashboard.html';
   window.location.href = dashboard;
 }
 
@@ -145,7 +145,7 @@ async function requireRole(allowedRoles) {
   const user = await getCurrentUser();
   
   if (!user) {
-    window.location.href = '/html/login.html';
+    window.location.href = '/html/auth/login.html';
     return false;
   }
   
@@ -194,8 +194,10 @@ async function handleLogout() {
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
+    // Only clear current tab's session
     clearSession();
-    window.location.href = '/html/login.html?logout=true';
+    // Redirect to login
+    window.location.replace('/html/auth/login.html');
   }
 }
 
@@ -233,7 +235,7 @@ async function handleRegister(event) {
     
     if (response.success) {
       alert('Registration successful! Please login.');
-      window.location.href = '/html/login.html';
+      window.location.href = '/html/auth/login.html';
     } else {
       alert(response.message || 'Registration failed');
     }
@@ -246,12 +248,15 @@ async function handleRegister(event) {
  * Initialize authentication on page load (async)
  */
 async function initAuth() {
-  // Check if on login/register page
+  // Check if on auth or landing page
   const path = window.location.pathname;
-  const isAuthPage = path.includes('/login.html') || path.includes('/register.html') || path.includes('/index.html') || path.includes('/forgot-password.html') || path.includes('/reset-password.html');
+  const isAuthPage = path.includes('/auth/') || path.includes('/index.html');
   
-  // If logged in and on auth page, redirect to dashboard
-  if (isLoggedIn() && isAuthPage) {
+  // DON'T redirect from index.html - it's the landing page
+  const isIndexPage = path.includes('/index.html') || path === '/' || path === '/html/' || path === '/html/index.html';
+  
+  // If logged in and on auth page (but NOT index), redirect to dashboard
+  if (isLoggedIn() && isAuthPage && !isIndexPage) {
     const user = await getCurrentUser();
     if (user) {
       redirectToDashboard(user.role);
@@ -259,8 +264,9 @@ async function initAuth() {
     }
   }
   
-  // Setup logout buttons
-  const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn, #logoutBtn');
+  // Setup logout buttons on ALL pages (not just dashboards)
+  const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn, #logoutBtn, .nav-item.logout');
+  console.log('Found logout buttons:', logoutButtons.length);
   logoutButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutor Dashboard - MC Tutor</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -45,11 +45,11 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutor/dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/tutor-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="/html/tutor/dashboard.html" class="nav-link active">Dashboard</a>
                 <a href="/html/my-subjects.html" class="nav-link">My Subjects</a>
-                <a href="/html/tutor-sessions.html" class="nav-link">Sessions</a>
+                <a href="/html/tutor/sessions.html" class="nav-link">Sessions</a>
                 <a href="/html/upload-materials.html" class="nav-link">Materials</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
@@ -110,7 +110,7 @@
         <div class="card">
             <div class="card-header">
                 <h3>Upcoming Confirmed Sessions</h3>
-                <a href="/html/tutor-sessions.html" class="text-primary">View all</a>
+                <a href="/html/tutor/sessions.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="upcomingSessionsList">
                 <div class="loading-spinner"></div>
@@ -169,9 +169,9 @@
         </div>
     </div>
 
-    <script type="module" src="../scripts/api.js"></script>
-    <script type="module" src="../scripts/auth.js"></script>
-    <script type="module" src="../scripts/utils.js"></script>
+    <script type="module" src="../../scripts/api.js"></script>
+    <script type="module" src="../../scripts/auth.js"></script>
+    <script type="module" src="../../scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
         import { getCurrentUser } from '../scripts/auth.js';
@@ -188,7 +188,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/html/login.html?logout=true');
+                window.location.replace('/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -199,7 +199,7 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = '/html/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
 
@@ -473,7 +473,7 @@
             console.log('Logout clicked!');
             localStorage.clear();
             sessionStorage.clear();
-            window.location.replace('/html/login.html?logout=true');
+            window.location.replace('/html/auth/login.html?logout=true');
             return false;
         });
 
