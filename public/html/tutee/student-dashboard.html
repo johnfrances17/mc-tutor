@@ -107,20 +107,113 @@
             letter-spacing: 0.5px;
         }
 
+        /* Main Navbar with User Info */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .user-info-inline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 25px;
+            color: white;
+        }
+
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: white;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-details-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .user-name-inline {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-role-badge-inline {
+            font-size: 11px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* Collapsible Secondary Header */
         .secondary-navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
-            top: 0;
+            top: 68px;
             z-index: 999;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 70px;
+            overflow: hidden;
         }
 
         .secondary-navbar.collapsed {
             max-height: 0;
-            overflow: hidden;
             opacity: 0;
+            transform: translateY(-100%);
         }
 
         .secondary-nav-container {
@@ -130,29 +223,30 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 5px;
         }
 
         .secondary-nav-links {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             align-items: center;
         }
 
         .secondary-nav-link {
             color: white;
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.3s ease;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
         }
 
         .secondary-nav-link:hover {
-            background: rgba(255,255,255,0.2);
+            background: white;
+            color: #667eea;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .secondary-nav-link.active {
@@ -161,66 +255,74 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Toggle Button */
+        /* Toggle Button - Curtain Style */
         .nav-toggle-btn {
             position: fixed;
             top: 70px;
-            right: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            right: 30px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+            z-index: 1001;
             transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 13px;
         }
 
         .nav-toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .nav-toggle-btn i {
             transition: transform 0.3s ease;
+            font-size: 14px;
         }
 
         .nav-toggle-btn.collapsed i {
             transform: rotate(180deg);
         }
+
+        /* Hide old user header */
+        .user-header {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- User Header Component -->
-    <div class="user-header">
-        <div class="user-info-display">
-            <div class="user-avatar" data-user-avatar>
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="user-details">
-                <span class="user-name" data-user-name>User</span>
-                <span class="user-role-badge" data-user-role>Student</span>
-            </div>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div class="nav-container">
             <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
-            <div class="nav-links">
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            <div class="nav-right">
+                <div class="user-info-inline">
+                    <div class="user-avatar-small" data-user-avatar>
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details-inline">
+                        <span class="user-name-inline" data-user-name>User</span>
+                        <span class="user-role-badge-inline" data-user-role>Student</span>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Toggle Button -->
     <button class="nav-toggle-btn" id="navToggleBtn">
+        <span>Menu</span>
         <i class="fas fa-chevron-up"></i>
     </button>
 
