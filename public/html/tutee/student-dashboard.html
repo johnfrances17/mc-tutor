@@ -106,6 +106,93 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
+        /* Collapsible Secondary Header */
+        .secondary-navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-navbar.collapsed {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .secondary-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .secondary-nav-links {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .secondary-nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .secondary-nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .secondary-nav-link.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Toggle Button */
+        .nav-toggle-btn {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-toggle-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-toggle-btn.collapsed i {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
@@ -126,12 +213,25 @@
         <div class="nav-container">
             <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/tutee/student-dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
-                <a href="/html/shared/materials.html" class="nav-link">Materials</a>
                 <a href="/html/shared/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toggle Button -->
+    <button class="nav-toggle-btn" id="navToggleBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Collapsible Secondary Navigation -->
+    <nav class="secondary-navbar" id="secondaryNav">
+        <div class="secondary-nav-container">
+            <div class="secondary-nav-links">
+                <a href="/html/tutee/student-dashboard.html" class="secondary-nav-link active">Dashboard</a>
+                <a href="/html/tutee/student-find-tutors.html" class="secondary-nav-link">Find Tutors</a>
+                <a href="/html/tutee/student-my-sessions.html" class="secondary-nav-link">My Sessions</a>
+                <a href="/html/shared/materials.html" class="secondary-nav-link">Materials</a>
             </div>
         </div>
     </nav>
@@ -345,6 +445,26 @@
         
         // Initialize on load
         initDashboard();
+
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        // Load saved state from localStorage
+        const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+        if (isNavCollapsed) {
+            secondaryNav.classList.add('collapsed');
+            navToggleBtn.classList.add('collapsed');
+        }
+
+        navToggleBtn.addEventListener('click', () => {
+            secondaryNav.classList.toggle('collapsed');
+            navToggleBtn.classList.toggle('collapsed');
+            
+            // Save state to localStorage
+            const isCollapsed = secondaryNav.classList.contains('collapsed');
+            localStorage.setItem('secondaryNavCollapsed', isCollapsed);
+        });
     </script>
 </body>
 </html>
