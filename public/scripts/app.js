@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main Application Initialization
  * This script initializes all components for authenticated pages
  * Include this AFTER api.js and auth.js on every protected page
@@ -17,7 +17,7 @@ async function initApp() {
       const currentPage = window.location.pathname.split('/').pop();
       
       if (!publicPages.includes(currentPage)) {
-        window.location.href = '/html/auth/login.html';
+        window.location.href = '/public/html/auth/login.html';
         return;
       }
     }
@@ -45,9 +45,9 @@ async function initApp() {
  */
 async function initializeComponents(user) {
   // Load component scripts dynamically
-  await loadScript('/scripts/components/header.js');
-  await loadScript('/scripts/components/nav.js');
-  await loadScript('/scripts/components/floatingChat.js');
+  await loadScript('/public/scripts/components/header.js');
+  await loadScript('/public/scripts/components/nav.js');
+  await loadScript('/public/scripts/components/floatingChat.js');
   
   // Initialize header
   if (window.headerComponent?.initHeader) {

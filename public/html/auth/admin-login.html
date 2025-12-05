@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login - MC Tutor</title>
-  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="/public/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
@@ -250,7 +250,7 @@
       </div>
 
       <div class="admin-login-body">
-        <a href="/html/auth/login.html" class="back-link">
+        <a href="/public/html/auth/login.html" class="back-link">
           <i class="fas fa-arrow-left"></i> Back to role selection
         </a>
 
@@ -304,14 +304,14 @@
 
         <div class="auth-footer">
           Not an administrator? 
-          <a href="/html/auth/login.html">Back to login</a>
+          <a href="/public/html/auth/login.html">Back to login</a>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="../../scripts/utils.js"></script>
-  <script src="../../scripts/api.js"></script>
+  <script src="/public/scripts/utils.js"></script>
+  <script src="/public/scripts/api.js"></script>
   <script>
     // Toggle password visibility
     function togglePassword(fieldId, button) {
@@ -373,7 +373,7 @@
           localStorage.setItem('user', JSON.stringify(response.data.user));
 
           setTimeout(() => {
-            window.location.href = '/html/admin/admin-dashboard.html';
+            window.location.href = '/public/html/admin/admin-dashboard.html';
           }, 1500);
         } else {
           throw new Error(response.message || 'Login failed');

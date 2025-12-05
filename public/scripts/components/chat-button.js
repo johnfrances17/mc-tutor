@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Floating Chat Button Component
  * Displays a floating chat button with unread message count
  */
@@ -106,7 +106,7 @@ class FloatingChatButton {
   }
   
   openMessenger() {
-    window.location.href = '/html/messenger.html';
+    window.location.href = '/public/html/messenger.html';
   }
   
   destroy() {

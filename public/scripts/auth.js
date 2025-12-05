@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Authentication Helper Functions
  * Handles login, logout, and session management
  */
@@ -97,7 +97,7 @@ function clearSession() {
  */
 function requireAuth() {
   if (!isLoggedIn()) {
-    window.location.href = '/html/auth/login.html';
+    window.location.href = '/public/html/auth/login.html';
     return false;
   }
   return true;
@@ -109,12 +109,12 @@ function requireAuth() {
  */
 function redirectToDashboard(role) {
   const dashboards = {
-    admin: '/html/admin-dashboard.html',
-    tutor: '/html/tutor-dashboard.html',
-    tutee: '/html/student-dashboard.html'
+    admin: '/public/html/admin-dashboard.html',
+    tutor: '/public/html/tutor-dashboard.html',
+    tutee: '/public/html/student-dashboard.html'
   };
   
-  const dashboard = dashboards[role] || '/html/student-dashboard.html';
+  const dashboard = dashboards[role] || '/public/html/student-dashboard.html';
   window.location.href = dashboard;
 }
 
@@ -183,7 +183,7 @@ async function handleLogout() {
     console.error('Logout error:', error);
   } finally {
     clearSession();
-    window.location.href = '/html/auth/login.html?logout=true';
+    window.location.href = '/public/html/auth/login.html?logout=true';
   }
 }
 
@@ -221,7 +221,7 @@ async function handleRegister(event) {
     
     if (response.success) {
       alert('Registration successful! Please login.');
-      window.location.href = '/html/login.html';
+      window.location.href = '/public/html/login.html';
     } else {
       alert(response.message || 'Registration failed');
     }

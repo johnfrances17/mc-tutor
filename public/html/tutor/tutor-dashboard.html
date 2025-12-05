@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutor Dashboard - MC Tutor</title>
-    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -103,19 +103,19 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/tutor/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/public/html/tutor/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/tutor/tutor-dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/html/my-subjects.html" class="nav-link">My Subjects</a>
-                <a href="/html/tutor/tutor-sessions.html" class="nav-link">Sessions</a>
-                <a href="/html/upload-materials.html" class="nav-link">Materials</a>
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                <a href="/public/html/tutor/tutor-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="/public/html/my-subjects.html" class="nav-link">My Subjects</a>
+                <a href="/public/html/tutor/tutor-sessions.html" class="nav-link">Sessions</a>
+                <a href="/public/html/upload-materials.html" class="nav-link">Materials</a>
+                <a href="/public/html/shared/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
     </nav>
 
-    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
+    <a href="/public/html/shared/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comment-dots"></i>
     </a>
 
@@ -168,7 +168,7 @@
         <div class="card">
             <div class="card-header">
                 <h3>Upcoming Confirmed Sessions</h3>
-                <a href="/html/tutor/tutor-sessions.html" class="text-primary">View all</a>
+                <a href="/public/html/tutor/tutor-sessions.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="upcomingSessionsList">
                 <div class="loading-spinner"></div>
@@ -188,7 +188,7 @@
         <div class="card">
             <div class="card-header">
                 <h3>Recent Feedback</h3>
-                <a href="/html/tutor-feedback.html" class="text-primary">View all</a>
+                <a href="/public/html/tutor-feedback.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="recentFeedbackList">
                 <div class="loading-spinner"></div>
@@ -202,22 +202,22 @@
             </div>
             <div class="card-body">
                 <div class="quick-actions-grid">
-                    <a href="/html/my-subjects.html" class="quick-action-card">
+                    <a href="/public/html/my-subjects.html" class="quick-action-card">
                         <div class="quick-action-icon">📚</div>
                         <div class="quick-action-title">Manage Subjects</div>
                         <div class="quick-action-desc">Add or remove subjects you tutor</div>
                     </a>
-                    <a href="/html/upload-materials.html" class="quick-action-card">
+                    <a href="/public/html/upload-materials.html" class="quick-action-card">
                         <div class="quick-action-icon">📤</div>
                         <div class="quick-action-title">Upload Materials</div>
                         <div class="quick-action-desc">Share study resources with students</div>
                     </a>
-                    <a href="/html/session-preferences.html" class="quick-action-card">
+                    <a href="/public/html/session-preferences.html" class="quick-action-card">
                         <div class="quick-action-icon">⚙️</div>
                         <div class="quick-action-title">Session Preferences</div>
                         <div class="quick-action-desc">Set availability and preferences</div>
                     </a>
-                    <a href="/html/shared/messenger.html" class="quick-action-card">
+                    <a href="/public/html/shared/messenger.html" class="quick-action-card">
                         <div class="quick-action-icon">💬</div>
                         <div class="quick-action-title">Messages</div>
                         <div class="quick-action-desc">Chat with your students</div>
@@ -227,9 +227,9 @@
         </div>
     </div>
 
-    <script type="module" src="../../scripts/api.js"></script>
-    <script type="module" src="../../scripts/auth.js"></script>
-    <script type="module" src="../../scripts/utils.js"></script>
+    <script type="module" src="/public/scripts/api.js"></script>
+    <script type="module" src="/public/scripts/auth.js"></script>
+    <script type="module" src="/public/scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
         import { getCurrentUser } from '../scripts/auth.js';
@@ -246,7 +246,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
+                window.location.replace('/public/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -257,13 +257,13 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = '/html/auth/login.html';
+                    window.location.href = '/public/html/auth/login.html';
                     return;
                 }
 
                 if (currentUser.role !== 'tutor') {
                     showToast('Access denied. Tutors only.', 'error');
-                    setTimeout(() => window.location.href = '/html/index.html', 2000);
+                    setTimeout(() => window.location.href = '/public/html/index.html', 2000);
                     return;
                 }
 
@@ -531,7 +531,7 @@
             console.log('Logout clicked!');
             localStorage.clear();
             sessionStorage.clear();
-            window.location.replace('/html/auth/login.html?logout=true');
+            window.location.replace('/public/html/auth/login.html?logout=true');
             return false;
         });
 

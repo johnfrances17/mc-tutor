@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Sessions - MC Tutor Admin</title>
-    <link rel="stylesheet" href="/public/css/style.css">
+    <title>Manage Sessions - MC Tutor Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -163,92 +163,9 @@
             color: #6b7280;
             margin-top: 4px;
         }
-
-        /* User Header Component */
-        .user-header {
-            background: white;
-            padding: 15px 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 300px;
-            z-index: 1001;
-            border-bottom-left-radius: 12px;
-        }
-        .user-info-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 14px;
-        }
-        .user-role-badge {
-            font-size: 11px;
-            color: #667eea;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Floating Message Button */
-        .floating-message-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            text-decoration: none;
-            color: white;
-            font-size: 24px;
-        }
-        .floating-message-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
     </style>
 </head>
 <body>
-    <!-- User Header Component -->
-    <div class="user-header">
-        <div class="user-info-display">
-            <div class="user-avatar" data-user-avatar>
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="user-details">
-                <span class="user-name" data-user-name>User</span>
-                <span class="user-role-badge" data-user-role>Admin</span>
-            </div>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div class="nav-container">
             <a href="/public/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
@@ -259,11 +176,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- Floating Message Button -->
-    <a href="/public/html/shared/messenger.html" class="floating-message-btn" title="Messages">
-        <i class="fas fa-comments"></i>
-    </a>
 
     <div class="page-header">
         <h1>Manage Sessions</h1>
@@ -341,9 +253,9 @@
         </div>
     </div>
 
-    <script type="module" src="/public/scripts/api.js"></script>
-    <script type="module" src="/public/scripts/auth.js"></script>
-    <script type="module" src="/public/scripts/utils.js"></script>
+    <script type="module" src="../scripts/api.js"></script>
+    <script type="module" src="../scripts/auth.js"></script>
+    <script type="module" src="../scripts/utils.js"></script>
     <script type="module">
         import { getCurrentUser } from '../scripts/auth.js';
         import { showToast, formatDate } from '../scripts/utils.js';
@@ -362,7 +274,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/public/html/auth/login.html?logout=true');
+                window.location.replace('/html/login.html?logout=true');
                 return false;
             });
         }
@@ -373,7 +285,7 @@
                 currentUser = await getCurrentUser();
                 if (!currentUser || currentUser.role !== 'admin') {
                     showToast('Access denied. Admins only.', 'error');
-                    window.location.href = '/public/html/auth/login.html';
+                    window.location.href = '/html/login.html';
                     return;
                 }
 

@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Materials - MC Tutor</title>
-    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -142,9 +142,9 @@
         </div>
     </div>
 
-    <script type="module" src="/public/scripts/api.js"></script>
-    <script type="module" src="/public/scripts/auth.js"></script>
-    <script type="module" src="/public/scripts/utils.js"></script>
+    <script type="module" src="../scripts/api.js"></script>
+    <script type="module" src="../scripts/auth.js"></script>
+    <script type="module" src="../scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
         import { getCurrentUser } from '../scripts/auth.js';
@@ -157,46 +157,26 @@
         let currentPage = 1;
         let itemsPerPage = 12;
 
-        // Init auth
-        window.auth.initAuth();
-                } else if (user.role === 'admin') {
-                    navLinks.innerHTML = `
-                        <a href="${dashboardUrl}" class="nav-link">Dashboard</a>
-                        <a href="/public/html/admin/admin-view-materials.html" class="nav-link active">Materials</a>
-                        <a href="/public/html/shared/profile.html" class="nav-link">Profile</a>
-                        <a href="#" class="nav-link" id="logoutBtn">Logout</a>
-                    `;
-                    attachLogoutHandler();
-                }
-            }
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout clicked!');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/html/auth/login.html?logout=true');
+                return false;
+            });
         }
 
-        // Logout handler
-        function attachLogoutHandler() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Logout clicked!');
-                    localStorage.clear();
-                    window.location.replace('/public/html/auth/login.html');
-                    return false;
-                });
-            }
-        }
-
-        // Initial nav update
-        updateNavigation();
-        attachLogoutHandler();
-
-        // Initialize page
-        async function initPage() {
+        // Initialize page\n        async function initPage() {
         try {
             currentUser = await getCurrentUser();
             
             if (!currentUser) {
-                window.location.href = '/public/html/auth/login.html';
+                window.location.href = '/html/auth/login.html';
                 return;
             }
 

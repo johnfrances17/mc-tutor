@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MC Tutor - Cloud-Based Peer Tutoring Platform</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body style="padding: 0;">
   <nav class="navbar">
     <div class="nav-container">
       <a href="/" class="nav-brand">MC Tutor</a>
       <div class="nav-links">
-        <a href="/html/auth/login.html" class="btn btn-outline" style="background: transparent; border: 2px solid #667eea; color: #667eea;">Login</a>
-        <a href="/html/auth/register.html" class="btn btn-primary">Register</a>
+        <a href="/public/html/auth/login.html" class="btn btn-outline" style="background: transparent; border: 2px solid #667eea; color: #667eea;">Login</a>
+        <a href="/public/html/auth/register.html" class="btn btn-primary">Register</a>
       </div>
     </div>
   </nav>
@@ -25,7 +25,7 @@
         <p style="font-size: 16px; margin-bottom: 10px;">Mabini College Inc.</p>
         <p>Where your dreams come true.</p>
         <div class="hero-actions">
-          <a href="/html/auth/register.html" class="btn btn-primary btn-lg">Get Started</a>
+          <a href="/public/html/auth/register.html" class="btn btn-primary btn-lg">Get Started</a>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@
     <div class="container">
       <h2>Ready to Get Started?</h2>
       <p>Join hundreds of Mabini College students already using MC Tutor to achieve academic success</p>
-      <a href="/html/auth/register.html" class="btn btn-primary btn-lg">Create Your Account</a>
+      <a href="/public/html/auth/register.html" class="btn btn-primary btn-lg">Create Your Account</a>
     </div>
   </section>
 
@@ -82,15 +82,15 @@
       <p>&copy; 2025 MC Tutor. All rights reserved.</p>
       <p>Cloud-Based Peer Tutoring Platform - Mabini College Inc.</p>
       <p style="margin-top: 12px; font-size: 11px;">
-        <a href="/html/auth/admin-login.html" style="color: #999; text-decoration: none; opacity: 0.7; transition: opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+        <a href="/public/html/auth/admin-login.html" style="color: #999; text-decoration: none; opacity: 0.7; transition: opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
           Staff Access
         </a>
       </p>
     </div>
   </footer>
 
-  <script type="module" src="../scripts/api.js"></script>
-  <script type="module" src="../scripts/auth.js"></script>
+  <script type="module" src="/public/scripts/api.js"></script>
+  <script type="module" src="/public/scripts/auth.js"></script>
   <script type="module">
     // Redirect if already logged in
     import { getCurrentUser } from '../scripts/auth.js';

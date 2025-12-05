@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Navigation Menu Component
  * Dynamically generates role-based navigation menu
  */
@@ -27,12 +27,12 @@ class NavigationMenu {
     this.container.innerHTML = `
       <nav class="navbar">
         <div class="nav-brand">
-          <a href="/html/index.html">MC Tutor</a>
+          <a href="/public/html/index.html">MC Tutor</a>
         </div>
         <ul class="nav-links">
-          <li><a href="/html/index.html">Home</a></li>
-          <li><a href="/html/login.html">Login</a></li>
-          <li><a href="/html/register.html">Register</a></li>
+          <li><a href="/public/html/index.html">Home</a></li>
+          <li><a href="/public/html/login.html">Login</a></li>
+          <li><a href="/public/html/register.html">Register</a></li>
         </ul>
       </nav>
     `;
@@ -67,27 +67,27 @@ class NavigationMenu {
   getMenuItemsForRole(role) {
     const menus = {
       admin: [
-        { label: 'Dashboard', url: '/html/admin-dashboard.html' },
+        { label: 'Dashboard', url: '/public/html/admin-dashboard.html' },
         { label: 'Manage Users', url: '/main/admin/manage_users.php' },
         { label: 'Manage Subjects', url: '/main/admin/manage_subjects.php' },
         { label: 'View Sessions', url: '/main/admin/view_sessions.php' },
         { label: 'View Materials', url: '/main/admin/view_materials.php' }
       ],
       tutor: [
-        { label: 'Dashboard', url: '/html/tutor-dashboard.html' },
+        { label: 'Dashboard', url: '/public/html/tutor-dashboard.html' },
         { label: 'My Sessions', url: '/main/tutor/my_sessions.php' },
         { label: 'My Subjects', url: '/main/tutor/my_subjects.php' },
         { label: 'Upload Materials', url: '/main/tutor/upload_materials.php' },
         { label: 'My Feedback', url: '/main/tutor/my_feedback.php' },
-        { label: 'Messages', url: '/html/messenger.html' }
+        { label: 'Messages', url: '/public/html/messenger.html' }
       ],
       tutee: [
-        { label: 'Dashboard', url: '/html/student-dashboard.html' },
-        { label: 'Find Tutors', url: '/html/find-tutors.html' },
+        { label: 'Dashboard', url: '/public/html/student-dashboard.html' },
+        { label: 'Find Tutors', url: '/public/html/find-tutors.html' },
         { label: 'My Sessions', url: '/main/student/my_sessions.php' },
-        { label: 'Study Materials', url: '/html/materials.html' },
+        { label: 'Study Materials', url: '/public/html/materials.html' },
         { label: 'My Feedback', url: '/main/student/my_feedback.php' },
-        { label: 'Messages', url: '/html/messenger.html' }
+        { label: 'Messages', url: '/public/html/messenger.html' }
       ]
     };
     
@@ -96,12 +96,12 @@ class NavigationMenu {
   
   getDashboardUrl() {
     const dashboards = {
-      admin: '/html/admin-dashboard.html',
-      tutor: '/html/tutor-dashboard.html',
-      tutee: '/html/student-dashboard.html'
+      admin: '/public/html/admin-dashboard.html',
+      tutor: '/public/html/tutor-dashboard.html',
+      tutee: '/public/html/student-dashboard.html'
     };
     
-    return dashboards[this.user.role] || '/html/index.html';
+    return dashboards[this.user.role] || '/public/html/index.html';
   }
   
   isActive(url) {

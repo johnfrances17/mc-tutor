@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Materials - MC Tutor</title>
-    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -99,20 +99,20 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/public/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/admin/admin-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/admin/admin-view-sessions.html" class="nav-link">View Sessions</a>
-                <a href="/html/admin/admin-manage-subjects.html" class="nav-link">Manage Subjects</a>
-                <a href="/html/admin/admin-manage-users.html" class="nav-link">Manage Users</a>
-                <a href="/html/admin/admin-view-materials.html" class="nav-link active">View Materials</a>
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                <a href="/public/html/admin/admin-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/public/html/admin/admin-view-sessions.html" class="nav-link">View Sessions</a>
+                <a href="/public/html/admin/admin-manage-subjects.html" class="nav-link">Manage Subjects</a>
+                <a href="/public/html/admin/admin-manage-users.html" class="nav-link">Manage Users</a>
+                <a href="/public/html/admin/admin-view-materials.html" class="nav-link active">View Materials</a>
+                <a href="/public/html/shared/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
     </nav>
 
-    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
+    <a href="/public/html/shared/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comments"></i>
     </a>
 
@@ -201,9 +201,9 @@
         </div>
     </div>
 
-    <script type="module" src="../../scripts/api.js"></script>
-    <script type="module" src="../../scripts/auth.js"></script>
-    <script type="module" src="../../scripts/utils.js"></script>
+    <script type="module" src="/public/scripts/api.js"></script>
+    <script type="module" src="/public/scripts/auth.js"></script>
+    <script type="module" src="/public/scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
         import { getCurrentUser } from '../scripts/auth.js';
@@ -225,7 +225,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
+                window.location.replace('/public/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -235,7 +235,7 @@
             currentUser = await getCurrentUser();
             
             if (!currentUser) {
-                window.location.href = '/html/auth/login.html';
+                window.location.href = '/public/html/auth/login.html';
                 return;
             }
 

@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger - MC Tutor</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
     <style>
@@ -361,13 +361,13 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/public/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/tutee/student-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
-                <a href="/html/materials.html" class="nav-link">Materials</a>
-                <a href="/html/profile.html" class="nav-link">Profile</a>
+                <a href="/public/html/tutee/student-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/public/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/public/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
+                <a href="/public/html/materials.html" class="nav-link">Materials</a>
+                <a href="/public/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
@@ -399,10 +399,10 @@
         </div>
     </div>
 
-    <script type="module" src="../scripts/api.js"></script>
-    <script type="module" src="../scripts/auth.js"></script>
-    <script type="module" src="../scripts/utils.js"></script>
-    <script type="module" src="../scripts/socket.js"></script>
+    <script type="module" src="/public/scripts/api.js"></script>
+    <script type="module" src="/public/scripts/auth.js"></script>
+    <script type="module" src="/public/scripts/utils.js"></script>
+    <script type="module" src="/public/scripts/socket.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
         import { getCurrentUser } from '../scripts/auth.js';
@@ -424,7 +424,7 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = '/html/auth/login.html';
+                    window.location.href = '/public/html/auth/login.html';
                     return;
                 }
 
