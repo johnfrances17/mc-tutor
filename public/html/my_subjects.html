@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subjects - MC Tutor</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        #logoutBtn { color: #dc3545 !important; }
+        #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+        
+        .page-header {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 0 20px;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .page-header p {
+            color: #6b7280;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .subject-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .subject-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subject-info h4 {
+            color: #2d3748;
+            margin: 0 0 4px 0;
+            font-size: 16px;
+        }
+
+        .subject-info p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .proficiency-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .proficiency-beginner {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .proficiency-intermediate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .proficiency-advanced {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .proficiency-expert {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #d1d5db;
+            margin-bottom: 16px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .floating-message-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+        }
+        .floating-message-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/html/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
+            <div class="nav-links">
+                <a href="/html/tutor-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/tutor-sessions.html" class="nav-link">Sessions</a>
+                <a href="/html/my_subjects.html" class="nav-link active">My Subjects</a>
+                <a href="/html/upload_materials.html" class="nav-link">Upload Materials</a>
+                <a href="/html/materials.html" class="nav-link">Materials</a>
+                <a href="/html/my_feedback.html" class="nav-link">My Feedback</a>
+                <a href="/html/profile.html" class="nav-link">Profile</a>
+                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <a href="/html/messenger.html" class="floating-message-btn" title="Messages">
+        <i class="fas fa-comment-dots"></i>
+    </a>
+
+    <div class="page-header">
+        <h1>My Subjects</h1>
+        <p>Manage the subjects you can teach</p>
+    </div>
+
+    <div class="content-container">
+        <div id="messageContainer"></div>
+
+        <!-- Add Subject Form -->
+        <div class="card">
+            <h2><i class="fas fa-plus-circle"></i> Add New Subject</h2>
+            <form id="addSubjectForm">
+                <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 16px; align-items: end;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="subject_id">Subject *</label>
+                        <select id="subject_id" name="subject_id" required>
+                            <option value="">Select a subject</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label for="proficiency">Proficiency Level *</label>
+                        <select id="proficiency" name="proficiency" required>
+                            <option value="">Select level</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="expert">Expert</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Subject
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- My Subjects List -->
+        <div class="card">
+            <h2><i class="fas fa-book"></i> My Subjects</h2>
+            <div id="subjectsContainer">
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin"></i> Loading subjects...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getCurrentUser, requireRole } from '../scripts/auth.js';
+
+        // Check authentication and role
+        await requireRole('tutor');
+
+        // Load available subjects and tutor's current subjects
+        async function loadData() {
+            try {
+                // Load available subjects
+                const availableResponse = await window.API.subjects.getAvailableForTutor();
+                const availableSelect = document.getElementById('subject_id');
+                
+                if (availableResponse.success && availableResponse.data) {
+                    availableSelect.innerHTML = '<option value="">Select a subject</option>' +
+                        availableResponse.data.map(subject => 
+                            `<option value="${subject.subject_id}">${subject.subject_code} - ${subject.subject_name}</option>`
+                        ).join('');
+                }
+
+                // Load tutor's subjects
+                await loadMySubjects();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showMessage('Error loading subjects', 'danger');
+            }
+        }
+
+        async function loadMySubjects() {
+            try {
+                const response = await window.API.tutorSubjects.getMySubjects();
+                const container = document.getElementById('subjectsContainer');
+
+                if (!response.success || !response.data || response.data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>You haven't added any subjects yet.</p>
+                            <p>Add subjects above to start tutoring students.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const subjectsHTML = response.data.map(subject => `
+                    <div class="subject-card">
+                        <div class="subject-info">
+                            <h4>${subject.subject_code} - ${subject.subject_name}</h4>
+                            <p>${subject.description || 'No description'}</p>
+                            <span class="proficiency-badge proficiency-${subject.proficiency_level}">
+                                ${subject.proficiency_level.toUpperCase()}
+                            </span>
+                        </div>
+                        <button class="btn btn-danger" onclick="removeSubject(${subject.id})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `<div class="subject-grid">${subjectsHTML}</div>`;
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+                document.getElementById('subjectsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading subjects. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle add subject
+        document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subjectId = document.getElementById('subject_id').value;
+            const proficiency = document.getElementById('proficiency').value;
+
+            if (!subjectId || !proficiency) {
+                showMessage('Please fill in all fields', 'danger');
+                return;
+            }
+
+            try {
+                const response = await window.API.tutorSubjects.addSubject({
+                    subject_id: parseInt(subjectId),
+                    proficiency_level: proficiency
+                });
+
+                if (response.success) {
+                    showMessage('Subject added successfully!', 'success');
+                    document.getElementById('addSubjectForm').reset();
+                    await loadData(); // Reload both lists
+                } else {
+                    showMessage(response.message || 'Error adding subject', 'danger');
+                }
+            } catch (error) {
+                console.error('Error adding subject:', error);
+                showMessage('Error adding subject. Please try again.', 'danger');
+            }
+        });
+
+        // Handle remove subject
+        window.removeSubject = async function(id) {
+            if (!confirm('Are you sure you want to remove this subject?')) {
+                return;
+            }
+
+            try {
+                const response = await window.API.tutorSubjects.removeSubject(id);
+
+                if (response.success) {
+                    showMessage('Subject removed successfully!', 'success');
+                    await loadData(); // Reload both lists
+                } else {
+                    showMessage(response.message || 'Error removing subject', 'danger');
+                }
+            } catch (error) {
+                console.error('Error removing subject:', error);
+                showMessage('Error removing subject. Please try again.', 'danger');
+            }
+        };
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const { handleLogout } = await import('../scripts/auth.js');
+            handleLogout();
+        });
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>

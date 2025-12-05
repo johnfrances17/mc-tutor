@@ -124,6 +124,19 @@ function hasRole(allowedRoles) {
 }
 
 /**
+ * Check if user has required role (async with backend validation)
+ * @param {string|string[]} allowedRoles - Role(s) allowed
+ * @returns {Promise<boolean>}
+ */
+async function hasRoleAsync(allowedRoles) {
+  const user = await getCurrentUser();
+  if (!user) return false;
+  
+  const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+  return roles.includes(user.role);
+}
+
+/**
  * Redirect if user doesn't have required role (async)
  * @param {string|string[]} allowedRoles - Role(s) allowed
  * @returns {Promise<boolean>}
@@ -140,19 +153,6 @@ async function requireRole(allowedRoles) {
   if (!roles.includes(user.role)) {
     alert('You do not have permission to access this page');
     redirectToDashboard(user.role);
-    return false;
-  }
-  
-  return true;
-}* Redirect if user doesn't have required role
- * @param {string|string[]} allowedRoles - Role(s) allowed
- */
-function requireRole(allowedRoles) {
-  if (!requireAuth()) return false;
-  
-  if (!hasRole(allowedRoles)) {
-    alert('You do not have permission to access this page');
-    redirectToDashboard(getCurrentUser().role);
     return false;
   }
   
@@ -235,6 +235,13 @@ async function handleRegister(event) {
       alert('Registration successful! Please login.');
       window.location.href = '/html/login.html';
     } else {
+      alert(response.message || 'Registration failed');
+    }
+  } catch (error) {
+    alert(error.message || 'Registration failed. Please try again.');
+  }
+}
+
 /**
  * Initialize authentication on page load (async)
  */
@@ -277,13 +284,8 @@ async function initAuth() {
       el.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
     });
   }
-}   });
-    
-    const userRoleElements = document.querySelectorAll('[data-user-role]');
-    userRoleElements.forEach(el => {
-      el.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-    });
-  }
+}
+
 // Export functions for use in other scripts
 if (typeof window !== 'undefined') {
   window.auth = {
@@ -302,14 +304,5 @@ if (typeof window !== 'undefined') {
     logout: handleLogout, // Export as both names for compatibility
     handleRegister,
     initAuth
-  };
-}   requireAuth,
-    requireRole,
-    hasRole,
-    redirectToDashboard,
-    handleLogin,
-    handleLogout,
-    logout: handleLogout, // Export as both names for compatibility
-    handleRegister
   };
 }
