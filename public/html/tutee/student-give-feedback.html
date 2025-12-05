@@ -203,14 +203,14 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/tutee/dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/tutee/dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/tutee/book_session.html" class="nav-link">Book Session</a>
-                <a href="/html/tutee/find_tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/tutee/my_sessions.html" class="nav-link">My Sessions</a>
+                <a href="/html/tutee/student-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/html/tutee/student-book-session.html" class="nav-link">Book Session</a>
+                <a href="/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
                 <a href="/html/materials.html" class="nav-link">Study Materials</a>
-                <a href="/html/tutee/my_feedback.html" class="nav-link">My Feedback</a>
+                <a href="/html/tutee/student-my-feedback.html" class="nav-link">My Feedback</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
@@ -263,7 +263,7 @@
             </div>
 
             <div class="btn-group">
-                <a href="/html/tutee/my_sessions.html" class="btn btn-secondary">Cancel</a>
+                <a href="/html/tutee/student-my-sessions.html" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Submit Feedback
                 </button>
@@ -282,7 +282,7 @@
         const sessionId = urlParams.get('session_id');
 
         if (!sessionId) {
-            window.location.href = '/html/tutee/my_sessions.html';
+            window.location.href = '/html/tutee/student-my-sessions.html';
         }
 
         // Load session details
@@ -292,7 +292,7 @@
                 
                 if (!response.success || !response.data) {
                     showMessage('Session not found or invalid', 'danger');
-                    setTimeout(() => window.location.href = '/html/tutee/my_sessions.html', 2000);
+                    setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);
                     return;
                 }
 
@@ -301,7 +301,7 @@
                 // Check if session is completed
                 if (session.status !== 'completed') {
                     showMessage('You can only give feedback for completed sessions', 'danger');
-                    setTimeout(() => window.location.href = '/html/tutee/my_sessions.html', 2000);
+                    setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);
                     return;
                 }
 
@@ -309,7 +309,7 @@
                 const feedbackCheck = await window.API.feedback.checkFeedbackExists(sessionId);
                 if (feedbackCheck.data && feedbackCheck.data.exists) {
                     showMessage('You have already given feedback for this session', 'danger');
-                    setTimeout(() => window.location.href = '/html/tutee/my_sessions.html', 2000);
+                    setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);
                     return;
                 }
 
@@ -329,7 +329,7 @@
             } catch (error) {
                 console.error('Error loading session:', error);
                 showMessage('Error loading session details', 'danger');
-                setTimeout(() => window.location.href = '/html/tutee/my_sessions.html', 2000);
+                setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);
             }
         }
 
@@ -359,7 +359,7 @@
 
                 if (response.success) {
                     showMessage('Feedback submitted successfully! Thank you for your input.', 'success');
-                    setTimeout(() => window.location.href = '/html/tutee/my_sessions.html', 2000);
+                    setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);
                 } else {
                     showMessage(response.message || 'Error submitting feedback', 'danger');
                 }

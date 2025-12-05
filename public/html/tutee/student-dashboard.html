@@ -61,11 +61,11 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/tutee/dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/html/tutee/dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/html/tutee/find_tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/tutee/my_sessions.html" class="nav-link">My Sessions</a>
+                <a href="/html/tutee/student-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
                 <a href="/html/materials.html" class="nav-link">Materials</a>
                 <a href="/html/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
@@ -126,7 +126,7 @@
         <div class="card">
             <div class="card-header">
                 <h3>Upcoming Sessions</h3>
-                <a href="/html/tutee/my_sessions.html" class="text-primary">View all</a>
+                <a href="/html/tutee/student-my-sessions.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="upcomingSessionsList">
                 <div class="loading-spinner"></div>
@@ -218,7 +218,7 @@
                     const sessions = response.data;
                     
                     if (sessions.length === 0) {
-                        container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/html/tutee/find_tutors.html">Find a tutor</a> to get started!</p>';
+                        container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/html/tutee/student-find-tutors.html">Find a tutor</a> to get started!</p>';
                         return;
                     }
                     

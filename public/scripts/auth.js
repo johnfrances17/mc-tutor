@@ -101,12 +101,12 @@ function requireAuth() {
  */
 function redirectToDashboard(role) {
   const dashboards = {
-    admin: '/html/admin/dashboard.html',
-    tutor: '/html/tutor/dashboard.html',
-    tutee: '/html/tutee/dashboard.html'
+    admin: '/html/admin/admin-dashboard.html',
+    tutor: '/html/tutor/tutor-dashboard.html',
+    tutee: '/html/tutee/student-dashboard.html'
   };
   
-  const dashboard = dashboards[role] || '/html/tutee/dashboard.html';
+  const dashboard = dashboards[role] || '/html/tutee/student-dashboard.html';
   window.location.href = dashboard;
 }
 

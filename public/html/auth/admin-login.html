@@ -373,7 +373,7 @@
           localStorage.setItem('user', JSON.stringify(response.data.user));
 
           setTimeout(() => {
-            window.location.href = '/html/admin/dashboard.html';
+            window.location.href = '/html/admin/admin-dashboard.html';
           }, 1500);
         } else {
           throw new Error(response.message || 'Login failed');
