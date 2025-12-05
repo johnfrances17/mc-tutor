@@ -246,14 +246,14 @@
             <div class="nav-links">
                 <a href="/html/tutor/tutor-dashboard.html" class="nav-link">Dashboard</a>
                 <a href="/html/tutor/tutor-sessions.html" class="nav-link active">Sessions</a>
-                <a href="/html/materials.html" class="nav-link">Materials</a>
-                <a href="/html/profile.html" class="nav-link">Profile</a>
+                <a href="/html/shared/materials.html" class="nav-link">Materials</a>
+                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
     </nav>
 
-    <a href="/html/messenger.html" class="floating-message-btn" title="Messages">
+    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comment-dots"></i>
     </a>
 
@@ -470,7 +470,7 @@
         };
 
         window.messageStudent = function(studentId) {
-            window.location.href = '/html/messenger.html?user=' + studentId;
+            window.location.href = '/html/shared/messenger.html?user=' + studentId;
         };
 
         init();

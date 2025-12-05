@@ -97,7 +97,7 @@ function clearSession() {
  */
 function requireAuth() {
   if (!isLoggedIn()) {
-    window.location.href = '/html/login.html';
+    window.location.href = '/html/auth/login.html';
     return false;
   }
   return true;
@@ -183,7 +183,7 @@ async function handleLogout() {
     console.error('Logout error:', error);
   } finally {
     clearSession();
-    window.location.href = '/html/login.html?logout=true';
+    window.location.href = '/html/auth/login.html?logout=true';
   }
 }
 

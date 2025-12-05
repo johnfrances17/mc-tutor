@@ -17,7 +17,7 @@ async function initApp() {
       const currentPage = window.location.pathname.split('/').pop();
       
       if (!publicPages.includes(currentPage)) {
-        window.location.href = '/html/login.html';
+        window.location.href = '/html/auth/login.html';
         return;
       }
     }
