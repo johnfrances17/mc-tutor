@@ -198,9 +198,67 @@
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
+
+        /* User Header Component */
+        .user-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            z-index: 1001;
+            border-bottom-left-radius: 12px;
+        }
+        .user-info-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        .user-role-badge {
+            font-size: 11px;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
+    <!-- User Header Component -->
+    <div class="user-header">
+        <div class="user-info-display">
+            <div class="user-avatar" data-user-avatar>
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <span class="user-name" data-user-name>User</span>
+                <span class="user-role-badge" data-user-role>Student</span>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-container">
             <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>

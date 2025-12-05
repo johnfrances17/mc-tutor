@@ -154,15 +154,6 @@ const API = {
     cancelSession: (id, reason) => apiRequest(`/sessions/${id}/cancel`, {
       method: 'PUT',
       body: JSON.stringify({ reason })
-    }),
-    
-    getAllSessions: (params = {}) => {
-      const query = new URLSearchParams(params).toString();
-      return apiRequest(`/sessions/all${query ? '?' + query : ''}`);
-    },
-    
-    deleteSession: (id) => apiRequest(`/sessions/${id}`, {
-      method: 'DELETE'
     })
   },
 

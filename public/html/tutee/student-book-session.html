@@ -5,8 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Session - MC Tutor</title>
     <link rel="stylesheet" href="../../styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* User Header Component */
+        .user-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            z-index: 1001;
+            border-bottom-left-radius: 12px;
+        }
+        .user-info-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        .user-role-badge {
+            font-size: 11px;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
 <body>
+    <!-- User Header Component -->
+    <div class="user-header">
+        <div class="user-info-display">
+            <div class="user-avatar" data-user-avatar>
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <span class="user-name" data-user-name>User</span>
+                <span class="user-role-badge" data-user-role>Student</span>
+            </div>
+        </div>
+    </div>
+
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -19,27 +79,27 @@
                     <span class="icon">📊</span>
                     Dashboard
                 </a>
-                <a href="book_session.html" class="nav-item active">
+                <a href="student-book-session.html" class="nav-item active">
                     <span class="icon">📅</span>
                     Book Session
                 </a>
-                <a href="find_tutors.html" class="nav-item">
+                <a href="student-find-tutors.html" class="nav-item">
                     <span class="icon">🔍</span>
                     Find Tutors
                 </a>
-                <a href="my-sessions.html" class="nav-item">
+                <a href="student-my-sessions.html" class="nav-item">
                     <span class="icon">📝</span>
                     My Sessions
                 </a>
-                <a href="study_materials.html" class="nav-item">
+                <a href="student-study-materials.html" class="nav-item">
                     <span class="icon">📚</span>
                     Study Materials
                 </a>
-                <a href="my_feedback.html" class="nav-item">
+                <a href="student-my-feedback.html" class="nav-item">
                     <span class="icon">⭐</span>
                     My Feedback
                 </a>
-                <a href="profile.html" class="nav-item">
+                <a href="../profile.html" class="nav-item">
                     <span class="icon">👤</span>
                     Profile
                 </a>
@@ -268,7 +328,7 @@
                 
                 if (response.success) {
                     alert('Session request submitted successfully! The tutor will be notified.');
-                    window.location.href = 'my-sessions.html';
+                    window.location.href = 'student-my-sessions.html';
                 } else {
                     alert(response.message || 'Failed to book session');
                 }
