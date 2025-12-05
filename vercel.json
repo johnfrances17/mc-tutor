@@ -14,17 +14,10 @@
     {
       "source": "/",
       "destination": "/public/html/index.html"
-    }
-  ],
-  "headers": [
+    },
     {
-      "source": "/public/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
+      "source": "/(.*)",
+      "destination": "/public/$1"
     }
   ]
 }

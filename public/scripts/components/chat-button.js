@@ -106,7 +106,7 @@ class FloatingChatButton {
   }
   
   openMessenger() {
-    window.location.href = '/public/html/messenger.html';
+    window.location.href = '/html/messenger.html';
   }
   
   destroy() {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - MC Tutor</title>
-    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Logout button red styling */
@@ -124,20 +124,20 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/public/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-links">
-                <a href="/public/html/tutee/student-dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/public/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/public/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
-                <a href="/public/html/shared/materials.html" class="nav-link">Materials</a>
-                <a href="/public/html/shared/profile.html" class="nav-link">Profile</a>
+                <a href="/html/tutee/student-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
+                <a href="/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
+                <a href="/html/shared/materials.html" class="nav-link">Materials</a>
+                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
     </nav>
 
     <!-- Floating Message Button -->
-    <a href="/public/html/shared/messenger.html" class="floating-message-btn" title="Messages">
+    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comments"></i>
     </a>
 
@@ -189,7 +189,7 @@
         <div class="card">
             <div class="card-header">
                 <h3>Upcoming Sessions</h3>
-                <a href="/public/html/tutee/student-my-sessions.html" class="text-primary">View all</a>
+                <a href="/html/tutee/student-my-sessions.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="upcomingSessionsList">
                 <div class="loading-spinner"></div>
@@ -209,7 +209,7 @@
         <div class="card">
             <div class="card-header">
                 <h3>Recent Study Materials</h3>
-                <a href="/public/html/shared/materials.html" class="text-primary">View all</a>
+                <a href="/html/shared/materials.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="recentMaterialsList">
                 <div class="loading-spinner"></div>
@@ -218,9 +218,9 @@
     </div>
 
     <!-- Core Scripts -->
-    <script src="/public/scripts/utils.js"></script>
-    <script src="/public/scripts/api.js"></script>
-    <script src="/public/scripts/auth.js"></script>
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
         // Using window.auth from auth.js loaded above
         const { getCurrentUser } = window.auth;
@@ -234,12 +234,12 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = '/public/html/auth/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
                 
                 if (currentUser.role !== 'tutee') {
-                    window.location.href = '/public/html/auth/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
                 
@@ -281,7 +281,7 @@
                     const sessions = response.data;
                     
                     if (sessions.length === 0) {
-                        container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/public/html/tutee/student-find-tutors.html">Find a tutor</a> to get started!</p>';
+                        container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/html/tutee/student-find-tutors.html">Find a tutor</a> to get started!</p>';
                         return;
                     }
                     
@@ -338,7 +338,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/public/html/auth/login.html?logout=true');
+                window.location.replace('/html/auth/login.html?logout=true');
                 return false;
             });
         }

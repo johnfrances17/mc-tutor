@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - MC Tutor</title>
-    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         #logoutBtn { color: #dc3545 !important; }
@@ -126,21 +126,21 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/public/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
+            <a href="/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
             <div class="nav-links">
-                <a href="/public/html/admin/admin-dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/public/html/admin/admin-manage-users.html" class="nav-link">Users</a>
-                <a href="/public/html/admin/admin-manage-sessions.html" class="nav-link">Sessions</a>
-                <a href="/public/html/admin/admin-manage-subjects.html" class="nav-link">Subjects</a>
-                <a href="/public/html/admin/admin-view-materials.html" class="nav-link">Materials</a>
-                <a href="/public/html/shared/profile.html" class="nav-link">Profile</a>
+                <a href="/html/admin/admin-dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="/html/admin/admin-manage-users.html" class="nav-link">Users</a>
+                <a href="/html/admin/admin-manage-sessions.html" class="nav-link">Sessions</a>
+                <a href="/html/admin/admin-manage-subjects.html" class="nav-link">Subjects</a>
+                <a href="/html/admin/admin-view-materials.html" class="nav-link">Materials</a>
+                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
                 <a href="#" class="nav-link" id="logoutBtn">Logout</a>
             </div>
         </div>
     </nav>
 
     <!-- Floating Message Button -->
-    <a href="/public/html/messenger.html" class="floating-message-btn" title="Messages">
+    <a href="/html/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comments"></i>
     </a>
 
@@ -153,7 +153,7 @@
             <button class="btn btn-secondary" onclick="exportData()">
                 <i class="fas fa-download"></i> Export Data
             </button>
-            <a href="/public/html/manage-users.html?action=create" class="btn btn-primary">
+            <a href="/html/manage-users.html?action=create" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Add User
             </a>
         </div>
@@ -203,7 +203,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>Recent User Registrations</h3>
-                        <a href="/public/html/manage-users.html" class="text-primary">View all</a>
+                        <a href="/html/manage-users.html" class="text-primary">View all</a>
                     </div>
                     <div class="card-body" id="recentUsersList">
                         <div class="loading-spinner"></div>
@@ -215,7 +215,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>Pending Session Requests</h3>
-                        <a href="/public/html/admin/admin-manage-sessions.html?status=pending" class="text-primary">View all</a>
+                        <a href="/html/admin/admin-manage-sessions.html?status=pending" class="text-primary">View all</a>
                     </div>
                     <div class="card-body" id="pendingSessionsList">
                         <div class="loading-spinner"></div>
@@ -285,9 +285,9 @@
         </div>
     </div>
 
-    <script type="module" src="/public/scripts/api.js"></script>
-    <script type="module" src="/public/scripts/auth.js"></script>
-    <script type="module" src="/public/scripts/utils.js"></script>
+    <script type="module" src="/scripts/api.js"></script>
+    <script type="module" src="/scripts/auth.js"></script>
+    <script type="module" src="/scripts/utils.js"></script>
     <script type="module">
         import { api } from '../scripts/api.js';
         import { getCurrentUser } from '../scripts/auth.js';
@@ -307,7 +307,7 @@
                 console.log('Logout clicked!');
                 localStorage.clear();
                 sessionStorage.clear();
-                window.location.replace('/public/html/auth/login.html?logout=true');
+                window.location.replace('/html/auth/login.html?logout=true');
                 return false;
             });
         }
@@ -318,13 +318,13 @@
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
-                    window.location.href = '/public/html/auth/login.html';
+                    window.location.href = '/html/auth/login.html';
                     return;
                 }
 
                 if (currentUser.role !== 'admin') {
                     showToast('Access denied. Admins only.', 'error');
-                    setTimeout(() => window.location.href = '/public/html/index.html', 2000);
+                    setTimeout(() => window.location.href = '/html/index.html', 2000);
                     return;
                 }
 
@@ -420,7 +420,7 @@
                                     <span>${formatDate(user.created_at || new Date())}</span>
                                 </div>
                             </div>
-                            <a href="/public/html/manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
+                            <a href="/html/manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
                         </div>
                     `).join('');
                 }
@@ -517,7 +517,7 @@
                                         <td>${tutor.completedSessions}</td>
                                         <td>${tutor.avgRating}</td>
                                         <td>
-                                            <a href="/public/html/manage-users.html?id=${tutor.school_id}" class="btn btn-sm">View</a>
+                                            <a href="/html/manage-users.html?id=${tutor.school_id}" class="btn btn-sm">View</a>
                                         </td>
                                     </tr>
                                 `).join('')}

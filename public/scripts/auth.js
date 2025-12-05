@@ -97,9 +97,33 @@ function clearSession() {
  */
 function requireAuth() {
   if (!isLoggedIn()) {
-    window.location.href = '/public/html/auth/login.html';
+    // Redirect to homepage instead of login for better UX
+    window.location.href = '/html/index.html';
     return false;
   }
+  return true;
+}
+
+/**
+ * Check authentication and redirect appropriately
+ * Call this on protected pages
+ */
+function checkAuthOrRedirect() {
+  const path = window.location.pathname;
+  const isPublicPage = path.includes('/index.html') || 
+                       path.includes('/login.html') || 
+                       path.includes('/register.html') ||
+                       path.includes('/admin-login.html') ||
+                       path.includes('/forgot-password.html') ||
+                       path.includes('/reset-password.html');
+  
+  // If on protected page and not logged in, redirect to homepage
+  if (!isPublicPage && !isLoggedIn()) {
+    console.warn('No authentication found. Redirecting to homepage...');
+    window.location.href = '/html/index.html';
+    return false;
+  }
+  
   return true;
 }
 
@@ -109,12 +133,12 @@ function requireAuth() {
  */
 function redirectToDashboard(role) {
   const dashboards = {
-    admin: '/public/html/admin-dashboard.html',
-    tutor: '/public/html/tutor-dashboard.html',
-    tutee: '/public/html/student-dashboard.html'
+    admin: '/html/admin-dashboard.html',
+    tutor: '/html/tutor-dashboard.html',
+    tutee: '/html/student-dashboard.html'
   };
   
-  const dashboard = dashboards[role] || '/public/html/student-dashboard.html';
+  const dashboard = dashboards[role] || '/html/student-dashboard.html';
   window.location.href = dashboard;
 }
 
@@ -183,7 +207,8 @@ async function handleLogout() {
     console.error('Logout error:', error);
   } finally {
     clearSession();
-    window.location.href = '/public/html/auth/login.html?logout=true';
+    // Redirect to homepage for better UX
+    window.location.href = '/html/index.html';
   }
 }
 
@@ -221,7 +246,7 @@ async function handleRegister(event) {
     
     if (response.success) {
       alert('Registration successful! Please login.');
-      window.location.href = '/public/html/login.html';
+      window.location.href = '/html/login.html';
     } else {
       alert(response.message || 'Registration failed');
     }
@@ -287,6 +312,7 @@ if (typeof window !== 'undefined') {
     saveSession,
     clearSession,
     requireAuth,
+    checkAuthOrRedirect,
     requireRole,
     hasRole,
     redirectToDashboard,
