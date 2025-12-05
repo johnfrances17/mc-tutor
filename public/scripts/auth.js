@@ -250,19 +250,13 @@ async function handleRegister(event) {
 async function initAuth() {
   // Check if on auth or landing page
   const path = window.location.pathname;
-  const isAuthPage = path.includes('/auth/') || path.includes('/index.html');
   
-  // DON'T redirect from index.html - it's the landing page
+  // DON'T auto-redirect from login/register pages - let users visit them
+  // ONLY redirect from protected pages if NOT logged in
+  const isLoginPage = path.includes('/login.html');
+  const isRegisterPage = path.includes('/register.html');
+  const isAuthPage = path.includes('/auth/');
   const isIndexPage = path.includes('/index.html') || path === '/' || path === '/html/' || path === '/html/index.html';
-  
-  // If logged in and on auth page (but NOT index), redirect to dashboard
-  if (isLoggedIn() && isAuthPage && !isIndexPage) {
-    const user = await getCurrentUser();
-    if (user) {
-      redirectToDashboard(user.role);
-      return;
-    }
-  }
   
   // Setup logout buttons on ALL pages (not just dashboards)
   const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn, #logoutBtn, .nav-item.logout');

@@ -310,19 +310,6 @@
       }
     }
 
-    // Check if already logged in
-    (function() {
-      const user = window.auth?.getCurrentUser();
-      if (user) {
-        const dashboards = {
-          'admin': 'admin-dashboard.html',
-          'tutor': 'tutor-dashboard.html',
-          'tutee': 'student-dashboard.html'
-        };
-        window.location.href = dashboards[user.role] || 'student-dashboard.html';
-      }
-    })();
-
     // Handle login (unified - no role selection needed)
     document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
       e.preventDefault();
