@@ -551,6 +551,9 @@ table td .btn {
     border: 1px solid #e8e8e8;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
 }
 
 .stat-card:hover {
@@ -558,26 +561,37 @@ table td .btn {
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
+.stat-card .stat-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
 .stat-card h3 {
     font-size: 16px;
-    margin-bottom: 15px;
+    margin: 0;
     color: #666;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    align-self: flex-start;
 }
 
 .stat-card p {
     color: #666;
     font-size: 16px;
+    margin: 0;
 }
 
 .stat-card .number {
     font-size: 48px;
     font-weight: 700;
     color: #667eea;
-    margin: 15px 0;
+    margin: 0;
     line-height: 1;
+    align-self: flex-end;
+    margin-top: auto;
 }
 
 /* Auth Container */

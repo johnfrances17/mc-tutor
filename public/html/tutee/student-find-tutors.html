@@ -226,6 +226,20 @@
             letter-spacing: 0.5px;
         }
 
+        /* Responsive user-info for all viewport sizes */
+        @media (max-width: 1024px) {
+            .user-info-inline {
+                max-width: 160px;
+                min-width: 100px;
+            }
+
+            .user-name-inline {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
         /* Collapsible Secondary Header */
         .secondary-navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -490,103 +504,63 @@
         <h1>Find Tutors</h1>
     </div>
 
-    <!-- Keep existing sidebar for fallback (hidden by CSS) -->
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>MC Tutor</h2>
-                <p class="user-role" data-user-role>Student</p>
+    <div class="container">
+        <!-- Search and Filter Card -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-header">
+                <h3>Search for Tutors</h3>
             </div>
-            <nav class="sidebar-nav">
-                <a href="student-dashboard.html" class="nav-item">
-                    <span class="icon">📊</span>
-                    Dashboard
-                </a>
-                <a href="student-book-session.html" class="nav-item">
-                    <span class="icon">📅</span>
-                    Book Session
-                </a>
-                <a href="student-find-tutors.html" class="nav-item active">
-                    <span class="icon">🔍</span>
-                    Find Tutors
-                </a>
-                <a href="student-my-sessions.html" class="nav-item">
-                    <span class="icon">📝</span>
-                    My Sessions
-                </a>
-                <a href="student-study-materials.html" class="nav-item">
-                    <span class="icon">📚</span>
-                    Study Materials
-                </a>
-                <a href="student-my-feedback.html" class="nav-item">
-                    <span class="icon">⭐</span>
-                    My Feedback
-                </a>
-                <a href="../profile.html" class="nav-item">
-                    <span class="icon">👤</span>
-                    Profile
-                </a>
-                <a href="#" class="nav-item" id="logoutBtn">
-                    <span class="icon">🚪</span>
-                    Logout
-                </a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="content-header">
-                <h1>Find Tutors</h1>
-                <div class="user-info">
-                    <span data-user-name>User</span>
-                </div>
-            </header>
-
-            <div class="content-body">
-                <!-- Search and Filters -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Search Tutors</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="search-filters">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="subjectFilter">Subject</label>
-                                    <select id="subjectFilter">
-                                        <option value="">All Subjects</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="searchName">Tutor Name</label>
-                                    <input type="text" id="searchName" placeholder="Search by name...">
-                                </div>
-                                <div class="form-group">
-                                    <label for="ratingFilter">Minimum Rating</label>
-                                    <select id="ratingFilter">
-                                        <option value="">Any Rating</option>
-                                        <option value="4">4+ Stars</option>
-                                        <option value="3">3+ Stars</option>
-                                        <option value="2">2+ Stars</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary" id="searchBtn">Search</button>
+            <div class="card-body">
+                <div class="search-filters">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label for="searchInput">Search Tutors or Subjects</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by name, student ID, or subject...">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="subjectFilter">Filter by Subject</label>
+                            <select id="subjectFilter" class="form-control">
+                                <option value="">All Subjects</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="sortBy">Sort By</label>
+                            <select id="sortBy" class="form-control">
+                                <option value="rating">Highest Rating</option>
+                                <option value="sessions">Most Sessions</option>
+                                <option value="name">Name (A-Z)</option>
+                            </select>
                         </div>
                     </div>
-                </div>
-
-                <!-- Tutors List -->
-                <div class="tutors-grid" id="tutorsContainer">
-                    <!-- Tutors will be loaded here -->
-                </div>
-
-                <div id="noResultsMessage" style="display: none; text-align: center; padding: 40px;">
-                    <p>No tutors found matching your criteria.</p>
+                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn btn-primary" id="searchBtn">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <button class="btn btn-secondary" id="clearBtn" style="display: none;">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <!-- Tutors Grid -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Available Tutors</h3>
+                <span id="resultsCount" class="text-muted"></span>
+            </div>
+            <div class="card-body">
+                <div class="tutors-grid" id="tutorsContainer">
+                    <div class="loading-spinner"></div>
+                </div>
+                <div id="noResultsMessage" style="display: none; text-align: center; padding: 40px; color: #999;">
+                    <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
+                    <p style="font-size: 18px;">No tutors found matching your criteria.</p>
+                    <p>Try adjusting your search filters or check back later.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -598,6 +572,7 @@
         const currentUser = await getCurrentUser();
         let allTutors = [];
         let subjects = [];
+        let filteredTutors = [];
 
         // Load subjects for filter
         async function loadSubjects() {
@@ -614,6 +589,7 @@
 
         function populateSubjectFilter() {
             const select = document.getElementById('subjectFilter');
+            select.innerHTML = '<option value="">All Subjects</option>';
             subjects.forEach(subject => {
                 const option = document.createElement('option');
                 option.value = subject.id;
@@ -628,110 +604,188 @@
                 const response = await window.API.tutors.getAllTutors();
                 if (response.success) {
                     allTutors = response.data;
-                    displayTutors(allTutors);
+                    filteredTutors = allTutors;
+                    displayTutors();
                 }
             } catch (error) {
                 console.error('Error loading tutors:', error);
-                alert('Failed to load tutors');
+                document.getElementById('tutorsContainer').innerHTML = 
+                    '<p style="text-align: center; padding: 40px; color: #999;">Failed to load tutors. Please try again later.</p>';
             }
         }
 
-        function displayTutors(tutorsToDisplay) {
+        function displayTutors() {
             const container = document.getElementById('tutorsContainer');
             const noResults = document.getElementById('noResultsMessage');
+            const resultsCount = document.getElementById('resultsCount');
 
-            if (!tutorsToDisplay || tutorsToDisplay.length === 0) {
+            resultsCount.textContent = `${filteredTutors.length} tutor${filteredTutors.length !== 1 ? 's' : ''} found`;
+
+            if (!filteredTutors || filteredTutors.length === 0) {
                 container.innerHTML = '';
                 noResults.style.display = 'block';
                 return;
             }
 
             noResults.style.display = 'none';
-            container.innerHTML = tutorsToDisplay.map(tutor => `
-                <div class="tutor-card">
-                    <div class="tutor-header">
-                        <div class="tutor-avatar">
-                            ${tutor.fullName.charAt(0).toUpperCase()}
+            container.innerHTML = filteredTutors.map(tutor => {
+                const fullName = tutor.fullName || 'Unknown';
+                const studentId = tutor.studentId || tutor.school_id || 'N/A';
+                const course = tutor.course || 'N/A';
+                const yearLevel = tutor.yearLevel || '';
+                const email = tutor.email || '';
+                const phone = tutor.phone || 'Not provided';
+                const rating = parseFloat(tutor.rating || 0);
+                const totalSessions = tutor.totalSessions || 0;
+                const subjects = tutor.subjects || [];
+
+                // Generate star rating
+                let stars = '';
+                if (rating > 0) {
+                    for (let i = 1; i <= 5; i++) {
+                        stars += i <= Math.round(rating) ? '★' : '☆';
+                    }
+                }
+
+                // Generate subject tags
+                const subjectTags = subjects.length > 0 ? 
+                    subjects.map(s => `<span class="tag">${s.subjectCode}</span>`).join('') :
+                    '<span class="text-muted">No subjects listed</span>';
+
+                return `
+                    <div class="tutor-card">
+                        <div class="tutor-header">
+                            <div class="tutor-avatar">
+                                ${fullName.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="tutor-info">
+                                <h3>${fullName}</h3>
+                                ${rating > 0 ? `
+                                    <div class="rating">
+                                        <span style="color: #ffc107; font-size: 16px;">${stars}</span>
+                                        <span style="color: #666; margin-left: 5px;">${rating.toFixed(1)}</span>
+                                    </div>
+                                ` : '<div class="no-rating">No ratings yet</div>'}
+                            </div>
                         </div>
-                        <div class="tutor-info">
-                            <h3>${tutor.fullName}</h3>
-                            ${tutor.rating ? `
-                                <div class="rating">
-                                    ${'⭐'.repeat(Math.round(tutor.rating))}
-                                    <span>${tutor.rating.toFixed(1)}</span>
-                                </div>
-                            ` : '<p class="no-rating">No ratings yet</p>'}
-                        </div>
-                    </div>
-                    <div class="tutor-details">
-                        <p><strong>Email:</strong> ${tutor.email}</p>
-                        ${tutor.phone ? `<p><strong>Phone:</strong> ${tutor.phone}</p>` : ''}
-                        ${tutor.subjects && tutor.subjects.length > 0 ? `
+                        <div class="tutor-details">
+                            <p><strong>Student ID:</strong> ${studentId}</p>
+                            <p><strong>Course:</strong> ${course}${yearLevel ? ` - ${yearLevel}` : ''}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Phone:</strong> ${phone}</p>
                             <div class="subjects">
                                 <strong>Subjects:</strong>
                                 <div class="subject-tags">
-                                    ${tutor.subjects.map(s => `<span class="tag">${s.subjectCode}</span>`).join('')}
+                                    ${subjectTags}
                                 </div>
                             </div>
-                        ` : ''}
-                        ${tutor.totalSessions ? `
-                            <p><strong>Sessions Completed:</strong> ${tutor.totalSessions}</p>
-                        ` : ''}
+                            <p style="margin-top: 10px;"><strong>Total Sessions:</strong> ${totalSessions}</p>
+                        </div>
+                        <div class="tutor-actions">
+                            <button class="btn btn-primary" onclick="bookTutor(${tutor.id})">
+                                <i class="fas fa-calendar-plus"></i> Book Session
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewProfile(${tutor.id})">
+                                <i class="fas fa-user"></i> View Profile
+                            </button>
+                        </div>
                     </div>
-                    <div class="tutor-actions">
-                        <button class="btn btn-primary" onclick="bookTutor(${tutor.id})">Book Session</button>
-                        <button class="btn btn-secondary" onclick="viewProfile(${tutor.id})">View Profile</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Search and filter functionality
         function filterTutors() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const subjectId = document.getElementById('subjectFilter').value;
-            const searchName = document.getElementById('searchName').value.toLowerCase();
-            const minRating = parseFloat(document.getElementById('ratingFilter').value) || 0;
+            const sortBy = document.getElementById('sortBy').value;
 
-            let filtered = allTutors.filter(tutor => {
-                // Filter by subject
+            // Filter
+            filteredTutors = allTutors.filter(tutor => {
+                // Search filter (name, ID, or subjects)
+                if (searchQuery) {
+                    const matchName = (tutor.fullName || '').toLowerCase().includes(searchQuery);
+                    const matchId = (tutor.studentId || tutor.school_id || '').toLowerCase().includes(searchQuery);
+                    const matchSubjects = (tutor.subjects || []).some(s => 
+                        s.subjectCode.toLowerCase().includes(searchQuery) ||
+                        s.subjectName.toLowerCase().includes(searchQuery)
+                    );
+                    
+                    if (!matchName && !matchId && !matchSubjects) return false;
+                }
+
+                // Subject filter
                 if (subjectId && tutor.subjects) {
                     const hasSubject = tutor.subjects.some(s => s.id == subjectId);
                     if (!hasSubject) return false;
                 }
 
-                // Filter by name
-                if (searchName && !tutor.fullName.toLowerCase().includes(searchName)) {
-                    return false;
-                }
-
-                // Filter by rating
-                if (minRating && (!tutor.rating || tutor.rating < minRating)) {
-                    return false;
-                }
-
                 return true;
             });
 
-            displayTutors(filtered);
+            // Sort
+            switch (sortBy) {
+                case 'name':
+                    filteredTutors.sort((a, b) => {
+                        const nameA = (a.fullName || '').toLowerCase();
+                        const nameB = (b.fullName || '').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    });
+                    break;
+                case 'sessions':
+                    filteredTutors.sort((a, b) => (b.totalSessions || 0) - (a.totalSessions || 0));
+                    break;
+                case 'rating':
+                default:
+                    filteredTutors.sort((a, b) => {
+                        const ratingA = parseFloat(a.rating || 0);
+                        const ratingB = parseFloat(b.rating || 0);
+                        if (ratingB !== ratingA) return ratingB - ratingA;
+                        return (b.totalSessions || 0) - (a.totalSessions || 0);
+                    });
+                    break;
+            }
+
+            displayTutors();
+
+            // Show/hide clear button
+            const hasFilters = searchQuery || subjectId || sortBy !== 'rating';
+            document.getElementById('clearBtn').style.display = hasFilters ? 'inline-block' : 'none';
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('subjectFilter').value = '';
+            document.getElementById('sortBy').value = 'rating';
+            filteredTutors = allTutors;
+            displayTutors();
+            document.getElementById('clearBtn').style.display = 'none';
         }
 
         // Global functions for buttons
         window.bookTutor = function(tutorId) {
-            // Store tutor ID and redirect to book session page
             sessionStorage.setItem('selectedTutorId', tutorId);
-            window.location.href = 'student-book-session.html';
+            window.location.href = '/html/tutee/student-book-session.html';
         };
 
         window.viewProfile = function(tutorId) {
-            // Navigate to tutor profile page
-            window.location.href = `../profile.html?id=${tutorId}`;
+            window.location.href = `/html/shared/profile.html?id=${tutorId}`;
         };
 
         // Event listeners
         document.getElementById('searchBtn').addEventListener('click', filterTutors);
+        document.getElementById('clearBtn').addEventListener('click', clearFilters);
+        
+        // Real-time search with debounce
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(filterTutors, 500);
+        });
+        
         document.getElementById('subjectFilter').addEventListener('change', filterTutors);
-        document.getElementById('searchName').addEventListener('input', filterTutors);
-        document.getElementById('ratingFilter').addEventListener('change', filterTutors);
+        document.getElementById('sortBy').addEventListener('change', filterTutors);
 
         // Initialize
         loadSubjects();
@@ -818,6 +872,16 @@
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 12px;
+        }
+
+        .subject-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-block;
+            margin: 2px;
         }
 
         .tutor-actions {

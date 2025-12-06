@@ -231,6 +231,20 @@
             letter-spacing: 0.5px;
         }
 
+        /* Responsive user-info for all viewport sizes */
+        @media (max-width: 1024px) {
+            .user-info-inline {
+                max-width: 160px;
+                min-width: 100px;
+            }
+
+            .user-name-inline {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
         /* Collapsible Secondary Header */
         .secondary-navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
