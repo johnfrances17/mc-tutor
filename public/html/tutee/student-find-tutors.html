@@ -85,7 +85,7 @@
 
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
@@ -101,6 +101,37 @@
         .nav-link:hover {
             background: #f0f0f0;
             color: #667eea;
+        }
+
+        /* Menu button inside navbar */
+        .nav-menu-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .nav-menu-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .nav-menu-btn i {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .nav-menu-btn.collapsed i {
+            transform: rotate(180deg);
         }
 
         .user-info-inline {
@@ -200,43 +231,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Toggle Button - Curtain Style */
-        .nav-toggle-btn {
-            position: fixed;
-            top: 70px;
-            right: 30px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
-            z-index: 1001;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .nav-toggle-btn:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .nav-toggle-btn i {
-            transition: transform 0.3s ease;
-            font-size: 14px;
-        }
-
-        .nav-toggle-btn.collapsed i {
-            transform: rotate(180deg);
-        }
-
         /* Hide old sidebar and old user header */
         .user-header,
         .sidebar,
@@ -268,18 +262,15 @@
                     </div>
                 </div>
                 <div class="nav-links">
+                    <button class="nav-menu-btn" id="navToggleBtn">
+                        Menu <i>↑</i>
+                    </button>
                     <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                    <a href="#" class="nav-link" id="logoutBtn2">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
-
-    <!-- Toggle Button -->
-    <button class="nav-toggle-btn" id="navToggleBtn">
-        <span>Menu</span>
-        <i class="fas fa-chevron-up"></i>
-    </button>
 
     <!-- Collapsible Secondary Navigation -->
     <nav class="secondary-navbar" id="secondaryNav">
@@ -651,21 +642,23 @@
         const navToggleBtn = document.getElementById('navToggleBtn');
         const secondaryNav = document.getElementById('secondaryNav');
         
-        // Load saved state from localStorage
-        const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
-        if (isNavCollapsed) {
-            secondaryNav.classList.add('collapsed');
-            navToggleBtn.classList.add('collapsed');
-        }
+        if (navToggleBtn && secondaryNav) {
+            // Load saved state from localStorage
+            const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+            if (isNavCollapsed) {
+                secondaryNav.classList.add('collapsed');
+                navToggleBtn.classList.add('collapsed');
+            }
 
-        navToggleBtn.addEventListener('click', () => {
-            secondaryNav.classList.toggle('collapsed');
-            navToggleBtn.classList.toggle('collapsed');
-            
-            // Save state to localStorage
-            const isCollapsed = secondaryNav.classList.contains('collapsed');
-            localStorage.setItem('secondaryNavCollapsed', isCollapsed);
-        });
+            navToggleBtn.addEventListener('click', () => {
+                secondaryNav.classList.toggle('collapsed');
+                navToggleBtn.classList.toggle('collapsed');
+                
+                // Save state to localStorage
+                const isCollapsed = secondaryNav.classList.contains('collapsed');
+                localStorage.setItem('secondaryNavCollapsed', isCollapsed);
+            });
+        }
     </script>
 </body>
 </html>
