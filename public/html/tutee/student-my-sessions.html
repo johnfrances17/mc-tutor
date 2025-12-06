@@ -142,6 +142,8 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 25px;
             color: white;
+            max-width: 200px;
+            min-width: 100px;
         }
 
         .user-avatar-small {
@@ -154,17 +156,23 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
+            flex-shrink: 0;
         }
 
         .user-details-inline {
             display: flex;
             flex-direction: column;
             gap: 2px;
+            overflow: hidden;
+            flex: 1;
         }
 
         .user-name-inline {
             font-weight: 600;
             font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .user-role-badge-inline {
@@ -172,19 +180,13 @@
             opacity: 0.9;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         /* Responsive user-info for all viewport sizes */
         @media (max-width: 1024px) {
             .user-info-inline {
                 max-width: 160px;
-                min-width: 100px;
-            }
-
-            .user-name-inline {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
         }
 
