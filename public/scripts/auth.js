@@ -28,6 +28,17 @@ function deleteCookie(name) {
   document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Strict";
 }
 
+function clearAllCookies() {
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf('=');
+    const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Strict';
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+  }
+}
+
 /**
  * Check if user is logged in (checks both localStorage and cookies)
  * @returns {boolean}
@@ -54,6 +65,27 @@ function getCurrentUser() {
 }
 
 /**
+ * Update last activity timestamp (for session timeout)
+ */
+function updateLastActivity() {
+  localStorage.setItem('lastActivity', Date.now().toString());
+}
+
+/**
+ * Check if session has expired (1 day = 24 hours inactivity)
+ * @returns {boolean}
+ */
+function checkSessionTimeout() {
+  const lastActivity = localStorage.getItem('lastActivity');
+  if (!lastActivity) return false;
+  
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
+  
+  return timeSinceLastActivity > ONE_DAY_MS;
+}
+
+/**
  * Save user session (to both localStorage and cookies)
  * @param {object} data - { token, refreshToken, user }
  */
@@ -66,6 +98,9 @@ function saveSession(data) {
   if (data.user) {
     localStorage.setItem('user', JSON.stringify(data.user));
   }
+  
+  // Update last activity timestamp
+  updateLastActivity();
   
   // Save to cookies (7 days expiry)
   setCookie('token', data.token, 7);
@@ -81,15 +116,22 @@ function saveSession(data) {
  * Clear user session (logout - clear both localStorage and cookies)
  */
 function clearSession() {
+  // Set logout flag for multi-tab sync BEFORE clearing
+  localStorage.setItem('logoutFlag', Date.now().toString());
+  
   // Clear localStorage
   localStorage.removeItem('token');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
+  localStorage.removeItem('lastActivity');
   
   // Clear cookies
   deleteCookie('token');
   deleteCookie('refreshToken');
   deleteCookie('user');
+  
+  // Clear all cookies as fallback
+  clearAllCookies();
 }
 
 /**
@@ -202,13 +244,25 @@ async function handleLogin(event) {
  */
 async function handleLogout() {
   try {
-    await API.auth.logout();
+    // Call logout API to clear server-side session/cookies
+    const response = await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || getCookie('token')}`
+      },
+      credentials: 'include' // Important: send cookies with request
+    });
+    
+    if (!response.ok) {
+      console.warn('Logout API call failed, clearing session anyway');
+    }
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
     clearSession();
-    // Redirect to homepage for better UX
-    window.location.href = '/html/index.html';
+    // Redirect to login page
+    window.location.replace('/html/auth/login.html?logout=true');
   }
 }
 
@@ -263,6 +317,16 @@ function initAuth() {
   const path = window.location.pathname;
   const isAuthPage = path.includes('/login.html') || path.includes('/register.html') || path.includes('/index.html');
   
+  // Check session timeout (1 day inactivity)
+  if (isLoggedIn() && checkSessionTimeout()) {
+    console.warn('Session expired due to inactivity');
+    clearSession();
+    if (!isAuthPage) {
+      window.location.href = '/html/auth/login.html?timeout=true';
+      return;
+    }
+  }
+  
   // If logged in and on auth page, redirect to dashboard
   if (isLoggedIn() && isAuthPage) {
     const user = getCurrentUser();
@@ -271,14 +335,41 @@ function initAuth() {
     }
   }
   
+  // Update activity timestamp on page load if logged in
+  if (isLoggedIn()) {
+    updateLastActivity();
+  }
+  
+  // Track user activity (update timestamp on navigation)
+  if (isLoggedIn()) {
+    // Update activity every 5 minutes if user is active
+    setInterval(() => {
+      if (isLoggedIn()) {
+        updateLastActivity();
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+  }
+  
+  // Multi-tab logout sync: listen for storage changes
+  window.addEventListener('storage', (e) => {
+    // If logout flag changed or token removed in another tab
+    if (e.key === 'logoutFlag' || (e.key === 'token' && !e.newValue)) {
+      console.log('Logout detected in another tab, syncing...');
+      // Clear session without API call (already done in other tab)
+      localStorage.clear();
+      sessionStorage.clear();
+      clearAllCookies();
+      // Redirect to login
+      window.location.replace('/html/auth/login.html?logout=true');
+    }
+  });
+  
   // Setup logout buttons
-  const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn');
+  const logoutButtons = document.querySelectorAll('[data-logout], .logout-btn, #logoutBtn, #logoutBtn2');
   logoutButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (confirm('Are you sure you want to logout?')) {
-        handleLogout();
-      }
+      handleLogout();
     });
   });
   
@@ -320,9 +411,12 @@ if (typeof window !== 'undefined') {
     handleLogout,
     logout: handleLogout, // Export as both names for compatibility
     handleRegister,
+    updateLastActivity,
+    checkSessionTimeout,
     // Export cookie helpers
     setCookie,
     getCookie,
-    deleteCookie
+    deleteCookie,
+    clearAllCookies
   };
 }
