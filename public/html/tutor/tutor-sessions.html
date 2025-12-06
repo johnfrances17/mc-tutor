@@ -835,22 +835,27 @@
     </script>
 
     <script>
-        // Secondary Navbar Toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleBtn = document.getElementById('navToggleBtn');
-            const secondaryNav = document.getElementById('secondaryNav');
-            
-            // Load collapsed state from localStorage
-            const isCollapsed = localStorage.getItem('navCollapsed') === 'true';
-            if (isCollapsed) {
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        if (navToggleBtn && secondaryNav) {
+            // Load saved state from localStorage
+            const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+            if (isNavCollapsed) {
                 secondaryNav.classList.add('collapsed');
+                navToggleBtn.classList.add('collapsed');
             }
-            
-            toggleBtn.addEventListener('click', function() {
+
+            navToggleBtn.addEventListener('click', () => {
                 secondaryNav.classList.toggle('collapsed');
-                localStorage.setItem('navCollapsed', secondaryNav.classList.contains('collapsed'));
+                navToggleBtn.classList.toggle('collapsed');
+                
+                // Save state to localStorage
+                const isCollapsed = secondaryNav.classList.contains('collapsed');
+                localStorage.setItem('secondaryNavCollapsed', isCollapsed);
             });
-        });
+        }
     </script>
 </body>
 </html>
