@@ -315,11 +315,11 @@
       const user = window.auth?.getCurrentUser();
       if (user) {
         const dashboards = {
-          'admin': '/html/admin/admin-dashboard.html',
-          'tutor': '/html/tutor/tutor-dashboard.html',
-          'tutee': '/html/tutee/student-dashboard.html'
+          'admin': 'admin-dashboard.html',
+          'tutor': 'tutor-dashboard.html',
+          'tutee': 'student-dashboard.html'
         };
-        window.location.href = dashboards[user.role] || '/html/tutee/student-dashboard.html';
+        window.location.href = dashboards[user.role] || 'student-dashboard.html';
       }
     })();
 
