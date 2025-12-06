@@ -7,6 +7,16 @@
     box-sizing: border-box;
 }
 
+/* Hide old legacy navigation elements to prevent duplicate buttons */
+.old-navbar,
+.legacy-sidebar,
+.legacy-nav,
+header.old-header,
+.sidebar-nav,
+.nav-menu:not(.modern-nav-menu) {
+    display: none !important;
+}
+
 /* Global hyperlink styling */
 a {
     color: #667eea;

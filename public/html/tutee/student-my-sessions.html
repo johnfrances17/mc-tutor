@@ -231,6 +231,14 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
+        /* Hide old/legacy navigation elements */
+        .user-header,
+        .old-navbar,
+        .sidebar,
+        nav.navbar:not(:first-of-type) {
+            display: none !important;
+        }
+
 
         .sessions-container {
             max-width: 1200px;
