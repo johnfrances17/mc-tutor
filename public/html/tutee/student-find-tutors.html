@@ -20,8 +20,8 @@
         }
 
         /* Logout button red styling */
-        #logoutBtn2 { color: #dc3545 !important; }
-        #logoutBtn2:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+        #logoutBtn { color: #dc3545 !important; }
+        #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
         
         /* Page header styling */
         .page-header {
@@ -305,6 +305,139 @@
             margin: 0 auto;
             padding: 0 20px;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 10px;
+            }
+
+            .nav-brand {
+                font-size: 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .user-info-inline {
+                padding: 6px 12px;
+                max-width: 180px;
+            }
+
+            .user-avatar-small {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .user-name-inline {
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100px;
+            }
+
+            .user-role-badge-inline {
+                font-size: 9px;
+            }
+
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-link {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .nav-menu-btn {
+                padding: 6px 10px;
+                font-size: 16px;
+            }
+
+            .secondary-navbar {
+                top: 58px;
+            }
+
+            .secondary-nav-container {
+                padding: 10px;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .secondary-nav-links {
+                gap: 6px;
+                min-width: min-content;
+            }
+
+            .secondary-nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .page-header {
+                margin: 20px auto 0;
+                padding: 0 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .floating-message-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .main-content,
+            .container {
+                padding: 0 10px;
+            }
+
+            .tutors-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-brand {
+                font-size: 16px;
+            }
+
+            .user-name-inline {
+                display: none;
+            }
+
+            .nav-link {
+                font-size: 0;
+                padding: 6px;
+            }
+
+            .nav-link::before {
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+                font-size: 16px;
+            }
+
+            .nav-link[href*="profile"]::before {
+                content: '\f007';
+            }
+
+            #logoutBtn::before {
+                content: '\f2f5';
+            }
+
+            .user-info-inline {
+                max-width: 50px;
+                padding: 6px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -326,7 +459,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                    <a href="#" class="nav-link" id="logoutBtn2">Logout</a>
+                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
                 </div>
             </div>
         </div>
@@ -733,8 +866,8 @@
             });
         }
 
-        // Logout handler - use centralized auth.logout()
-        const logoutBtn = document.getElementById('logoutBtn2');
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();

@@ -294,6 +294,139 @@
         .user-header {
             display: none;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 10px;
+            }
+
+            .nav-brand {
+                font-size: 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .user-info-inline {
+                padding: 6px 12px;
+                max-width: 180px;
+            }
+
+            .user-avatar-small {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .user-name-inline {
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100px;
+            }
+
+            .user-role-badge-inline {
+                font-size: 9px;
+            }
+
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-link {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .nav-menu-btn {
+                padding: 6px 10px;
+                font-size: 16px;
+            }
+
+            .secondary-navbar {
+                top: 58px;
+            }
+
+            .secondary-nav-container {
+                padding: 10px;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .secondary-nav-links {
+                gap: 6px;
+                min-width: min-content;
+            }
+
+            .secondary-nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .page-header {
+                margin: 20px auto 0;
+                padding: 0 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .floating-message-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-brand {
+                font-size: 16px;
+            }
+
+            .user-name-inline {
+                display: none;
+            }
+
+            .nav-link {
+                font-size: 0;
+                padding: 6px;
+            }
+
+            .nav-link::before {
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+                font-size: 16px;
+            }
+
+            .nav-link[href*="profile"]::before {
+                content: '\f007';
+            }
+
+            #logoutBtn::before {
+                content: '\f2f5';
+            }
+
+            .user-info-inline {
+                max-width: 50px;
+                padding: 6px;
+            }
+        }
     </style>
 </head>
 <body>

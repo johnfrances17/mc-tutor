@@ -239,6 +239,156 @@
             display: none !important;
         }
 
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 10px;
+            }
+
+            .nav-brand {
+                font-size: 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            /* User info becomes more compact */
+            .user-info-inline {
+                padding: 6px 12px;
+                max-width: 180px;
+            }
+
+            .user-avatar-small {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .user-name-inline {
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100px;
+            }
+
+            .user-role-badge-inline {
+                font-size: 9px;
+            }
+
+            /* Burger menu and links stack */
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-link {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .nav-menu-btn {
+                padding: 6px 10px;
+                font-size: 16px;
+            }
+
+            /* Secondary nav becomes scrollable */
+            .secondary-navbar {
+                top: 58px; /* Reduced for mobile navbar height */
+            }
+
+            .secondary-nav-container {
+                padding: 10px;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .secondary-nav-links {
+                gap: 6px;
+                min-width: min-content;
+            }
+
+            .secondary-nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            /* Page header adjustments */
+            .page-header {
+                margin: 20px auto 0;
+                padding: 0 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            /* Floating button smaller on mobile */
+            .floating-message-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            /* Sessions container mobile adjustments */
+            .sessions-container {
+                padding: 0 10px;
+            }
+
+            .session-card {
+                padding: 16px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab {
+                padding: 10px 16px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+        }
+
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            .nav-brand {
+                font-size: 16px;
+            }
+
+            .user-name-inline {
+                display: none; /* Hide name on very small screens */
+            }
+
+            .nav-link {
+                font-size: 0; /* Hide text */
+                padding: 6px;
+            }
+
+            .nav-link::before {
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+                font-size: 16px;
+            }
+
+            .nav-link[href*="profile"]::before {
+                content: '\f007'; /* fa-user */
+            }
+
+            #logoutBtn::before {
+                content: '\f2f5'; /* fa-sign-out-alt */
+            }
+
+            .user-info-inline {
+                max-width: 50px;
+                padding: 6px;
+            }
+        }
+
 
         .sessions-container {
             max-width: 1200px;
@@ -454,16 +604,6 @@
     <!-- Floating Message Button -->
     <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
         <i class="fas fa-comments"></i>
-    </a>
-
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
-        <i class="fas fa-comment-dots"></i>
     </a>
 
     <div class="page-header">
