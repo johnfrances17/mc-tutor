@@ -103,11 +103,11 @@
             color: #667eea;
         }
 
-        /* Menu button inside navbar */
+        /* Menu button inside navbar - matching Profile style */
         .nav-menu-btn {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: transparent;
+            color: #333;
+            border: none;
             border-radius: 6px;
             padding: 8px 16px;
             display: flex;
@@ -116,13 +116,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 18px;
         }
 
         .nav-menu-btn:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
+            background: #f0f0f0;
+            color: #667eea;
         }
 
         .nav-menu-btn i {
@@ -262,8 +261,8 @@
                     </div>
                 </div>
                 <div class="nav-links">
-                    <button class="nav-menu-btn" id="navToggleBtn">
-                        Menu <i>↑</i>
+                    <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
                     </button>
                     <a href="/html/shared/profile.html" class="nav-link">Profile</a>
                     <a href="#" class="nav-link" id="logoutBtn2">Logout</a>

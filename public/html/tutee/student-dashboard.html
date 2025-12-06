@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Base font styling - Arial for all elements */
+        * {
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
         /* Logout button red styling */
         #logoutBtn { color: #dc3545 !important; }
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
@@ -158,11 +169,11 @@
             color: #667eea;
         }
 
-        /* Menu button inside navbar */
+        /* Menu button inside navbar - matching Profile style */
         .nav-menu-btn {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: transparent;
+            color: #333;
+            border: none;
             border-radius: 6px;
             padding: 8px 16px;
             display: flex;
@@ -171,22 +182,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 18px;
         }
 
         .nav-menu-btn:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
-        }
-
-        .nav-menu-btn i {
-            transition: transform 0.3s ease;
-            font-size: 12px;
-        }
-
-        .nav-menu-btn.collapsed i {
-            transform: rotate(180deg);
+            background: #f0f0f0;
+            color: #667eea;
         }
 
         .user-info-inline {
@@ -309,9 +310,8 @@
                     </div>
                 </div>
                 <div class="nav-links">
-                    <button class="nav-menu-btn" id="navToggleBtn">
-                        <span>Menu</span>
-                        <i class="fas fa-chevron-up"></i>
+                    <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
                     </button>
                     <a href="/html/shared/profile.html" class="nav-link">Profile</a>
                     <a href="#" class="nav-link" id="logoutBtn">Logout</a>
