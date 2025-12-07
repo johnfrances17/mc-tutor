@@ -135,7 +135,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>First Name *</label>
-                                <input type="text" id="firstName" class="form-control" required disabled>
+                                <input type="text" id="firstName" class="form-control" required readonly>
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Last Name *</label>
-                                <input type="text" id="lastName" class="form-control" required disabled>
+                                <input type="text" id="lastName" class="form-control" required readonly>
                             </div>
                         </div>
                     </div>
@@ -174,7 +174,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Course</label>
-                                <input type="text" id="course" class="form-control" disabled>
+                                <input type="text" id="course" class="form-control" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -374,15 +374,15 @@
         // Toggle edit mode
         function toggleEditMode(enable) {
             isEditMode = enable;
-            const fields = ['firstName', 'middleName', 'lastName', 'email', 'phone', 'course', 'yearLevel'];
             
-            fields.forEach(field => {
-                document.getElementById(field).disabled = !enable;
-            });
-
+            // Only enable editable fields (not firstName, lastName, studentId)
+            document.getElementById('middleName').disabled = !enable;
+            document.getElementById('email').disabled = !enable;
+            document.getElementById('phone').disabled = !enable;
+            document.getElementById('yearLevel').disabled = !enable;
+            
             document.getElementById('profileActions').style.display = enable ? 'flex' : 'none';
-            document.getElementById('editProfileBtn').textContent = enable ? 'Editing...' : 'Edit';
-            document.getElementById('editProfileBtn').disabled = enable;
+            document.getElementById('editProfileBtn').style.display = enable ? 'none' : 'inline-block';
         }
 
         // Handle profile form submission
@@ -489,14 +489,9 @@
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                 toggleEditMode(false);
                 // Restore original values
-                const originalFullName = originalProfile.fullName || originalProfile.full_name || 
-                    (originalProfile.first_name && originalProfile.last_name ? 
-                      `${originalProfile.first_name} ${originalProfile.middle_name || ''} ${originalProfile.last_name}`.replace(/\s+/g, ' ').trim() : 
-                      '');
-                document.getElementById('fullName').value = originalFullName;
+                document.getElementById('middleName').value = originalProfile.middle_name || '';
                 document.getElementById('email').value = originalProfile.email || '';
                 document.getElementById('phone').value = originalProfile.phone || '';
-                document.getElementById('course').value = originalProfile.course || '';
                 document.getElementById('yearLevel').value = originalProfile.year_level || '';
             });
         }

@@ -78,11 +78,15 @@
         }
 
         .search-box::before {
-            content: '🔍';
+            content: '';
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            content: '\f002';
+            color: #9ca3af;
         }
 
         .conversations-list {
@@ -310,6 +314,7 @@
 
         .empty-chat-icon {
             font-size: 4rem;
+            color: #d1d5db;
             margin-bottom: 20px;
         }
 
@@ -416,7 +421,7 @@
 
             <div class="chat-area" id="chatArea">
                 <div class="empty-chat">
-                    <div class="empty-chat-icon">💬</div>
+                    <div class="empty-chat-icon"><i class="fas fa-comments"></i></div>
                     <p>Select a conversation to start messaging</p>
                 </div>
             </div>
