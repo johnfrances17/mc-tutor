@@ -649,8 +649,14 @@
     <script type="module" src="/scripts/api.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script type="module" src="/scripts/utils.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser } from '../scripts/auth.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
         import { showToast, formatDate, formatTime } from '../scripts/utils.js';
 
         // Use window.API

@@ -565,8 +565,14 @@
         </div>
     </div>
 
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser, requireRole } from '../scripts/auth.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser, requireRole } = window.auth;
+        const { api } = window;
 
         // Check authentication and role
         await requireRole('tutee');

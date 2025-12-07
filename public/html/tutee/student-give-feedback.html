@@ -770,8 +770,14 @@
         </form>
     </div>
 
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser, requireRole } from '../scripts/auth.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser, requireRole } = window.auth;
+        const { api } = window;
 
         // Check authentication and role
         await requireRole('tutee');
@@ -878,12 +884,16 @@
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Logout handler
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            const { handleLogout } = await import('../scripts/auth.js');
-            handleLogout();
-        });
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
 
         // Initialize
         loadSessionDetails();
