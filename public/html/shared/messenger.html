@@ -373,13 +373,31 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
-            <div class="nav-links">
-                <a href="/html/tutee/student-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/tutee/student-find-tutors.html" class="nav-link">Find Tutors</a>
-                <a href="/html/tutee/student-my-sessions.html" class="nav-link">My Sessions</a>
-                <a href="/html/tutee/student-study-materials.html" class="nav-link">Study Materials</a>
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            <div class="nav-right">
+                <div class="user-info-inline">
+                    <div class="user-avatar-small" data-user-avatar><img src="/image/default.png" alt="User Avatar" id="navAvatarImg">
+                    </div>
+                    <div class="user-details-inline">
+                        <span class="user-name-inline" data-user-name>User</span>
+                        <span class="user-role-badge-inline" data-user-role>Student</span>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Collapsible Secondary Navigation -->
+    <nav class="secondary-navbar" id="secondaryNav">
+        <div class="secondary-nav-container">
+            <div class="secondary-nav-links">
+                <!-- Will be populated by JavaScript based on role -->
             </div>
         </div>
     </nav>
@@ -450,6 +468,9 @@
                     return;
                 }
 
+                // Populate secondary navigation based on role
+                populateSecondaryNav();
+
                 const token = localStorage.getItem('token');
                 if (token) {
                     socketManager.connect(token);
@@ -470,6 +491,42 @@
             } catch (error) {
                 console.error('Messenger init error:', error);
             }
+        }
+
+        // Populate secondary navigation based on user role
+        function populateSecondaryNav() {
+            const secondaryNavLinks = document.querySelector('.secondary-nav-links');
+            if (!secondaryNavLinks || !currentUser) return;
+
+            let navItems = [];
+            
+            if (currentUser.role === 'tutee') {
+                navItems = [
+                    { href: '/html/tutee/student-dashboard.html', text: 'Dashboard' },
+                    { href: '/html/tutee/student-find-tutors.html', text: 'Find Tutors' },
+                    { href: '/html/tutee/student-my-sessions.html', text: 'My Sessions' },
+                    { href: '/html/tutee/student-study-materials.html', text: 'Study Materials' }
+                ];
+            } else if (currentUser.role === 'tutor') {
+                navItems = [
+                    { href: '/html/tutor/tutor-dashboard.html', text: 'Dashboard' },
+                    { href: '/html/tutor/tutor-my-subjects.html', text: 'My Subjects' },
+                    { href: '/html/tutor/tutor-sessions.html', text: 'Sessions' },
+                    { href: '/html/tutor/tutor-upload-materials.html', text: 'Materials' }
+                ];
+            } else if (currentUser.role === 'admin') {
+                navItems = [
+                    { href: '/html/admin/admin-dashboard.html', text: 'Dashboard' },
+                    { href: '/html/admin/admin-manage-users.html', text: 'Users' },
+                    { href: '/html/admin/admin-manage-sessions.html', text: 'Sessions' },
+                    { href: '/html/admin/admin-manage-subjects.html', text: 'Subjects' },
+                    { href: '/html/admin/admin-view-materials.html', text: 'Materials' }
+                ];
+            }
+
+            secondaryNavLinks.innerHTML = navItems.map(item => 
+                `<a href="${item.href}" class="secondary-nav-link">${item.text}</a>`
+            ).join('');
         }
 
         // Setup Socket.IO handlers
@@ -764,6 +821,28 @@
 
         // Initialize on load
         initMessenger();
+
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        if (navToggleBtn && secondaryNav) {
+            // Load saved state from localStorage
+            const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+            if (isNavCollapsed) {
+                secondaryNav.classList.add('collapsed');
+                navToggleBtn.classList.add('collapsed');
+            }
+
+            navToggleBtn.addEventListener('click', () => {
+                secondaryNav.classList.toggle('collapsed');
+                navToggleBtn.classList.toggle('collapsed');
+                
+                // Save state to localStorage
+                const isCollapsed = secondaryNav.classList.contains('collapsed');
+                localStorage.setItem('secondaryNavCollapsed', isCollapsed);
+            });
+        }
     </script>
 </body>
 </html>
