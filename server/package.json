@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "generate-key": "node scripts/generate-key.js",
     "setup:storage": "ts-node src/scripts/setup-storage.ts",
+    "migrate": "echo 'Please run migrations in Supabase SQL Editor. See server/migrations/README.md'",
     "test": "echo \"No tests configured yet\" && exit 0",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""
