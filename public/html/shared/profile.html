@@ -328,6 +328,12 @@
                     { href: '/html/admin/admin-manage-subjects.html', text: 'Subjects' },
                     { href: '/html/admin/admin-view-materials.html', text: 'Materials' }
                 ];
+                
+                // Apply admin gradient to navbar elements
+                const userInfoInline = document.querySelector('.user-info-inline');
+                if (userInfoInline) {
+                    userInfoInline.classList.add('admin-gradient');
+                }
             }
 
             secondaryNavLinks.innerHTML = navItems.map(item => 
