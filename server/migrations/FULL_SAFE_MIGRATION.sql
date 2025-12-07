@@ -14,14 +14,25 @@
 DROP TABLE IF EXISTS feedback CASCADE;
 DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS chats CASCADE;
+DROP TABLE IF EXISTS chat_messages CASCADE;  -- Old table
 DROP TABLE IF EXISTS materials CASCADE;
+DROP TABLE IF EXISTS study_materials CASCADE;  -- Old table
 DROP TABLE IF EXISTS sessions CASCADE;
+DROP TABLE IF EXISTS upcoming_sessions CASCADE;  -- View/table not needed
+DROP TABLE IF EXISTS active_students CASCADE;  -- View not needed
+DROP TABLE IF EXISTS active_tutors CASCADE;  -- View not needed
 DROP TABLE IF EXISTS tutor_availability CASCADE;
 DROP TABLE IF EXISTS tutor_stats CASCADE;
 DROP TABLE IF EXISTS tutor_subjects CASCADE;
 DROP TABLE IF EXISTS subjects CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS courses CASCADE;
+DROP TABLE IF EXISTS audit_logs CASCADE;  -- Not in new schema
+
+-- Drop any views
+DROP VIEW IF EXISTS active_students CASCADE;
+DROP VIEW IF EXISTS active_tutors CASCADE;
+DROP VIEW IF EXISTS upcoming_sessions CASCADE;
 
 -- Drop any existing types/enums
 DROP TYPE IF EXISTS user_role CASCADE;
