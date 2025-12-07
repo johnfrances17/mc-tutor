@@ -132,12 +132,17 @@ CREATE INDEX IF NOT EXISTS idx_users_name_search ON users
   ));
 
 -- ============================================
--- STEP 7: Disable RLS (for server-side auth)
+-- STEP 7: Disable RLS and clean up tables
 -- ============================================
 -- Note: We're using server-side authentication with JWT
 -- RLS is not needed and adds complexity
 
+-- Disable RLS on all tables to avoid "unrestricted" warnings
 ALTER TABLE users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_logs DISABLE ROW LEVEL SECURITY;
+ALTER TABLE active_students DISABLE ROW LEVEL SECURITY;
+ALTER TABLE active_tutors DISABLE ROW LEVEL SECURITY;
+ALTER TABLE upcoming_sessions DISABLE ROW LEVEL SECURITY;
 
 -- Drop any existing RLS policies
 DROP POLICY IF EXISTS "Users can view their own profile" ON users;
@@ -145,6 +150,10 @@ DROP POLICY IF EXISTS "Users can update their own profile" ON users;
 DROP POLICY IF EXISTS "Public can view active tutors" ON users;
 DROP POLICY IF EXISTS "Service role has full access" ON users;
 DROP POLICY IF EXISTS "Enable read access for all users" ON users;
+
+-- Drop legacy/unused tables and views
+DROP TABLE IF EXISTS users_legacy CASCADE;
+DROP VIEW IF EXISTS users_with_full_name CASCADE;
 
 -- ============================================
 -- STEP 8: Add security fields
