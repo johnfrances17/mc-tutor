@@ -804,17 +804,6 @@
             }
         };
 
-        // Logout handler - direct implementation
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                window.auth.logout();
-                return false;
-            });
-        }
-
         // Initialize on load
         initDashboard();
 
