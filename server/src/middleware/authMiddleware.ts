@@ -8,7 +8,9 @@ interface JWTPayload {
   school_id: string;
   email: string;
   role: string;
-  full_name: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
 }
 
 /**
@@ -48,7 +50,9 @@ export const authMiddleware = async (
       school_id: decoded.school_id,
       email: decoded.email,
       role: decoded.role,
-      full_name: decoded.full_name,
+      first_name: decoded.first_name,
+      middle_name: decoded.middle_name,
+      last_name: decoded.last_name,
     };
 
     next();
@@ -112,7 +116,9 @@ export const optionalAuthMiddleware = async (
           school_id: decoded.school_id,
           email: decoded.email,
           role: decoded.role,
-          full_name: decoded.full_name,
+          first_name: decoded.first_name,
+          middle_name: decoded.middle_name,
+          last_name: decoded.last_name,
         };
       }
     }

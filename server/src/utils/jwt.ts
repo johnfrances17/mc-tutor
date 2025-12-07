@@ -5,7 +5,9 @@ interface TokenPayload {
   school_id: string;
   email: string;
   role: string;
-  full_name: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
   type?: string; // Optional type field for special tokens like password_reset
 }
 

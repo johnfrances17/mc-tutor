@@ -72,17 +72,24 @@ export interface Database {
           school_id: string;
           email: string;
           password: string;
-          full_name: string;
+          first_name: string;
+          middle_name: string | null;
+          last_name: string;
           role: UserRole;
           phone: string | null;
           year_level: string | null;
           course: string | null;
           profile_picture: string | null;
           chat_pin_hash: string | null;
+          bio: string | null;
           last_active: string;
           created_at: string;
           updated_at: string;
           status: UserStatus;
+          last_password_change: string | null;
+          failed_login_attempts: number;
+          last_failed_login: string | null;
+          account_locked_until: string | null;
         };
       };
       sessions: {
