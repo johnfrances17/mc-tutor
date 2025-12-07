@@ -400,49 +400,33 @@
         </div>
     </div>
 
-    <script type="module" src="/scripts/api.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script type="module" src="/scripts/utils.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser } from '../scripts/auth.js';
-        import { showToast, formatDate } from '../scripts/utils.js';
-
+        const { getCurrentUser } = window.auth;
+        const { showToast, formatDate } = window;
         const api = window.API;
+
         let currentUser = null;
         let allSessions = [];
         let allSubjects = [];
-
-        // Logout handler
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
-                return false;
-            });
-        }
 
         // Initialize
         async function init() {
             try {
                 currentUser = await getCurrentUser();
-                if (!currentUser || currentUser.role !== 'admin') {
-                    showToast('Access denied. Admins only.', 'error');
+                
+                if (!currentUser) {
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
 
-                // Update user display
-                document.querySelectorAll('[data-user-name]').forEach(el => {
-                    el.textContent = currentUser.first_name || 'Admin';
-                });
-                document.querySelectorAll('[data-user-role]').forEach(el => {
-                    el.textContent = currentUser.role.toUpperCase();
-                });
+                if (currentUser.role !== 'admin') {
+                    window.location.href = '/html/index.html';
+                    return;
+                }
 
                 await Promise.all([
                     loadSessions(),
@@ -594,6 +578,18 @@
             }
         };
 
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
+
+        // Initialize on load
         init();
     </script>
 

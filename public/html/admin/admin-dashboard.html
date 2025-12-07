@@ -569,32 +569,19 @@
         </div>
     </div>
 
-    <script type="module" src="/scripts/api.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script type="module" src="/scripts/utils.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { api } from '../scripts/api.js';
-        import { getCurrentUser } from '../scripts/auth.js';
-        import { showToast, formatDate, formatDateTime, getStatusBadgeClass } from '../scripts/utils.js';
-
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
+        
         let currentUser = null;
         let allSessions = [];
         let allUsers = [];
         let allSubjects = [];
-
-        // Logout handler - direct implementation
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
-                return false;
-            });
-        }
 
         // Initialize dashboard
         async function initDashboard() {
@@ -607,22 +594,9 @@
                 }
 
                 if (currentUser.role !== 'admin') {
-                    showToast('Access denied. Admins only.', 'error');
-                    setTimeout(() => window.location.href = '/html/index.html', 2000);
+                    window.location.href = '/html/index.html';
                     return;
                 }
-
-                // Update user display
-                document.querySelectorAll('[data-user-name]').forEach(el => {
-                    const fullName = currentUser.fullName || currentUser.full_name || 
-                                    (currentUser.first_name && currentUser.last_name ? 
-                                      `${currentUser.first_name} ${currentUser.middle_name || ''} ${currentUser.last_name}`.replace(/\s+/g, ' ').trim() : 
-                                      'User');
-                    el.textContent = fullName;
-                });
-                document.querySelectorAll('[data-user-role]').forEach(el => {
-                    el.textContent = currentUser.role.toUpperCase();
-                });
 
                 // Load all data
                 await Promise.all([
@@ -639,6 +613,20 @@
                 console.error('Dashboard init error:', error);
             }
         }
+
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
+
+        // Initialize on load
+        initDashboard();
 
         // Load system statistics
         async function loadSystemStats() {

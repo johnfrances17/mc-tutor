@@ -504,8 +504,13 @@
         </div>
     </div>
 
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser, requireRole } from '../scripts/auth.js';
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
 
         let currentUser = null;
         let allSubjects = [];
@@ -513,25 +518,17 @@
         // Initialize
         async function init() {
             try {
-                await requireRole('admin');
-                currentUser = getCurrentUser();
+                currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
-                
-                // Update user display
-                document.querySelectorAll('[data-user-name]').forEach(el => {
-                    const fullName = currentUser.fullName || currentUser.full_name || 
-                                    (currentUser.first_name && currentUser.last_name ? 
-                                      `${currentUser.first_name} ${currentUser.middle_name || ''} ${currentUser.last_name}`.replace(/\s+/g, ' ').trim() : 
-                                      'User');
-                    el.textContent = fullName;
-                });
-                document.querySelectorAll('[data-user-role]').forEach(el => {
-                    el.textContent = currentUser.role.toUpperCase();
-                });
+
+                if (currentUser.role !== 'admin') {
+                    window.location.href = '/html/index.html';
+                    return;
+                }
 
                 await loadSubjects();
             } catch (error) {
@@ -708,7 +705,18 @@
             handleLogout();
         });
 
-        // Initialize page
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
+
+        // Initialize on load
         init();
     </script>
 
