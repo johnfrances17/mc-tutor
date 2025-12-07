@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -349,7 +349,7 @@
       loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
       try {
-        console.log('🔐 Attempting login...', { email });
+        console.log('?? Attempting login...', { email });
         
         // No role parameter - backend auto-detects from database
         const response = await window.API.auth.login({
@@ -358,10 +358,10 @@
           // role is omitted - backend will auto-detect
         });
 
-        console.log('📥 Login response:', response);
+        console.log('?? Login response:', response);
 
         if (response.success && response.data) {
-          console.log('✅ Login successful');
+          console.log('? Login successful');
           window.auth.saveSession(response.data);
           
           if (window.utils && window.utils.showToast) {
@@ -373,11 +373,11 @@
             window.auth.redirectToDashboard(response.data.user.role);
           }, 500);
         } else {
-          console.error('❌ Login failed:', response);
+          console.error('? Login failed:', response);
           throw new Error(response.error?.message || response.message || 'Login failed');
         }
       } catch (error) {
-        console.error('❌ Login error caught:', error);
+        console.error('? Login error caught:', error);
         console.error('Error details:', {
           message: error.message,
           stack: error.stack,
@@ -406,3 +406,4 @@
   </script>
 </body>
 </html>
+

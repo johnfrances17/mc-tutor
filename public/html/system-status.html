@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -306,7 +306,7 @@
             <i class="fas fa-cloud"></i>
           </div>
           <div class="status-info">
-            <h3>Vercel Hosting</h3>
+            <div class="section-title">Vercel Hosting</div>
             <span class="status-badge checking" id="vercel-status">
               <div class="spinner"></div> Checking...
             </span>
@@ -335,7 +335,7 @@
             <i class="fas fa-database"></i>
           </div>
           <div class="status-info">
-            <h3>Supabase Database</h3>
+            <div class="section-title">Supabase Database</div>
             <span class="status-badge checking" id="supabase-status">
               <div class="spinner"></div> Checking...
             </span>
@@ -364,7 +364,7 @@
             <i class="fas fa-plug"></i>
           </div>
           <div class="status-info">
-            <h3>Backend API</h3>
+            <div class="section-title">Backend API</div>
             <span class="status-badge checking" id="api-status">
               <div class="spinner"></div> Checking...
             </span>
@@ -393,7 +393,7 @@
             <i class="fas fa-envelope"></i>
           </div>
           <div class="status-info">
-            <h3>Email Service</h3>
+            <div class="section-title">Email Service</div>
             <span class="status-badge checking" id="email-status">
               <div class="spinner"></div> Checking...
             </span>
@@ -586,7 +586,7 @@
     function appendOutput(message, type = 'info') {
       const output = document.getElementById('test-output');
       const timestamp = new Date().toLocaleTimeString();
-      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+      const prefix = type === 'error' ? '?' : type === 'success' ? '?' : '??';
       output.textContent += `[${timestamp}] ${prefix} ${message}\n`;
       output.scrollTop = output.scrollHeight;
     }
@@ -665,3 +665,5 @@
   </script>
 </body>
 </html>
+
+

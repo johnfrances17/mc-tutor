@@ -22,6 +22,10 @@
         /* Logout button red styling */
         #logoutBtn { color: #dc3545 !important; }
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+
+        .page-title { font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 8px; }
+        .page-subtitle { color: #6b7280; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .section-title { font-size: 18px; font-weight: 600; color: #2d3748; margin-bottom: 16px; }
         
         /* Page header styling */
         .page-header {
@@ -451,7 +455,7 @@
     </a>
 
     <div class="page-header">
-        <h1>Tutor Dashboard</h1>
+        <div class="page-title">Tutor Dashboard</div>
         <p>Manage your tutoring sessions and students</p>
     </div>
 
@@ -460,7 +464,7 @@
         <!-- Pending Session Requests -->
         <div class="card" id="pendingRequestsCard">
             <div class="card-header">
-                <h3>Pending Session Requests</h3>
+                <div class="section-title">Pending Session Requests</div>
                 <span class="badge badge-warning" id="pendingBadge">0</span>
             </div>
             <div class="card-body" id="pendingRequestsList">
@@ -471,7 +475,7 @@
         <!-- Upcoming Sessions -->
         <div class="card">
             <div class="card-header">
-                <h3>Upcoming Confirmed Sessions</h3>
+                <div class="section-title">Upcoming Confirmed Sessions</div>
                 <a href="/html/tutor/tutor-sessions.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="upcomingSessionsList">
@@ -482,7 +486,7 @@
         <!-- Today's Schedule -->
         <div class="card" id="todayScheduleCard" style="display: none;">
             <div class="card-header">
-                <h3>Today's Schedule</h3>
+                <div class="section-title">Today's Schedule</div>
                 <span id="todayDate"></span>
             </div>
             <div class="card-body" id="todayScheduleList"></div>
@@ -491,7 +495,7 @@
         <!-- Recent Feedback -->
         <div class="card">
             <div class="card-header">
-                <h3>Recent Feedback</h3>
+                <div class="section-title">Recent Feedback</div>
             </div>
             <div class="card-body" id="recentFeedbackList">
                 <div class="loading-spinner"></div>
@@ -501,7 +505,7 @@
         <!-- Quick Actions -->
         <div class="card">
             <div class="card-header">
-                <h3>Quick Actions</h3>
+                <div class="section-title">Quick Actions</div>
             </div>
             <div class="card-body">
                 <div class="quick-actions-grid">
@@ -845,6 +849,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 

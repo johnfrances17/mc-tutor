@@ -22,6 +22,10 @@
         /* Logout button red styling */
         #logoutBtn { color: #dc3545 !important; }
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+
+        .page-title { font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 8px; }
+        .page-subtitle { color: #6b7280; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .section-title { font-size: 18px; font-weight: 600; color: #2d3748; margin-bottom: 16px; }
         
         /* Page header styling */
         .page-header {
@@ -514,7 +518,7 @@
     </a>
 
     <div class="page-header">
-        <h1>Find Tutors</h1>
+        <div class="page-title">Find Tutors</div>
         <p>Search for tutors by subject and availability</p>
     </div>
 
@@ -522,7 +526,7 @@
         <!-- Search and Filter Card -->
         <div class="card" style="margin-bottom: 30px;">
             <div class="card-header">
-                <h3>Search for Tutors</h3>
+                <div class="section-title">Search for Tutors</div>
             </div>
             <div class="card-body">
                 <div class="search-filters">
@@ -561,7 +565,7 @@
         <!-- Tutors Grid -->
         <div class="card">
             <div class="card-header">
-                <h3>Available Tutors</h3>
+                <div class="section-title">Available Tutors</div>
                 <span id="resultsCount" class="text-muted"></span>
             </div>
             <div class="card-body">
@@ -679,7 +683,7 @@
                                 ${fullName.charAt(0).toUpperCase()}
                             </div>
                             <div class="tutor-info">
-                                <h3>${fullName}</h3>
+                                <div class="section-title">${fullName}</div>
                                 ${rating > 0 ? `
                                     <div class="rating">
                                         <span style="color: #ffc107; font-size: 16px;">${stars}</span>
@@ -967,5 +971,7 @@
     </script>
 </body>
 </html>
+
+
 
 
