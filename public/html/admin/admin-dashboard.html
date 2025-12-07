@@ -704,7 +704,8 @@
                                     <span class="badge ${user.role === 'tutor' ? 'badge-primary' : 'badge-secondary'}">
                                         ${user.role}
                                     </span>
-                                    <span>${user.student_id || user.school_id || 'N/A'}</span>
+                                    <span>${user.school_id || 'N/A'}</span>
+                                    <span>${formatDate(user.created_at || new Date())}</span>
                                 </div>
                             </div>
                             <a href="/html/admin/admin-manage-users.html?id=${user.user_id}" class="btn btn-sm">View</a>
@@ -761,8 +762,8 @@
                 // Calculate tutor stats
                 const tutorStats = await Promise.all(tutors.slice(0, 10).map(async tutor => {
                     try {
-                        const sessions = allSessions.filter(s => s.tutor_id === tutor.school_id);
-                        const feedback = await api.get(`/feedback/tutor/${tutor.school_id}`);
+                        const sessions = allSessions.filter(s => s.tutor_id === tutor.user_id);
+                        const feedback = await api.get(`/feedback/tutor/${tutor.user_id}`);
                         
                         return {
                             ...tutor,
@@ -800,13 +801,13 @@
                                     return `
                                     <tr>
                                         <td>${tutorFullName}</td>
-                                        <td>${tutor.student_id}</td>
+                                        <td>${tutor.school_id || 'N/A'}</td>
                                         <td>${tutor.subject_count || 0}</td>
                                         <td>${tutor.sessionCount}</td>
                                         <td>${tutor.completedSessions}</td>
                                         <td>${tutor.avgRating}</td>
                                         <td>
-                                            <a href="/html/admin/admin-manage-users.html?id=${tutor.school_id}" class="btn btn-sm">View</a>
+                                            <a href="/html/admin/admin-manage-users.html?id=${tutor.user_id}" class="btn btn-sm">View</a>
                                         </td>
                                     </tr>
                                     `;
@@ -965,13 +966,3 @@
     </script>
 </body>
 </html>
-<span class="badge ${user.role === 'tutor' ? 'badge-primary' : 'badge-secondary'}">
-                                        ${user.role}
-                                    </span>
-                                    <span>${user.school_id}</span>
-                                    <span>${formatDate(user.created_at || new Date())}</span>
-                                </div>
-                            </div>
-                            <a href="/html/admin/admin-manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
-                        </div>
-
