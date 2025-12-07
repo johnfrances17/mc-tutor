@@ -253,9 +253,10 @@ $$ LANGUAGE plpgsql STABLE;
 -- Uncomment the line below when ready:
 -- ALTER TABLE users DROP COLUMN IF EXISTS full_name;
 
--- Vacuum and analyze for better performance
-VACUUM ANALYZE users;
-VACUUM ANALYZE audit_logs;
+-- Note: VACUUM must be run outside transaction block
+-- Run these commands separately after migration:
+-- VACUUM ANALYZE users;
+-- VACUUM ANALYZE audit_logs;
 
 -- ============================================
 -- VERIFICATION
