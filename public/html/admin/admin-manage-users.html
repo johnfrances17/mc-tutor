@@ -463,21 +463,33 @@
     <script type="module">
         import { getCurrentUser, requireRole } from '../scripts/auth.js';
 
-        // Check authentication and role
-        await requireRole('admin');
-        const currentUser = getCurrentUser();
-        
-        // Update user display
-        if (currentUser) {
-            document.querySelectorAll('[data-user-name]').forEach(el => {
-                el.textContent = currentUser.first_name || 'Admin';
-            });
-            document.querySelectorAll('[data-user-role]').forEach(el => {
-                el.textContent = currentUser.role.toUpperCase();
-            });
-        }
-
+        let currentUser = null;
         let allUsers = [];
+
+        // Initialize
+        async function init() {
+            try {
+                await requireRole('admin');
+                currentUser = getCurrentUser();
+                
+                if (!currentUser) {
+                    window.location.href = '/html/auth/login.html';
+                    return;
+                }
+                
+                // Update user display
+                document.querySelectorAll('[data-user-name]').forEach(el => {
+                    el.textContent = currentUser.first_name || 'Admin';
+                });
+                document.querySelectorAll('[data-user-role]').forEach(el => {
+                    el.textContent = currentUser.role.toUpperCase();
+                });
+
+                await loadUsers();
+            } catch (error) {
+                console.error('Init error:', error);
+            }
+        }
 
         // Load users
         async function loadUsers() {
@@ -688,8 +700,8 @@
             handleLogout();
         });
 
-        // Initialize
-        loadUsers();
+        // Initialize page
+        init();
     </script>
 
     <script>
@@ -719,6 +731,9 @@
                 link.classList.add('active');
             }
         });
+
+        // Initialize page
+        init();
     </script>
 </body>
 </html>
