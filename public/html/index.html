@@ -30,7 +30,7 @@
     .nav-container {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 15px 30px;
+      padding: 0px 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -38,7 +38,7 @@
 
     .nav-brand {
       font-size: 24px;
-      font-weight: 700;
+      font-weight: bold;
       color: #667eea;
       text-decoration: none;
     }
@@ -49,11 +49,25 @@
       align-items: center;
     }
 
+    .nav-link {
+      color: #333;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      background: #f0f0f0;
+      color: #667eea;
+    }
+
     /* Hero section with gradient */
     .hero {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 100px 20px 80px;
+      padding: 120px 20px 80px;
       text-align: center;
     }
 
@@ -87,28 +101,50 @@
       font-weight: 600;
       border-radius: 8px;
       transition: all 0.3s ease;
+      display: inline-block;
     }
 
-    .btn-primary {
+    .btn-primary.btn-lg {
       background: white;
       color: #667eea;
-      border: none;
     }
 
-    .btn-primary:hover {
+    .btn-primary.btn-lg:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
-    .btn-outline {
-      background: transparent;
-      border: 2px solid white;
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 2px solid #667eea;
+      color: #667eea;
+      padding: 8px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
     }
 
     .btn-outline:hover {
-      background: white;
+      background: #f0f0f0;
       color: #667eea;
+      border-color: #667eea;
     }
 
     /* Features section */
@@ -238,7 +274,7 @@
     <div class="nav-container">
       <a href="/" class="nav-brand">MC Tutor</a>
       <div class="nav-links">
-        <a href="/html/auth/login.html" class="btn btn-outline" style="background: transparent; border: 2px solid #667eea; color: #667eea;">Login</a>
+        <a href="/html/auth/login.html" class="btn btn-outline">Login</a>
         <a href="/html/auth/register.html" class="btn btn-primary">Register</a>
       </div>
     </div>
