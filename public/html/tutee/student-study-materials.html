@@ -487,6 +487,7 @@
 
     <div class="page-header">
         <h1>Study Materials</h1>
+        <p>Browse and download learning resources from tutors</p>
         <button class="btn btn-primary" id="uploadBtn" style="display: none; margin-left: auto;">
             ?? Upload Material
         </button>
@@ -587,21 +588,8 @@
         let currentPage = 1;
         let itemsPerPage = 12;
 
-        // Logout handler - direct implementation
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
-                return false;
-            });
-        }
-
-        // Initialize page\n        async function initPage() {
+        // Initialize page
+        async function initPage() {
         try {
             currentUser = await getCurrentUser();
             
@@ -625,6 +613,18 @@
         } catch (error) {
             console.error('Init error:', error);
             showToast('Failed to load page', 'error');
+        }
+    }
+
+        // Logout handler - 10 lines
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
         }
 
         // Load subjects
