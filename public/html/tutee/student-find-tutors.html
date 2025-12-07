@@ -636,7 +636,9 @@
 
             noResults.style.display = 'none';
             container.innerHTML = filteredTutors.map(tutor => {
-                const fullName = tutor.fullName || 'Unknown';
+                const fullName = tutor.last_name && tutor.first_name 
+                    ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}`
+                    : 'Unknown';
                 const studentId = tutor.studentId || tutor.school_id || 'N/A';
                 const course = tutor.course || 'N/A';
                 const yearLevel = tutor.yearLevel || '';
@@ -711,7 +713,7 @@
             filteredTutors = allTutors.filter(tutor => {
                 // Search filter (name, ID, or subjects)
                 if (searchQuery) {
-                    const matchName = (tutor.fullName || '').toLowerCase().includes(searchQuery);
+                    const matchName = (`${tutor.first_name || ''} ${tutor.middle_name || ''} ${tutor.last_name || ''}`).toLowerCase().includes(searchQuery);
                     const matchId = (tutor.studentId || tutor.school_id || '').toLowerCase().includes(searchQuery);
                     const matchSubjects = (tutor.subjects || []).some(s => 
                         s.subjectCode.toLowerCase().includes(searchQuery) ||
@@ -734,8 +736,8 @@
             switch (sortBy) {
                 case 'name':
                     filteredTutors.sort((a, b) => {
-                        const nameA = (a.fullName || '').toLowerCase();
-                        const nameB = (b.fullName || '').toLowerCase();
+                        const nameA = (a.last_name || '').toLowerCase();
+                        const nameB = (b.last_name || '').toLowerCase();
                         return nameA.localeCompare(nameB);
                     });
                     break;

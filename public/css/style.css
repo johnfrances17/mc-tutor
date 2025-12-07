@@ -29,7 +29,7 @@ a:hover {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     background: #ffffff;
     min-height: 100vh;
     color: #333;
@@ -167,6 +167,7 @@ header {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
     transition: border 0.3s;
 }
 
@@ -722,7 +723,7 @@ textarea {
     border: 2px solid #e8e8e8;
     border-radius: 8px;
     font-size: 14px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     transition: all 0.3s;
     background: white;
 }

@@ -11,6 +11,7 @@
         /* Base font styling */
         * { font-family: 'Montserrat', sans-serif; }
         body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
 
         #logoutBtn { color: #dc3545 !important; }
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
@@ -105,14 +106,35 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
-            <div class="nav-links">
-                <a href="/html/admin/admin-dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/html/admin/admin-manage-users.html" class="nav-link">Users</a>
-                <a href="/html/admin/admin-manage-sessions.html" class="nav-link">Sessions</a>
-                <a href="/html/admin/admin-manage-subjects.html" class="nav-link">Subjects</a>
-                <a href="/html/admin/admin-view-materials.html" class="nav-link active">Materials</a>
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            <div class="nav-right">
+                <div class="user-info-inline">
+                    <div class="user-avatar-small" data-user-avatar>
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="user-details-inline">
+                        <span class="user-name-inline" data-user-name>Admin</span>
+                        <span class="user-role-badge-inline" data-user-role>ADMIN</span>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="secondary-navbar" id="secondaryNav">
+        <div class="secondary-nav-container">
+            <div class="secondary-nav-links">
+                <a href="/html/admin/admin-dashboard.html" class="secondary-nav-link">Dashboard</a>
+                <a href="/html/admin/admin-manage-users.html" class="secondary-nav-link">Users</a>
+                <a href="/html/admin/admin-manage-sessions.html" class="secondary-nav-link">Sessions</a>
+                <a href="/html/admin/admin-manage-subjects.html" class="secondary-nav-link">Subjects</a>
+                <a href="/html/admin/admin-view-materials.html" class="secondary-nav-link active">Materials</a>
             </div>
         </div>
     </nav>
@@ -642,5 +664,34 @@
             margin-top: 20px;
         }
     </style>
+
+    <script>
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        if (navToggleBtn && secondaryNav) {
+            // Check localStorage for saved state
+            const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+            if (isNavCollapsed) {
+                secondaryNav.classList.add('collapsed');
+            }
+
+            // Toggle on button click
+            navToggleBtn.addEventListener('click', () => {
+                secondaryNav.classList.toggle('collapsed');
+                const collapsed = secondaryNav.classList.contains('collapsed');
+                localStorage.setItem('secondaryNavCollapsed', collapsed);
+            });
+        }
+
+        // Highlight active page
+        const currentPage = window.location.pathname;
+        document.querySelectorAll('.secondary-nav-link').forEach(link => {
+            if (link.getAttribute('href') && currentPage.includes(link.getAttribute('href'))) {
+                link.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>

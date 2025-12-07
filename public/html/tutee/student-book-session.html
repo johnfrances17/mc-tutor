@@ -610,7 +610,10 @@
             tutors.forEach(tutor => {
                 const option = document.createElement('option');
                 option.value = tutor.id;
-                option.textContent = `${tutor.fullName} ${tutor.rating ? '⭐ ' + tutor.rating : ''}`;
+                const tutorName = tutor.last_name && tutor.first_name 
+                    ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}`
+                    : 'Unknown';
+                option.textContent = `${tutorName} ${tutor.rating ? '⭐ ' + tutor.rating : ''}`;
                 select.appendChild(option);
             });
         }
@@ -633,7 +636,7 @@
             const infoDiv = document.getElementById('availabilityInfo');
             
             infoDiv.innerHTML = `
-                <h3>${tutor.fullName}</h3>
+                <h3>${tutor.last_name && tutor.first_name ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}` : 'Unknown'}</h3>
                 <p><strong>Email:</strong> ${tutor.email}</p>
                 ${tutor.phone ? `<p><strong>Phone:</strong> ${tutor.phone}</p>` : ''}
                 ${tutor.rating ? `<p><strong>Rating:</strong> ⭐ ${tutor.rating}/5</p>` : ''}

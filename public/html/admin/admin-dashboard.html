@@ -18,6 +18,11 @@
             background: #f5f5f5;
             min-height: 100vh;
         }
+        
+        /* Ensure form elements use Montserrat */
+        input, select, textarea, button {
+            font-family: 'Montserrat', sans-serif;
+        }
 
         /* Logout button red styling */
         #logoutBtn { color: #dc3545 !important; }
@@ -325,14 +330,36 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
-            <div class="nav-links">
-                <a href="/html/admin/admin-dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/html/admin/admin-manage-users.html" class="nav-link">Users</a>
-                <a href="/html/admin/admin-manage-sessions.html" class="nav-link">Sessions</a>
-                <a href="/html/admin/admin-manage-subjects.html" class="nav-link">Subjects</a>
-                <a href="/html/admin/admin-view-materials.html" class="nav-link">Materials</a>
-                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
-                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            <div class="nav-right">
+                <div class="user-info-inline">
+                    <div class="user-avatar-small" data-user-avatar>
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="user-details-inline">
+                        <span class="user-name-inline" data-user-name>Admin</span>
+                        <span class="user-role-badge-inline" data-user-role>ADMIN</span>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Collapsible Secondary Navigation -->
+    <nav class="secondary-navbar" id="secondaryNav">
+        <div class="secondary-nav-container">
+            <div class="secondary-nav-links">
+                <a href="/html/admin/admin-dashboard.html" class="secondary-nav-link active">Dashboard</a>
+                <a href="/html/admin/admin-manage-users.html" class="secondary-nav-link">Users</a>
+                <a href="/html/admin/admin-manage-sessions.html" class="secondary-nav-link">Sessions</a>
+                <a href="/html/admin/admin-manage-subjects.html" class="secondary-nav-link">Subjects</a>
+                <a href="/html/admin/admin-view-materials.html" class="secondary-nav-link">Materials</a>
             </div>
         </div>
     </nav>
@@ -614,17 +641,17 @@
                             <div class="user-avatar">${userFullName.charAt(0)}</div>
                             <div class="user-info">
                                 <div class="user-name">${userFullName}</div>
-                                <div class="user-meta">`;
+                                <div class="user-meta">
                                     <span class="badge ${user.role === 'tutor' ? 'badge-primary' : 'badge-secondary'}">
                                         ${user.role}
                                     </span>
-                                    <span>${user.school_id}</span>
-                                    <span>${formatDate(user.created_at || new Date())}</span>
+                                    <span>${user.student_id || user.school_id || 'N/A'}</span>
                                 </div>
                             </div>
-                            <a href="/html/admin/admin-manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
+                            <a href="/html/admin/admin-manage-users.html?id=${user.user_id}" class="btn btn-sm">View</a>
                         </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             } catch (error) {
                 console.error('Recent users error:', error);
@@ -714,7 +741,7 @@
                                     return `
                                     <tr>
                                         <td>${tutorFullName}</td>
-                                        <td>${tutor.student_id}</td>`;
+                                        <td>${tutor.student_id}</td>
                                         <td>${tutor.subject_count || 0}</td>
                                         <td>${tutor.sessionCount}</td>
                                         <td>${tutor.completedSessions}</td>
@@ -723,7 +750,8 @@
                                             <a href="/html/admin/admin-manage-users.html?id=${tutor.school_id}" class="btn btn-sm">View</a>
                                         </td>
                                     </tr>
-                                `).join('')}
+                                    `;
+                                }).join('')}
                             </tbody>
                         </table>
                     </div>
@@ -857,6 +885,33 @@
             loadRecentUsers();
             loadPendingSessions();
         }, 60000);
+
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        if (navToggleBtn && secondaryNav) {
+            const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+            if (isNavCollapsed) {
+                secondaryNav.classList.add('collapsed');
+                navToggleBtn.classList.add('collapsed');
+            }
+
+            navToggleBtn.addEventListener('click', () => {
+                secondaryNav.classList.toggle('collapsed');
+                navToggleBtn.classList.toggle('collapsed');
+                localStorage.setItem('secondaryNavCollapsed', secondaryNav.classList.contains('collapsed'));
+            });
+        }
     </script>
 </body>
 </html>
+<span class="badge ${user.role === 'tutor' ? 'badge-primary' : 'badge-secondary'}">
+                                        ${user.role}
+                                    </span>
+                                    <span>${user.school_id}</span>
+                                    <span>${formatDate(user.created_at || new Date())}</span>
+                                </div>
+                            </div>
+                            <a href="/html/admin/admin-manage-users.html?id=${user.school_id}" class="btn btn-sm">View</a>
+                        </div>
