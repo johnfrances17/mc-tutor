@@ -8,7 +8,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 interface UserSocket {
   userId: string;
   socketId: string;
-  fullName: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  fullName: string; // Computed
 }
 
 // Store active users
@@ -39,19 +42,26 @@ export function initializeSocketIO(io: Server) {
 
   io.on('connection', (socket) => {
     const user = socket.data.user;
-    console.log(`✅ User connected: ${user.full_name} (${user.school_id})`);
+    const fullName = user.middle_name 
+      ? `${user.first_name} ${user.middle_name} ${user.last_name}`
+      : `${user.first_name} ${user.last_name}`;
+    
+    console.log(`✅ User connected: ${fullName} (${user.school_id})`);
 
     // Add user to active users
     activeUsers.set(user.school_id, {
       userId: user.school_id,
       socketId: socket.id,
-      fullName: user.full_name
+      firstName: user.first_name,
+      middleName: user.middle_name,
+      lastName: user.last_name,
+      fullName: fullName
     });
 
     // Broadcast online status to all connected users
     io.emit('user_online', {
       userId: user.school_id,
-      fullName: user.full_name,
+      fullName: fullName,
       timestamp: new Date()
     });
 
@@ -99,7 +109,7 @@ export function initializeSocketIO(io: Server) {
         io.to(conversationId).emit('new_message', {
           id: savedMessage.message.message_id,
           senderId: user.school_id,
-          senderName: user.full_name,
+          senderName: fullName,
           receiverId: receiverId,
           message: savedMessage.message.message,
           timestamp: savedMessage.message.timestamp,
@@ -111,7 +121,7 @@ export function initializeSocketIO(io: Server) {
         if (receiverSocket) {
           io.to(receiverSocket.socketId).emit('message_notification', {
             from: user.school_id,
-            fromName: user.full_name,
+            fromName: fullName,
             preview: message.substring(0, 50),
             timestamp: savedMessage.message.timestamp
           });
@@ -120,7 +130,7 @@ export function initializeSocketIO(io: Server) {
           await notificationService.createNotification(
             receiverId,
             'New Message',
-            'New message from ' + user.full_name,
+            'New message from ' + fullName,
             'new_message'
           );
         }
@@ -140,7 +150,7 @@ export function initializeSocketIO(io: Server) {
       if (receiverSocket) {
         io.to(receiverSocket.socketId).emit('user_typing', {
           userId: user.school_id,
-          userName: user.full_name,
+          userName: fullName,
           isTyping: true
         });
       }
@@ -151,7 +161,7 @@ export function initializeSocketIO(io: Server) {
       if (receiverSocket) {
         io.to(receiverSocket.socketId).emit('user_typing', {
           userId: user.school_id,
-          userName: user.full_name,
+          userName: fullName,
           isTyping: false
         });
       }
@@ -209,7 +219,7 @@ export function initializeSocketIO(io: Server) {
 
     // Handle disconnect
     socket.on('disconnect', () => {
-      console.log(`❌ User disconnected: ${user.full_name} (${user.school_id})`);
+      console.log(`❌ User disconnected: ${fullName} (${user.school_id})`);
       
       // Remove from active users
       activeUsers.delete(user.school_id);
@@ -217,7 +227,7 @@ export function initializeSocketIO(io: Server) {
       // Broadcast offline status
       io.emit('user_offline', {
         userId: user.school_id,
-        fullName: user.full_name,
+        fullName: fullName,
         timestamp: new Date()
       });
     });

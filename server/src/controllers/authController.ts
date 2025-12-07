@@ -15,7 +15,9 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       email,
       password,
       confirm_password,
-      full_name,
+      first_name,
+      middle_name,
+      last_name,
       role,
       phone,
       year_level,
@@ -23,10 +25,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     } = req.body;
 
     // Validate required fields
-    if (!school_id || !email || !password || !full_name || !role || !phone || !year_level || !course) {
+    if (!school_id || !email || !password || !first_name || !last_name || !role || !phone || !year_level || !course) {
       return res.status(400).json({
         success: false,
-        error: { message: 'All fields are required' },
+        error: { message: 'All fields are required except middle name' },
       });
     }
 
@@ -50,7 +52,9 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       school_id,
       email,
       password,
-      full_name,
+      first_name,
+      middle_name,
+      last_name,
       role,
       phone,
       year_level,
@@ -58,8 +62,11 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     });
 
     // Send welcome email (lazy load and don't await - send in background)
+    const fullName = middle_name 
+      ? `${first_name} ${middle_name} ${last_name}`
+      : `${first_name} ${last_name}`;
     import('../services/emailService')
-      .then(({ emailService }) => emailService.sendWelcomeEmail(email, full_name))
+      .then(({ emailService }) => emailService.sendWelcomeEmail(email, fullName))
       .catch(err => console.error('Welcome email failed:', err));
 
     res.status(201).json({

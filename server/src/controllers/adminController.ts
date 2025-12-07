@@ -24,7 +24,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 
     let query = supabase
       .from('users')
-      .select('user_id, school_id, full_name, email, phone, role, course, year_level, status, created_at, last_active', { count: 'exact' });
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, status, created_at, last_active', { count: 'exact' });
 
     // Apply filters
     if (role && typeof role === 'string') {
@@ -36,7 +36,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     }
 
     if (search && typeof search === 'string') {
-      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,school_id.ilike.%${search}%`);
+      query = query.or(`first_name.ilike.%${search}%,middle_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,school_id.ilike.%${search}%`);
     }
 
     // Pagination and sorting
@@ -73,7 +73,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, full_name, email, phone, role, course, year_level, profile_picture, bio, status, created_at, updated_at, last_active')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, profile_picture, bio, status, created_at, updated_at, last_active')
       .eq('user_id', id)
       .single();
 
@@ -97,7 +97,9 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       school_id,
       email,
       password,
-      full_name,
+      first_name,
+      middle_name,
+      last_name,
       role,
       phone,
       year_level,
@@ -106,10 +108,10 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     } = req.body;
 
     // Validate required fields
-    if (!school_id || !email || !password || !full_name || !role) {
+    if (!school_id || !email || !password || !first_name || !last_name || !role) {
       return res.status(400).json({
         success: false,
-        message: 'Student ID, email, password, full name, and role are required',
+        message: 'Student ID, email, password, first name, last name, and role are required',
       });
     }
 
@@ -149,14 +151,16 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         school_id: sanitizeInput(school_id),
         email: sanitizeInput(email),
         password: plainPassword,
-        full_name: sanitizeInput(full_name),
+        first_name: sanitizeInput(first_name),
+        middle_name: middle_name ? sanitizeInput(middle_name) : null,
+        last_name: sanitizeInput(last_name),
         role,
         phone: phone ? sanitizeInput(phone) : null,
         year_level: year_level || null,
         course: course ? sanitizeInput(course) : null,
         status,
       })
-      .select('user_id, school_id, full_name, email, role, phone, year_level, course, status, created_at')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, role, phone, year_level, course, status, created_at')
       .single();
 
     if (error) {
@@ -183,7 +187,9 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     const { id } = req.params;
     const {
       school_id,
-      full_name,
+      first_name,
+      middle_name,
+      last_name,
       email,
       phone,
       role,
@@ -197,7 +203,9 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     const updateData: any = {};
 
     if (school_id) updateData.school_id = sanitizeInput(school_id);
-    if (full_name) updateData.full_name = sanitizeInput(full_name);
+    if (first_name) updateData.first_name = sanitizeInput(first_name);
+    if (middle_name !== undefined) updateData.middle_name = middle_name ? sanitizeInput(middle_name) : null;
+    if (last_name) updateData.last_name = sanitizeInput(last_name);
     if (email) {
       if (!isValidEmail(email)) {
         return res.status(400).json({ success: false, message: 'Invalid email format' });
@@ -224,7 +232,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       .from('users')
       .update(updateData)
       .eq('user_id', id)
-      .select('user_id, school_id, full_name, email, phone, role, course, year_level, status, updated_at')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, status, updated_at')
       .single();
 
     if (error || !data) {
@@ -538,7 +546,7 @@ export const getActivityLog = async (req: Request, res: Response, next: NextFunc
     // Get recent users
     const { data: recentUsers } = await supabase
       .from('users')
-      .select('user_id, full_name, role, created_at')
+      .select('user_id, first_name, middle_name, last_name, role, created_at')
       .order('created_at', { ascending: false })
       .limit(validLimit);
 
@@ -549,8 +557,8 @@ export const getActivityLog = async (req: Request, res: Response, next: NextFunc
         session_id,
         status,
         created_at,
-        tutor:users!sessions_tutor_id_fkey(full_name),
-        tutee:users!sessions_tutee_id_fkey(full_name)
+        tutor:users!sessions_tutor_id_fkey(first_name, middle_name, last_name),
+        tutee:users!sessions_tutee_id_fkey(first_name, middle_name, last_name)
       `)
       .order('created_at', { ascending: false })
       .limit(validLimit);

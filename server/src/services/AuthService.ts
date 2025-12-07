@@ -6,7 +6,9 @@ interface RegisterData {
   school_id: string;
   email: string;
   password: string;
-  full_name: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
   role: 'tutor' | 'tutee';
   phone: string;
   year_level: string;
@@ -24,7 +26,10 @@ interface AuthResponse {
     user_id: number;
     school_id: string;
     email: string;
-    full_name: string;
+    first_name: string;
+    middle_name?: string | null;
+    last_name: string;
+    full_name: string; // Computed for display
     role: string;
     phone: string | null;
     year_level: string | null;
@@ -87,7 +92,9 @@ export class AuthService {
         school_id: data.school_id,
         email: data.email,
         password: plainPassword,
-        full_name: data.full_name,
+        first_name: data.first_name,
+        middle_name: data.middle_name || null,
+        last_name: data.last_name,
         role: data.role,
         phone: data.phone,
         year_level: data.year_level,
@@ -118,12 +125,18 @@ export class AuthService {
     }
 
     // Generate tokens
+    const fullName = newUser.middle_name 
+      ? `${newUser.first_name} ${newUser.middle_name} ${newUser.last_name}`
+      : `${newUser.first_name} ${newUser.last_name}`;
+
     const tokenPayload = {
       user_id: newUser.user_id,
       school_id: newUser.school_id,
       email: newUser.email,
       role: newUser.role,
-      full_name: newUser.full_name,
+      first_name: newUser.first_name,
+      middle_name: newUser.middle_name,
+      last_name: newUser.last_name,
     };
 
     const token = generateToken(tokenPayload);
@@ -134,7 +147,10 @@ export class AuthService {
         user_id: newUser.user_id,
         school_id: newUser.school_id,
         email: newUser.email,
-        full_name: newUser.full_name,
+        first_name: newUser.first_name,
+        middle_name: newUser.middle_name,
+        last_name: newUser.last_name,
+        full_name: fullName,
         role: newUser.role,
         phone: newUser.phone,
         year_level: newUser.year_level,
@@ -228,12 +244,18 @@ export class AuthService {
       .eq('user_id', user.user_id);
 
     // Generate tokens
+    const fullName = user.middle_name 
+      ? `${user.first_name} ${user.middle_name} ${user.last_name}`
+      : `${user.first_name} ${user.last_name}`;
+
     const tokenPayload = {
       user_id: user.user_id,
       school_id: user.school_id,
       email: user.email,
       role: user.role,
-      full_name: user.full_name,
+      first_name: user.first_name,
+      middle_name: user.middle_name,
+      last_name: user.last_name,
     };
 
     const token = generateToken(tokenPayload);
@@ -244,7 +266,10 @@ export class AuthService {
         user_id: user.user_id,
         school_id: user.school_id,
         email: user.email,
-        full_name: user.full_name,
+        first_name: user.first_name,
+        middle_name: user.middle_name,
+        last_name: user.last_name,
+        full_name: fullName,
         role: user.role,
         phone: user.phone,
         year_level: user.year_level,
@@ -262,7 +287,7 @@ export class AuthService {
   async getUserById(userId: number) {
     const { data: user, error } = await supabaseAdmin
       .from('users')
-      .select('user_id, school_id, email, full_name, role, phone, year_level, course, profile_picture, created_at, updated_at')
+      .select('user_id, school_id, email, first_name, middle_name, last_name, role, phone, year_level, course, profile_picture, created_at, updated_at')
       .eq('user_id', userId)
       .eq('status', 'active')
       .single();
@@ -271,7 +296,15 @@ export class AuthService {
       throw createError('User not found', 404);
     }
 
-    return user;
+    // Add computed full_name for backward compatibility
+    const fullName = user.middle_name 
+      ? `${user.first_name} ${user.middle_name} ${user.last_name}`
+      : `${user.first_name} ${user.last_name}`;
+
+    return {
+      ...user,
+      full_name: fullName
+    };
   }
 
   /**
@@ -309,7 +342,7 @@ export class AuthService {
     // Find user by email - USE ADMIN CLIENT
     const { data: user, error } = await supabaseAdmin
       .from('users')
-      .select('user_id, school_id, email, full_name, status')
+      .select('user_id, school_id, email, first_name, middle_name, last_name, status')
       .eq('email', email)
       .eq('status', 'active')
       .single();
@@ -330,8 +363,11 @@ export class AuthService {
 
     // Send reset email
     try {
+      const fullName = user.middle_name 
+        ? `${user.first_name} ${user.middle_name} ${user.last_name}`
+        : `${user.first_name} ${user.last_name}`;
       const { emailService } = await import('./emailService');
-      await emailService.sendPasswordReset(user.email, resetLink, user.full_name);
+      await emailService.sendPasswordReset(user.email, resetLink, fullName);
     } catch (emailError) {
       console.error('Failed to send reset email:', emailError);
       // Don't throw - still return success
