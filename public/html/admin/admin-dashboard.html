@@ -314,6 +314,66 @@
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
+
+        /* Container and Grid - matching student-dashboard */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .stat-card .stat-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            font-size: 16px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #5865F2;
+            margin: 0;
+            line-height: 1;
+            align-self: flex-end;
+            margin-top: auto;
+        }
+
+        /* Card title styling */
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
     </style>
 </head>
 <body>
@@ -422,7 +482,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Recent User Registrations</h3>
+                        <div class="card-title">Recent User Registrations</div>
                         <a href="/html/admin/admin-manage-users.html" class="text-primary">View all</a>
                     </div>
                     <div class="card-body" id="recentUsersList">
@@ -434,7 +494,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Pending Session Requests</h3>
+                        <div class="card-title">Pending Session Requests</div>
                         <a href="/html/admin/admin-manage-sessions.html?status=pending" class="text-primary">View all</a>
                     </div>
                     <div class="card-body" id="pendingSessionsList">
@@ -447,7 +507,7 @@
         <!-- Active Tutors -->
         <div class="card">
             <div class="card-header">
-                <h3>Active Tutors Overview</h3>
+                <div class="card-title">Active Tutors Overview</div>
                 <div class="card-header-actions">
                     <select id="tutorFilterSubject" class="form-select">
                         <option value="">All Subjects</option>
@@ -462,7 +522,7 @@
         <!-- System Activity -->
         <div class="card">
             <div class="card-header">
-                <h3>System Activity Log</h3>
+                <div class="card-title">System Activity Log</div>
                 <div class="card-header-actions">
                     <select id="activityFilter" class="form-select">
                         <option value="all">All Activities</option>
@@ -484,7 +544,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Sessions by Status</h3>
+                        <div class="card-title">Sessions by Status</div>
                     </div>
                     <div class="card-body">
                         <div id="sessionStatusChart" class="chart-container"></div>
@@ -495,7 +555,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Popular Subjects</h3>
+                        <div class="card-title">Popular Subjects</div>
                     </div>
                     <div class="card-body">
                         <div id="popularSubjectsChart" class="chart-container"></div>
