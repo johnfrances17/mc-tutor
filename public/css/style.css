@@ -1760,7 +1760,7 @@ body {
 
 .page-title { font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
 .page-subtitle { color: #6b7280; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-.section-title { font-size: 18px; font-weight: 600; color: #2d3748; margin-bottom: 16px; }
+.section-title { font-size: 18px; font-weight: 600; color: #ffffff; margin-bottom: 16px; }
 
 /* Page header styling */
 .page-header {
