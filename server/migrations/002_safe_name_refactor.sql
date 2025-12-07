@@ -266,20 +266,25 @@ DO $$
 DECLARE
   total_users INTEGER;
   users_with_names INTEGER;
-  unused_columns TEXT;
+  rls_status BOOLEAN;
 BEGIN
   -- Count users
   SELECT COUNT(*) INTO total_users FROM users;
   SELECT COUNT(*) INTO users_with_names FROM users 
     WHERE first_name IS NOT NULL AND last_name IS NOT NULL;
   
+  -- Check RLS status (use LIMIT 1 to avoid multiple row error)
+  SELECT COALESCE(rowsecurity, FALSE) INTO rls_status 
+  FROM pg_tables 
+  WHERE schemaname = 'public' AND tablename = 'users'
+  LIMIT 1;
+  
   RAISE NOTICE '========================================';
   RAISE NOTICE '✅ MIGRATION COMPLETE';
   RAISE NOTICE '========================================';
   RAISE NOTICE 'Total users: %', total_users;
   RAISE NOTICE 'Users with migrated names: %', users_with_names;
-  RAISE NOTICE 'RLS disabled: %', 
-    NOT (SELECT rowsecurity FROM pg_tables WHERE tablename = 'users');
+  RAISE NOTICE 'RLS disabled: %', NOT rls_status;
   RAISE NOTICE '';
   RAISE NOTICE '✅ Name fields: first_name, middle_name, last_name';
   RAISE NOTICE '✅ Indexes created for performance';
