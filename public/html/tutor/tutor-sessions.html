@@ -635,28 +635,27 @@
         </div>
     </div>
 
-    <script type="module" src="/scripts/api.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script type="module" src="/scripts/utils.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser } from '../scripts/auth.js';
-        import { showToast, formatDate, formatTime } from '../scripts/utils.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser } = window.auth;
+        const { showToast, formatDate, formatTime } = window;
 
-        const api = window.API;
+        const api = window.api || window.API;
         let currentUser = null;
         let allSessions = [];
         let currentFilter = 'all';
 
-        // Logout handler
+        // Logout handler - direct implementation
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
+            logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
+                window.auth.logout();
                 return false;
             });
         }

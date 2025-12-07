@@ -610,30 +610,6 @@
             border: 1px solid #fca5a5;
         }
 
-        .floating-message-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            text-decoration: none;
-            color: white;
-            font-size: 24px;
-        }
-        .floating-message-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
         /* User Header Component */
         .user-header {
             background: white;
@@ -783,8 +759,14 @@
         </div>
     </div>
 
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { getCurrentUser, requireRole } from '../scripts/auth.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser, requireRole } = window.auth;
+        const { api } = window;
 
         // Check authentication and role
         await requireRole('tutor');
@@ -966,12 +948,16 @@
             setTimeout(() => container.innerHTML = '', 5000);
         }
 
-        // Logout handler
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            const { handleLogout } = await import('../scripts/auth.js');
-            handleLogout();
-        });
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
 
         // Initialize
         await loadSubjects();

@@ -445,33 +445,6 @@
     </div>
 
     <div class="container">
-        <!-- Stats Cards -->
-        <div class="dashboard-grid">
-            <div class="stat-card" id="pendingSessions">
-                <div class="stat-content">
-                    <h3>Pending Requests</h3>
-                    <p class="number">0</p>
-                </div>
-            </div>
-            <div class="stat-card" id="confirmedSessions">
-                <div class="stat-content">
-                    <h3>Confirmed</h3>
-                    <p class="number">0</p>
-                </div>
-            </div>
-            <div class="stat-card" id="completedSessions">
-                <div class="stat-content">
-                    <h3>Completed</h3>
-                    <p class="number">0</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-content">
-                    <h3>Avg Rating</h3>
-                    <p class="number" id="averageRating">0.0</p>
-                </div>
-            </div>
-        </div>
 
         <!-- Pending Session Requests -->
         <div class="card" id="pendingRequestsCard">
@@ -546,13 +519,15 @@
         </div>
     </div>
 
-    <script type="module" src="/scripts/api.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script type="module" src="/scripts/utils.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
     <script type="module">
-        import { api } from '../scripts/api.js';
-        import { getCurrentUser } from '../scripts/auth.js';
-        import { showToast, formatDate, formatTime, formatDateTime, generateStars, getStatusBadgeClass } from '../scripts/utils.js';
+        // Using window.auth from auth.js loaded above
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
+        const { showToast, formatDate, formatTime, formatDateTime, generateStars, getStatusBadgeClass } = window;
 
         let currentUser = null;
 
@@ -562,10 +537,7 @@
             logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Logout clicked!');
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/html/auth/login.html?logout=true');
+                window.auth.logout();
                 return false;
             });
         }
@@ -611,27 +583,16 @@
                     api.get('/chat/conversations')
                 ]);
 
-                const pending = sessions.data.filter(s => s.status === 'pending');
-                const upcoming = sessions.data.filter(s => 
-                    s.status === 'confirmed' && new Date(s.session_date) > new Date()
-                );
-                const completed = sessions.data.filter(s => s.status === 'completed');
+                const allSessions = sessions.data || [];
+                const pending = allSessions.filter(s => s.status === 'pending');
                 const unreadChats = conversations.data.reduce((sum, conv) => sum + conv.unread_count, 0);
 
-                document.getElementById('pendingRequestsCount').textContent = pending.length;
-                document.getElementById('upcomingSessionsCount').textContent = upcoming.length;
-                document.getElementById('completedSessionsCount').textContent = completed.length;
-
-                // Calculate average rating
-                const ratings = feedback.data.map(f => f.rating);
-                const avgRating = ratings.length > 0 
-                    ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
-                    : '0.0';
-                document.getElementById('averageRating').textContent = avgRating;
+                // Update pending badge
+                document.getElementById('pendingBadge').textContent = pending.length;
 
                 // Update message badge
                 const badge = document.getElementById('unreadMessagesCount');
-                if (unreadChats > 0) {
+                if (badge && unreadChats > 0) {
                     badge.textContent = unreadChats;
                     badge.style.display = 'inline-block';
                 }
@@ -844,15 +805,15 @@
         };
 
         // Logout handler - direct implementation
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Logout clicked!');
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.replace('/html/auth/login.html?logout=true');
-            return false;
-        });
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
 
         // Initialize on load
         initDashboard();
