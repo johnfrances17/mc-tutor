@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -119,12 +119,15 @@
             height: 35px;
             border-radius: 50%;
             background: white;
-            color: #5865F2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+            overflow: hidden;
             flex-shrink: 0;
+            border: 2px solid white;
+        }
+
+        .user-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-details-inline {
@@ -333,7 +336,7 @@
             <div class="nav-right">
                 <div class="user-info-inline">
                     <div class="user-avatar-small" data-user-avatar>
-                        <i class="fas fa-user-shield"></i>
+                        <img src="/image/default.png" alt="User Avatar" id="navAvatarImg">
                     </div>
                     <div class="user-details-inline">
                         <span class="user-name-inline" data-user-name>Admin</span>
@@ -387,37 +390,29 @@
     <div class="container">
 
         <!-- System Stats -->
-        <div class="stats-grid">
+        <div class="dashboard-grid">
             <div class="stat-card">
-                <div class="stat-icon">👥</div>
                 <div class="stat-content">
-                    <div class="stat-value" id="totalUsersCount">0</div>
-                    <div class="stat-label">Total Users</div>
-                    <div class="stat-breakdown" id="userBreakdown"></div>
+                    Total Users
+                    <p class="number" id="totalUsersCount">0</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📚</div>
                 <div class="stat-content">
-                    <div class="stat-value" id="totalSessionsCount">0</div>
-                    <div class="stat-label">Total Sessions</div>
-                    <div class="stat-breakdown" id="sessionBreakdown"></div>
+                    Total Sessions
+                    <p class="number" id="totalSessionsCount">0</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📖</div>
                 <div class="stat-content">
-                    <div class="stat-value" id="totalSubjectsCount">0</div>
-                    <div class="stat-label">Subjects</div>
-                    <div class="stat-breakdown" id="subjectBreakdown"></div>
+                    Subjects
+                    <p class="number" id="totalSubjectsCount">0</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📄</div>
                 <div class="stat-content">
-                    <div class="stat-value" id="totalMaterialsCount">0</div>
-                    <div class="stat-label">Study Materials</div>
-                    <div class="stat-breakdown" id="materialsBreakdown"></div>
+                    Study Materials
+                    <p class="number" id="totalMaterialsCount">0</p>
                 </div>
             </div>
         </div>
@@ -673,8 +668,8 @@
                             <div class="session-info">
                                 <div class="session-subject">${session.subject_name || 'Subject'}</div>
                                 <div class="session-details">
-                                    <span>👤 ${session.student_name} → ${session.tutor_name}</span>
-                                    <span>📅 ${formatDate(session.session_date)}</span>
+                                    <span>?? ${session.student_name} ? ${session.tutor_name}</span>
+                                    <span>?? ${formatDate(session.session_date)}</span>
                                 </div>
                             </div>
                             <span class="badge badge-warning">Pending</span>
@@ -772,7 +767,7 @@
                         type: 'session_created',
                         description: `${session.student_name} booked a session with ${session.tutor_name}`,
                         timestamp: session.created_at,
-                        icon: '📚'
+                        icon: '??'
                     });
                 });
 
