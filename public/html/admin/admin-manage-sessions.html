@@ -436,6 +436,14 @@
                     return;
                 }
 
+                // Update user display
+                document.querySelectorAll('[data-user-name]').forEach(el => {
+                    el.textContent = currentUser.first_name || 'Admin';
+                });
+                document.querySelectorAll('[data-user-role]').forEach(el => {
+                    el.textContent = currentUser.role.toUpperCase();
+                });
+
                 await Promise.all([
                     loadSessions(),
                     loadSubjects()

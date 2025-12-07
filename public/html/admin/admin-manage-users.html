@@ -469,11 +469,12 @@
         
         // Update user display
         if (currentUser) {
-            const fullName = currentUser.last_name && currentUser.first_name 
-                ? `${currentUser.last_name}, ${currentUser.first_name}${currentUser.middle_name ? ' ' + currentUser.middle_name : ''}`
-                : 'Admin';
-            document.querySelectorAll('[data-user-name]').forEach(el => el.textContent = fullName);
-            document.querySelectorAll('[data-user-role]').forEach(el => el.textContent = currentUser.role.toUpperCase());
+            document.querySelectorAll('[data-user-name]').forEach(el => {
+                el.textContent = currentUser.first_name || 'Admin';
+            });
+            document.querySelectorAll('[data-user-role]').forEach(el => {
+                el.textContent = currentUser.role.toUpperCase();
+            });
         }
 
         let allUsers = [];
