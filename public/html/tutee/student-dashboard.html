@@ -649,7 +649,6 @@
                 }
             } catch (error) {
                 console.error('Error loading sessions:', error);
-                container.innerHTML = '<p class="text-muted">Failed to load sessions</p>';
             }
         }
         
@@ -673,10 +672,9 @@
                             <a href="${material.file_url}" target="_blank" class="btn btn-sm btn-primary">Download</a>
                         </div>
                     `).join('');
-                }
+                })
             } catch (error) {
                 console.error('Error loading materials:', error);
-                container.innerHTML = '<p class="text-muted">Failed to load materials</p>';
             }
         }
         

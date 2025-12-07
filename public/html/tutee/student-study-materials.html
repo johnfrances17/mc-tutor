@@ -612,7 +612,6 @@
 
         } catch (error) {
             console.error('Init error:', error);
-            showToast('Failed to load page', 'error');
         }
     }
 
@@ -682,8 +681,6 @@
 
             } catch (error) {
                 console.error('Load materials error:', error);
-                document.getElementById('materialsList').innerHTML = 
-                    '<p class="text-muted">Failed to load materials</p>';
             }
         }
 

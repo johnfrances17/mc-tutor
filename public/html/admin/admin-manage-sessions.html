@@ -185,7 +185,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -204,7 +204,7 @@
         }
         .user-role-badge {
             font-size: 11px;
-            color: #667eea;
+            color: #5865F2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -216,12 +216,12 @@
             right: 30px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 1000;
@@ -333,7 +333,7 @@
                 <tbody id="sessionsTableBody">
                     <tr>
                         <td colspan="8" style="text-align: center; padding: 40px;">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #5865F2;"></i>
                         </td>
                     </tr>
                 </tbody>
@@ -385,7 +385,6 @@
                 setupEventListeners();
             } catch (error) {
                 console.error('Init error:', error);
-                showToast('Failed to load page', 'error');
             }
         }
 
@@ -398,9 +397,6 @@
                 renderSessions();
             } catch (error) {
                 console.error('Load sessions error:', error);
-                showToast('Failed to load sessions', 'error');
-                document.getElementById('sessionsTableBody').innerHTML = 
-                    '<tr><td colspan="8" class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Failed to load sessions</p></td></tr>';
             }
         }
 

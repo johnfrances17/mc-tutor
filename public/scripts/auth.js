@@ -378,7 +378,12 @@ function initAuth() {
   if (user) {
     const userNameElements = document.querySelectorAll('[data-user-name]');
     userNameElements.forEach(el => {
-      el.textContent = user.fullName || user.full_name || 'User';
+      // Use computed fullName from backend, or construct from name parts
+      const fullName = user.fullName || user.full_name || 
+                      (user.first_name && user.last_name ? 
+                        `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
+                        'User');
+      el.textContent = fullName;
     });
     
     const userRoleElements = document.querySelectorAll('[data-user-role]');

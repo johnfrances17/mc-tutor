@@ -60,7 +60,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -79,7 +79,7 @@
         }
         .user-role-badge {
             font-size: 11px;
-            color: #667eea;
+            color: #5865F2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -91,12 +91,12 @@
             right: 30px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 1000;
@@ -341,7 +341,6 @@
                 renderCharts();
             } catch (error) {
                 console.error('Dashboard init error:', error);
-                showToast('Failed to load dashboard', 'error');
             }
         }
 
@@ -407,12 +406,17 @@
                 if (users.length === 0) {
                     container.innerHTML = '<p class="text-muted">No recent registrations</p>';
                 } else {
-                    container.innerHTML = users.map(user => `
+                    container.innerHTML = users.map(user => {
+                        const userFullName = user.fullName || user.full_name || 
+                            (user.first_name && user.last_name ? 
+                              `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
+                              'User');
+                        return `
                         <div class="user-item">
-                            <div class="user-avatar">${user.full_name.charAt(0)}</div>
+                            <div class="user-avatar">${userFullName.charAt(0)}</div>
                             <div class="user-info">
-                                <div class="user-name">${user.full_name}</div>
-                                <div class="user-meta">
+                                <div class="user-name">${userFullName}</div>
+                                <div class="user-meta">`;
                                     <span class="badge ${user.role === 'tutor' ? 'badge-primary' : 'badge-secondary'}">
                                         ${user.role}
                                     </span>
@@ -426,8 +430,6 @@
                 }
             } catch (error) {
                 console.error('Recent users error:', error);
-                document.getElementById('recentUsersList').innerHTML = 
-                    '<p class="text-muted">Failed to load users</p>';
             }
         }
 
@@ -456,8 +458,6 @@
                 }
             } catch (error) {
                 console.error('Pending sessions error:', error);
-                document.getElementById('pendingSessionsList').innerHTML = 
-                    '<p class="text-muted">Failed to load sessions</p>';
             }
         }
 
@@ -508,10 +508,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${tutorStats.map(tutor => `
+                                ${tutorStats.map(tutor => {
+                                    const tutorFullName = tutor.fullName || tutor.full_name || 
+                                        (tutor.first_name && tutor.last_name ? 
+                                          `${tutor.first_name} ${tutor.middle_name || ''} ${tutor.last_name}`.replace(/\s+/g, ' ').trim() : 
+                                          'User');
+                                    return `
                                     <tr>
-                                        <td>${tutor.full_name}</td>
-                                        <td>${tutor.student_id}</td>
+                                        <td>${tutorFullName}</td>
+                                        <td>${tutor.student_id}</td>`;
                                         <td>${tutor.subject_count || 0}</td>
                                         <td>${tutor.sessionCount}</td>
                                         <td>${tutor.completedSessions}</td>
@@ -527,8 +532,6 @@
                 `;
             } catch (error) {
                 console.error('Active tutors error:', error);
-                document.getElementById('activeTutorsList').innerHTML = 
-                    '<p class="text-muted">Failed to load tutors</p>';
             }
         }
 
@@ -566,8 +569,6 @@
                 }
             } catch (error) {
                 console.error('Activity log error:', error);
-                document.getElementById('activityLogList').innerHTML = 
-                    '<p class="text-muted">Failed to load activity log</p>';
             }
         }
 

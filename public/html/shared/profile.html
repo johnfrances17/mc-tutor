@@ -110,8 +110,23 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Full Name *</label>
-                                <input type="text" id="fullName" class="form-control" required disabled>
+                                <label>First Name *</label>
+                                <input type="text" id="firstName" class="form-control" required disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="gap: 20px;">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Middle Name</label>
+                                <input type="text" id="middleName" class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Last Name *</label>
+                                <input type="text" id="lastName" class="form-control" required disabled>
                             </div>
                         </div>
                     </div>
@@ -253,7 +268,6 @@
 
             } catch (error) {
                 console.error('Init error:', error);
-                showToast('Failed to load profile', 'error');
             }
         }
 
@@ -266,15 +280,18 @@
 
                 // Populate form
                 document.getElementById('studentId').value = currentUser.school_id || '';
-                document.getElementById('fullName').value = currentUser.full_name || '';
+                document.getElementById('firstName').value = currentUser.first_name || '';
+                document.getElementById('middleName').value = currentUser.middle_name || '';
+                document.getElementById('lastName').value = currentUser.last_name || '';
                 document.getElementById('email').value = currentUser.email || '';
                 document.getElementById('phone').value = currentUser.phone || '';
                 document.getElementById('course').value = currentUser.course || '';
                 document.getElementById('yearLevel').value = currentUser.year_level || '';
                 document.getElementById('role').value = currentUser.role || '';
 
-                // Set avatar
-                const initial = currentUser.full_name ? currentUser.full_name.charAt(0).toUpperCase() : 'U';
+                // Set avatar (use first_name or full_name from backend computed field)
+                const fullName = currentUser.fullName || currentUser.full_name || `${currentUser.first_name} ${currentUser.last_name}`;
+                const initial = fullName ? fullName.charAt(0).toUpperCase() : 'U';
                 document.getElementById('avatarInitial').textContent = initial;
 
                 // Account info
@@ -287,14 +304,13 @@
 
             } catch (error) {
                 console.error('Load profile error:', error);
-                showToast('Failed to load profile', 'error');
             }
         }
 
         // Toggle edit mode
         function toggleEditMode(enable) {
             isEditMode = enable;
-            const fields = ['fullName', 'email', 'phone', 'course', 'yearLevel'];
+            const fields = ['firstName', 'middleName', 'lastName', 'email', 'phone', 'course', 'yearLevel'];
             
             fields.forEach(field => {
                 document.getElementById(field).disabled = !enable;
@@ -310,7 +326,9 @@
             e.preventDefault();
 
             const updatedProfile = {
-                full_name: document.getElementById('fullName').value,
+                first_name: document.getElementById('firstName').value,
+                middle_name: document.getElementById('middleName').value,
+                last_name: document.getElementById('lastName').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 course: document.getElementById('course').value,
@@ -407,7 +425,11 @@
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                 toggleEditMode(false);
                 // Restore original values
-                document.getElementById('fullName').value = originalProfile.full_name || '';
+                const originalFullName = originalProfile.fullName || originalProfile.full_name || 
+                    (originalProfile.first_name && originalProfile.last_name ? 
+                      `${originalProfile.first_name} ${originalProfile.middle_name || ''} ${originalProfile.last_name}`.replace(/\s+/g, ' ').trim() : 
+                      '');
+                document.getElementById('fullName').value = originalFullName;
                 document.getElementById('email').value = originalProfile.email || '';
                 document.getElementById('phone').value = originalProfile.phone || '';
                 document.getElementById('course').value = originalProfile.course || '';

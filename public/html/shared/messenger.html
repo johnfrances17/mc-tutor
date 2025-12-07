@@ -458,7 +458,6 @@
 
             } catch (error) {
                 console.error('Messenger init error:', error);
-                showToast('Failed to load messenger', 'error');
             }
         }
 
@@ -613,8 +612,12 @@
 
                 container.innerHTML = messages.map(function(msg) {
                     const isSent = msg.sender_student_id === currentUser.school_id;
+                    const currentUserFullName = currentUser.fullName || currentUser.full_name || 
+                        (currentUser.first_name && currentUser.last_name ? 
+                          `${currentUser.first_name} ${currentUser.middle_name || ''} ${currentUser.last_name}`.replace(/\s+/g, ' ').trim() : 
+                          'User');
                     return '<div class="message ' + (isSent ? 'sent' : 'received') + '">' +
-                        '<div class="message-avatar">' + (isSent ? currentUser.full_name.charAt(0) : currentConversation.other_user_name.charAt(0)) + '</div>' +
+                        '<div class="message-avatar">' + (isSent ? currentUserFullName.charAt(0) : currentConversation.other_user_name.charAt(0)) + '</div>' +
                         '<div class="message-content">' +
                         '<div class="message-bubble">' + escapeHtml(msg.message) + '</div>' +
                         '<div class="message-time">' + formatTime(msg.created_at) + '</div>' +
@@ -667,7 +670,11 @@
             if (!container) return;
 
             const isSent = msgData.senderId === currentUser.school_id;
-            const senderName = isSent ? currentUser.full_name : currentConversation.other_user_name;
+            const currentUserFullName = currentUser.fullName || currentUser.full_name || 
+                (currentUser.first_name && currentUser.last_name ? 
+                  `${currentUser.first_name} ${currentUser.middle_name || ''} ${currentUser.last_name}`.replace(/\s+/g, ' ').trim() : 
+                  'User');
+            const senderName = isSent ? currentUserFullName : currentConversation.other_user_name;
             
             const messageHTML = 
                 '<div class="message ' + (isSent ? 'sent' : 'received') + '">' +

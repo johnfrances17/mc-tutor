@@ -29,9 +29,9 @@
         
         .floating-message-btn {
             position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer;
             transition: all 0.3s ease; z-index: 1000; text-decoration: none;
             color: white; font-size: 24px;
         }
@@ -58,7 +58,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -77,7 +77,7 @@
         }
         .user-role-badge {
             font-size: 11px;
-            color: #667eea;
+            color: #5865F2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -253,7 +253,6 @@
 
         } catch (error) {
             console.error('Init error:', error);
-            showToast('Failed to load page', 'error');
         }
 
         // Load subjects
@@ -311,8 +310,6 @@
 
             } catch (error) {
                 console.error('Load materials error:', error);
-                document.getElementById('materialsList').innerHTML = 
-                    '<p class="text-muted">Failed to load materials</p>';
             }
         }
 

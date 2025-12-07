@@ -558,7 +558,11 @@
                     return;
                 }
 
-                document.getElementById('tutorName').textContent = currentUser.full_name;
+                const tutorFullName = currentUser.fullName || currentUser.full_name || 
+                    (currentUser.first_name && currentUser.last_name ? 
+                      `${currentUser.first_name} ${currentUser.middle_name || ''} ${currentUser.last_name}`.replace(/\s+/g, ' ').trim() : 
+                      'User');
+                document.getElementById('tutorName').textContent = tutorFullName;
 
                 // Load all data
                 await Promise.all([
@@ -570,7 +574,6 @@
                 ]);
             } catch (error) {
                 console.error('Dashboard init error:', error);
-                showToast('Failed to load dashboard', 'error');
             }
         }
 
@@ -640,8 +643,6 @@
                 `).join('');
             } catch (error) {
                 console.error('Pending requests error:', error);
-                document.getElementById('pendingRequestsList').innerHTML = 
-                    '<p class="text-muted">Failed to load requests</p>';
             }
         }
 
@@ -682,8 +683,6 @@
                 }
             } catch (error) {
                 console.error('Sessions error:', error);
-                document.getElementById('upcomingSessionsList').innerHTML = 
-                    '<p class="text-muted">Failed to load sessions</p>';
             }
         }
 
@@ -749,8 +748,6 @@
                 }
             } catch (error) {
                 console.error('Feedback error:', error);
-                document.getElementById('recentFeedbackList').innerHTML = 
-                    '<p class="text-muted">Failed to load feedback</p>';
             }
         }
 

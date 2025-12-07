@@ -674,7 +674,6 @@
                 setupEventListeners();
             } catch (error) {
                 console.error('Init error:', error);
-                showToast('Failed to load page', 'error');
             }
         }
 
@@ -686,9 +685,6 @@
                 renderSessions();
             } catch (error) {
                 console.error('Load sessions error:', error);
-                showToast('Failed to load sessions', 'error');
-                document.getElementById('sessionsContainer').innerHTML = 
-                    '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Failed to load sessions</p></div>';
             }
         }
 

@@ -87,7 +87,6 @@ async function initializePage(pageName, user) {
       await initializer(user);
     } catch (error) {
       console.error(`Error initializing ${pageName}:`, error);
-      handleApiError?.(error, `Failed to load ${pageName}`);
     }
   }
 }
@@ -124,7 +123,11 @@ async function initStudentDashboard(user) {
   // Update welcome message
   const studentNameEl = document.getElementById('studentName');
   if (studentNameEl) {
-    studentNameEl.textContent = user.full_name || user.fullName || 'Student';
+    const fullName = user.fullName || user.full_name || 
+                    (user.first_name && user.last_name ? 
+                      `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
+                      'Student');
+    studentNameEl.textContent = fullName;
   }
 
   // Load dashboard stats
@@ -208,8 +211,7 @@ async function loadUpcomingSessions() {
       `).join('');
     }
   } catch (error) {
-    console.error('Error loading upcoming sessions:', error);
-    showError?.(container, 'Failed to load sessions');
+    console.error('Error loading tutor upcoming sessions:', error);
   }
 }
 
@@ -223,7 +225,11 @@ async function initTutorDashboard(user) {
   // Update welcome message
   const tutorNameEl = document.getElementById('tutorName');
   if (tutorNameEl) {
-    tutorNameEl.textContent = user.full_name || user.fullName || 'Tutor';
+    const fullName = user.fullName || user.full_name || 
+                    (user.first_name && user.last_name ? 
+                      `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
+                      'Tutor');
+    tutorNameEl.textContent = fullName;
   }
 
   // Load dashboard stats
@@ -309,7 +315,6 @@ async function loadPendingRequests() {
     }
   } catch (error) {
     console.error('Error loading pending requests:', error);
-    showError?.(container, 'Failed to load requests');
   }
 }
 
@@ -360,8 +365,7 @@ async function loadTutorUpcomingSessions() {
       `).join('');
     }
   } catch (error) {
-    console.error('Error loading upcoming sessions:', error);
-    showError?.(container, 'Failed to load sessions');
+    console.error('Error loading pending requests:', error);
   }
 }
 

@@ -222,7 +222,7 @@
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             color: white;
             padding: 20px;
             border-radius: 12px;
@@ -261,7 +261,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -280,7 +280,7 @@
         }
         .user-role-badge {
             font-size: 11px;
-            color: #667eea;
+            color: #5865F2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -292,12 +292,12 @@
             right: 30px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 1000;
@@ -484,12 +484,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${users.map(user => `
+                        ${users.map(user => {
+                            const userFullName = user.fullName || user.full_name || 
+                                (user.first_name && user.last_name ? 
+                                  `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
+                                  'User');
+                            return `
                             <tr>
                                 <td>${user.user_id}</td>
                                 <td>${user.student_id || '-'}</td>
-                                <td><strong>${user.full_name}</strong></td>
-                                <td>${user.email}</td>
+                                <td><strong>${userFullName}</strong></td>
+                                <td>${user.email}</td>`;
                                 <td><span class="badge badge-${user.role}">${user.role.toUpperCase()}</span></td>
                                 <td>${user.course || '-'}</td>
                                 <td>${user.year_level || '-'}</td>
@@ -529,8 +534,9 @@
             let filtered = allUsers;
 
             if (searchTerm) {
-                filtered = filtered.filter(user => 
-                    user.full_name.toLowerCase().includes(searchTerm) ||
+                filtered = filtered.filter(user => {
+                    const userFullName = user.fullName || user.full_name || `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`.trim();
+                    return userFullName.toLowerCase().includes(searchTerm) ||
                     user.email.toLowerCase().includes(searchTerm) ||
                     (user.student_id && user.student_id.toLowerCase().includes(searchTerm))
                 );
