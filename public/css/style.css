@@ -546,20 +546,20 @@ table td .btn {
 }
 
 .stat-card {
-    background: white;
+    background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
     padding: 30px;
     border-radius: 12px;
-    border: 1px solid #e8e8e8;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: all 0.3s;
     display: flex;
     flex-direction: column;
     min-height: 180px;
+    color: white;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
 .stat-card .stat-content {
@@ -572,7 +572,7 @@ table td .btn {
 .stat-card h3 {
     font-size: 16px;
     margin: 0;
-    color: #666;
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -580,7 +580,7 @@ table td .btn {
 }
 
 .stat-card p {
-    color: #666;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 16px;
     margin: 0;
 }
@@ -588,7 +588,7 @@ table td .btn {
 .stat-card .number {
     font-size: 48px;
     font-weight: 700;
-    color: #667eea;
+    color: white;
     margin: 0;
     line-height: 1;
     align-self: flex-end;
