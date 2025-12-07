@@ -348,6 +348,7 @@ DECLARE
   total_users INTEGER;
   users_with_names INTEGER;
   unrestricted_tables INTEGER;
+  rec RECORD;
 BEGIN
   -- Count users
   SELECT COUNT(*) INTO total_users FROM users;
