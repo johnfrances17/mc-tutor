@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,12 @@
     <title>Study Materials - MC Tutor</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Base font styling */
+        * { font-family: 'Montserrat', sans-serif; }
+        body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
+
         #logoutBtn { color: #dc3545 !important; }
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
         
@@ -119,7 +124,7 @@
     <div class="page-header">
         <h1>Study Materials</h1>
         <button class="btn btn-primary" id="uploadBtn" style="display: none; margin-left: auto;">
-            📤 Upload Material
+            ?? Upload Material
         </button>
     </div>
 
@@ -353,7 +358,7 @@
                                     <span class="text-muted">${formatDate(material.uploaded_at)}</span>
                                     <button class="btn btn-sm btn-primary" 
                                             onclick="downloadMaterial('${material.id}', '${material.filename}')">
-                                        ⬇️ Download
+                                        ?? Download
                                     </button>
                                     ${currentUser.role === 'tutor' && material.tutor_student_id === currentUser.school_id ? 
                                         `<button class="btn btn-sm btn-danger" onclick="deleteMaterial('${material.id}')">Delete</button>` : ''
@@ -372,16 +377,16 @@
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const icons = {
-                pdf: '📕',
-                doc: '📘',
-                docx: '📘',
-                ppt: '📙',
-                pptx: '📙',
-                txt: '📄',
-                zip: '📦',
-                rar: '📦'
+                pdf: '??',
+                doc: '??',
+                docx: '??',
+                ppt: '??',
+                pptx: '??',
+                txt: '??',
+                zip: '??',
+                rar: '??'
             };
-            return icons[ext] || '📄';
+            return icons[ext] || '??';
         }
 
         // Render pagination
@@ -516,6 +521,10 @@
     </script>
 
     <style>
+        /* Base font styling */
+        * { font-family: 'Montserrat', sans-serif; }
+        body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
+
         .materials-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

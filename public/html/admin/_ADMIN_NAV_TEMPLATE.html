@@ -1,0 +1,44 @@
+<!-- ADMIN NAVIGATION TEMPLATE -->
+<!-- Copy this entire navigation structure to replace old navbar in all admin files -->
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
+        <div class="nav-right">
+            <div class="user-info-inline">
+                <div class="user-avatar-small" data-user-avatar>
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-details-inline">
+                    <span class="user-name-inline" data-user-name>Admin</span>
+                    <span class="user-role-badge-inline" data-user-role">ADMIN</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Collapsible Secondary Navigation -->
+<nav class="secondary-navbar" id="secondaryNav">
+    <div class="secondary-nav-container">
+        <div class="secondary-nav-links">
+            <a href="/html/admin/admin-dashboard.html" class="secondary-nav-link">Dashboard</a>
+            <a href="/html/admin/admin-manage-users.html" class="secondary-nav-link">Users</a>
+            <a href="/html/admin/admin-manage-sessions.html" class="secondary-nav-link">Sessions</a>
+            <a href="/html/admin/admin-manage-subjects.html" class="secondary-nav-link">Subjects</a>
+            <a href="/html/admin/admin-view-materials.html" class="secondary-nav-link">Materials</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Floating Message Button -->
+<a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
+    <i class="fas fa-comments"></i>
+</a>

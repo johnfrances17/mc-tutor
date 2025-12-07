@@ -108,10 +108,36 @@ ALTER TABLE users
 ADD CONSTRAINT check_middle_name_length 
   CHECK (middle_name IS NULL OR (char_length(middle_name) >= 1 AND char_length(middle_name) <= 100));
 
-RAISE NOTICE '✅ Constraints added';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Constraints added';
+END $$;
 
 -- ============================================
--- STEP 4: DELETE full_name column (NO LONGER NEEDED!)
+-- STEP 4: DELETE DUPLICATE/USELESS VIEWS FIRST!
+-- ============================================
+
+DROP VIEW IF EXISTS users_with_full_name CASCADE;
+DROP VIEW IF EXISTS users_legacy CASCADE;
+DROP VIEW IF EXISTS active_students CASCADE;
+DROP VIEW IF EXISTS active_tutors CASCADE;
+DROP VIEW IF EXISTS upcoming_sessions CASCADE;
+
+DO $$ 
+BEGIN
+  RAISE NOTICE '🗑️ Deleted useless views: users_with_full_name, users_legacy, active_students, active_tutors, upcoming_sessions';
+END $$;
+
+DROP TABLE IF EXISTS users_legacy_backup CASCADE;
+DROP TABLE IF EXISTS sessions_backup CASCADE;
+
+DO $$ 
+BEGIN
+  RAISE NOTICE '🗑️ Deleted backup tables if existed';
+END $$;
+
+-- ============================================
+-- STEP 5: NOW DELETE full_name column (NO LONGER NEEDED!)
 -- ============================================
 
 DO $$
@@ -120,13 +146,13 @@ BEGIN
     SELECT 1 FROM information_schema.columns 
     WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'full_name'
   ) THEN
-    ALTER TABLE users DROP COLUMN full_name;
+    ALTER TABLE users DROP COLUMN full_name CASCADE;
     RAISE NOTICE '🗑️ DELETED full_name column - no longer needed!';
   END IF;
 END $$;
 
 -- ============================================
--- STEP 5: Create helper function for display
+-- STEP 6: Create helper function for display
 -- ============================================
 
 CREATE OR REPLACE FUNCTION get_full_name(
@@ -144,10 +170,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
-RAISE NOTICE '✅ Helper function created';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Helper function created';
+END $$;
 
 -- ============================================
--- STEP 6: Create optimized indexes
+-- STEP 7: Create optimized indexes
 -- ============================================
 
 CREATE INDEX IF NOT EXISTS idx_users_first_name ON users(first_name);
@@ -165,10 +194,13 @@ CREATE INDEX idx_users_name_search ON users
     COALESCE(last_name, '')
   ));
 
-RAISE NOTICE '✅ Indexes created';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Indexes created';
+END $$;
 
 -- ============================================
--- STEP 7: DISABLE RLS on ALL tables
+-- STEP 8: DISABLE RLS on ALL tables
 -- ============================================
 
 DO $$ 
@@ -185,7 +217,6 @@ BEGIN
   END LOOP;
 END $$;
 
--- Drop all policies
 DO $$ 
 DECLARE
   pol RECORD;
@@ -199,25 +230,6 @@ BEGIN
   END LOOP;
   RAISE NOTICE '✅ All RLS policies dropped';
 END $$;
-
--- ============================================
--- STEP 8: DELETE DUPLICATE/USELESS TABLES & VIEWS
--- ============================================
-
--- Delete useless views
-DROP VIEW IF EXISTS users_with_full_name CASCADE;
-DROP VIEW IF EXISTS users_legacy CASCADE;
-DROP VIEW IF EXISTS active_students CASCADE;
-DROP VIEW IF EXISTS active_tutors CASCADE;
-DROP VIEW IF EXISTS upcoming_sessions CASCADE;
-
-RAISE NOTICE '🗑️ Deleted useless views: users_with_full_name, users_legacy, active_students, active_tutors, upcoming_sessions';
-
--- Delete duplicate tables if they exist
-DROP TABLE IF EXISTS users_legacy_backup CASCADE;
-DROP TABLE IF EXISTS sessions_backup CASCADE;
-
-RAISE NOTICE '🗑️ Deleted backup tables if existed';
 
 -- ============================================
 -- STEP 9: Add security fields
@@ -250,7 +262,10 @@ END $$;
 CREATE INDEX IF NOT EXISTS idx_users_locked ON users(account_locked_until) 
   WHERE account_locked_until IS NOT NULL;
 
-RAISE NOTICE '✅ Security fields added';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Security fields added';
+END $$;
 
 -- ============================================
 -- STEP 10: Create audit log table
@@ -270,23 +285,27 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs(created_at DESC)
 
 ALTER TABLE audit_logs DISABLE ROW LEVEL SECURITY;
 
-RAISE NOTICE '✅ Audit logs table ready';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Audit logs table ready';
+END $$;
 
 -- ============================================
 -- STEP 11: Create useful helper views (ONLY IF NEEDED)
 -- ============================================
 
--- Simple view to get students (replaces active_students)
 CREATE OR REPLACE VIEW students AS
 SELECT * FROM users 
 WHERE role = 'tutee' AND status = 'active' AND deleted_at IS NULL;
 
--- Simple view to get tutors (replaces active_tutors)
 CREATE OR REPLACE VIEW tutors AS
 SELECT * FROM users 
 WHERE role = 'tutor' AND status = 'active' AND deleted_at IS NULL;
 
-RAISE NOTICE '✅ Created simple views: students, tutors';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Created simple views: students, tutors';
+END $$;
 
 -- ============================================
 -- STEP 12: Create search function
@@ -294,9 +313,9 @@ RAISE NOTICE '✅ Created simple views: students, tutors';
 
 CREATE OR REPLACE FUNCTION search_users_by_name(search_term TEXT)
 RETURNS TABLE(
-  user_id INTEGER,
-  full_name TEXT,
-  email VARCHAR,
+-- ============================================
+-- STEP 11: Create NEW simple views (ONLY IF NEEDED)
+-- ============================================
   role VARCHAR,
   status VARCHAR
 ) AS $$
@@ -322,7 +341,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
-RAISE NOTICE '✅ Search function created';
+DO $$ 
+BEGIN
+  RAISE NOTICE '✅ Search function created';
+END $$;
 
 -- ============================================
 -- VERIFICATION
@@ -370,7 +392,7 @@ BEGIN
            role
     FROM users LIMIT 3
   LOOP
-    RAISE NOTICE '  User % (%)): % % % → %', 
+    RAISE NOTICE '  User % (%): % % % → %', 
       rec.user_id, rec.role, rec.first_name, rec.middle_name, rec.last_name, rec.computed_name;
   END LOOP;
   
