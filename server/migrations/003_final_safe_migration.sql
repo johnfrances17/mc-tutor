@@ -261,8 +261,9 @@ ALTER TABLE audit_logs DISABLE ROW LEVEL SECURITY;
 -- STEP 9: Drop legacy tables and views
 -- ============================================
 
-DROP TABLE IF EXISTS users_legacy CASCADE;
+DROP VIEW IF EXISTS users_legacy CASCADE;
 DROP VIEW IF EXISTS users_with_full_name CASCADE;
+DROP TABLE IF EXISTS users_legacy_backup CASCADE;
 
 -- ============================================
 -- STEP 10: Create backward compatible view
