@@ -423,15 +423,17 @@
         </div>
     </div>
 
-    <script type="module" src="../scripts/api.js"></script>
-    <script type="module" src="../scripts/auth.js"></script>
-    <script type="module" src="../scripts/utils.js"></script>
-    <script type="module" src="../scripts/socket.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/socket.js"></script>
     <script type="module">
-        import { api } from '../scripts/api.js';
-        import { getCurrentUser } from '../scripts/auth.js';
-        import { showToast, formatTime, escapeHtml } from '../scripts/utils.js';
-        import socketManager from '../scripts/socket.js';
+        // Using window objects from scripts loaded above
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
+        const { showToast, formatTime, escapeHtml } = window;
+        const socketManager = window.socketManager;
 
         let currentUser = null;
         let currentConversation = null;
