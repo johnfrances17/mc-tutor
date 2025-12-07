@@ -50,6 +50,12 @@ WHERE full_name IS NOT NULL OR first_name IS NULL;
 ALTER TABLE users ALTER COLUMN first_name SET NOT NULL;
 ALTER TABLE users ALTER COLUMN last_name SET NOT NULL;
 
+-- Drop existing constraints if they exist (avoid duplicate error)
+ALTER TABLE users DROP CONSTRAINT IF EXISTS check_first_name_length;
+ALTER TABLE users DROP CONSTRAINT IF EXISTS check_last_name_length;
+ALTER TABLE users DROP CONSTRAINT IF EXISTS check_middle_name_length;
+
+-- Add length validation
 ALTER TABLE users 
 ADD CONSTRAINT check_first_name_length 
   CHECK (char_length(first_name) >= 1 AND char_length(first_name) <= 100);
