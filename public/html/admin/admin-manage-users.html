@@ -464,7 +464,8 @@
         import { getCurrentUser, requireRole } from '../scripts/auth.js';
 
         // Check authentication and role
-        const currentUser = await requireRole('admin');
+        await requireRole('admin');
+        const currentUser = getCurrentUser();
         
         // Update user display
         if (currentUser) {
