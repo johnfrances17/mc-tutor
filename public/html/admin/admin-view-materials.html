@@ -551,7 +551,7 @@
                 if (e.target.id === 'uploadModal') {
                     closeUploadModal();
                 }
-            }
+            });
         };
 
         // Logout handler - direct implementation
@@ -713,9 +713,9 @@
         }
 
         // Highlight active page
-        const currentPage = window.location.pathname;
+        const currentPathname = window.location.pathname;
         document.querySelectorAll('.secondary-nav-link').forEach(link => {
-            if (link.getAttribute('href') && currentPage.includes(link.getAttribute('href'))) {
+            if (link.getAttribute('href') && currentPathname.includes(link.getAttribute('href'))) {
                 link.classList.add('active');
             }
         });

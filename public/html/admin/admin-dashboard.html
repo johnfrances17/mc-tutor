@@ -319,58 +319,45 @@
             box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
         }
 
-        /* Container and Grid - matching student-dashboard */
+        /* Container and Grid - matching admin-manage-users */
         .container {
             margin-top: 40px;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px 40px;
         }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
             background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            min-height: 180px;
             color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+            transition: all 0.3s;
         }
 
         .stat-card .stat-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin: 0;
+            opacity: 0.9;
         }
 
         .stat-card .number {
-            font-size: 48px;
+            margin: 0 0 8px 0;
+            font-size: 32px;
             font-weight: 700;
             color: white;
-            margin: 0;
-            line-height: 1;
-            align-self: flex-end;
-            margin-top: auto;
         }
 
         /* Card title styling */
@@ -442,28 +429,20 @@
         <!-- System Stats -->
         <div class="dashboard-grid">
             <div class="stat-card">
-                <div class="stat-content">
-                    Total Users
-                    <p class="number" id="totalUsersCount">0</p>
-                </div>
+                <h3 class="number" id="totalUsersCount">0</h3>
+                <p class="stat-content">Total Users</p>
             </div>
             <div class="stat-card">
-                <div class="stat-content">
-                    Total Sessions
-                    <p class="number" id="totalSessionsCount">0</p>
-                </div>
+                <h3 class="number" id="totalSessionsCount">0</h3>
+                <p class="stat-content">Total Sessions</p>
             </div>
             <div class="stat-card">
-                <div class="stat-content">
-                    Subjects
-                    <p class="number" id="totalSubjectsCount">0</p>
-                </div>
+                <h3 class="number" id="totalSubjectsCount">0</h3>
+                <p class="stat-content">Subjects</p>
             </div>
             <div class="stat-card">
-                <div class="stat-content">
-                    Study Materials
-                    <p class="number" id="totalMaterialsCount">0</p>
-                </div>
+                <h3 class="number" id="totalMaterialsCount">0</h3>
+                <p class="stat-content">Study Materials</p>
             </div>
         </div>
 
