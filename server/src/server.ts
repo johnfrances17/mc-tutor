@@ -76,14 +76,26 @@ app.get('/api/health', async (_req, res) => {
     // Test database connection
     let databaseConnected = false;
     let databaseResponseTime = 0;
+    let subjectsCount = 0;
+    let usersCount = 0;
     try {
       const { supabase } = await import('./config/database');
       const start = Date.now();
-      // Use subjects table instead of users (less likely to have RLS issues)
-      const { error } = await supabase.from('subjects').select('subject_id').limit(1);
+      
+      // Test subjects table
+      const { data: subjects, error: subjectsError } = await supabase
+        .from('subjects')
+        .select('subject_id', { count: 'exact' });
+      
+      // Test users table
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('user_id', { count: 'exact' });
+      
       databaseResponseTime = Date.now() - start;
-      // Check if query succeeded (either has data or no error)
-      databaseConnected = !error;
+      databaseConnected = !subjectsError && !usersError;
+      subjectsCount = subjects?.length || 0;
+      usersCount = users?.length || 0;
     } catch (err) {
       console.error('Database health check error:', err);
       databaseConnected = false;
@@ -97,7 +109,11 @@ app.get('/api/health', async (_req, res) => {
       services: {
         database: {
           connected: databaseConnected,
-          responseTime: databaseResponseTime + 'ms'
+          responseTime: databaseResponseTime + 'ms',
+          data: {
+            subjects: subjectsCount,
+            users: usersCount
+          }
         },
         email: {
           configured: emailConfigured,
