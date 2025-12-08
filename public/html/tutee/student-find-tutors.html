@@ -129,8 +129,8 @@
         // Load subjects for filter
         async function loadSubjects() {
             try {
-                const response = await window.API.subjects.getAllSubjects();
-                if (response.success) {
+                const response = await api.get('/subjects');
+                if (response.success && response.data) {
                     subjects = response.data;
                     populateSubjectFilter();
                 }
@@ -144,8 +144,8 @@
             select.innerHTML = '<option value="">All Subjects</option>';
             subjects.forEach(subject => {
                 const option = document.createElement('option');
-                option.value = subject.id;
-                option.textContent = `${subject.subjectCode} - ${subject.subjectName}`;
+                option.value = subject.subject_id;
+                option.textContent = `${subject.subject_code} - ${subject.subject_name}`;
                 select.appendChild(option);
             });
         }
@@ -153,14 +153,19 @@
         // Load all tutors
         async function loadTutors() {
             try {
-                const response = await window.API.tutors.getAllTutors();
-                if (response.success) {
+                const response = await api.get('/tutors');
+                if (response.success && response.data) {
                     allTutors = response.data;
                     filteredTutors = allTutors;
                     displayTutors();
+                } else {
+                    document.getElementById('tutorsContainer').innerHTML = 
+                        '<div class="empty-state"><i class="fas fa-user-slash"></i><p>No tutors available</p></div>';
                 }
             } catch (error) {
                 console.error('Error loading tutors:', error);
+                document.getElementById('tutorsContainer').innerHTML = 
+                    '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading tutors. Please try again.</p></div>';
             }
         }
 
@@ -182,13 +187,13 @@
                 const fullName = tutor.last_name && tutor.first_name 
                     ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}`
                     : 'Unknown';
-                const studentId = tutor.studentId || tutor.school_id || 'N/A';
-                const course = tutor.course || 'N/A';
-                const yearLevel = tutor.yearLevel || '';
+                const studentId = tutor.school_id || 'N/A';
+                const courseName = tutor.course_name || tutor.course_code || 'N/A';
+                const yearLevel = tutor.year_level ? `Year ${tutor.year_level}` : '';
                 const email = tutor.email || '';
                 const phone = tutor.phone || 'Not provided';
-                const rating = parseFloat(tutor.rating || 0);
-                const totalSessions = tutor.totalSessions || 0;
+                const rating = parseFloat(tutor.average_rating || 0);
+                const totalSessions = tutor.total_sessions || 0;
                 const subjects = tutor.subjects || [];
 
                 // Generate star rating
@@ -201,7 +206,7 @@
 
                 // Generate subject tags
                 const subjectTags = subjects.length > 0 ? 
-                    subjects.map(s => `<span class="tag">${s.subjectCode}</span>`).join('') :
+                    subjects.map(s => `<span class="tag">${s.subject_code || s.subjectCode}</span>`).join('') :
                     '<span class="text-muted">No subjects listed</span>';
 
                 return `
@@ -222,7 +227,7 @@
                         </div>
                         <div class="tutor-details">
                             <p><strong>Student ID:</strong> ${studentId}</p>
-                            <p><strong>Course:</strong> ${course}${yearLevel ? ` - ${yearLevel}` : ''}</p>
+                            <p><strong>Course:</strong> ${courseName}${yearLevel ? ` - ${yearLevel}` : ''}</p>
                             <p><strong>Email:</strong> ${email}</p>
                             <p><strong>Phone:</strong> ${phone}</p>
                             <div class="subjects">
@@ -234,10 +239,10 @@
                             <p style="margin-top: 10px;"><strong>Total Sessions:</strong> ${totalSessions}</p>
                         </div>
                         <div class="tutor-actions">
-                            <button class="btn btn-primary" onclick="bookTutor(${tutor.id})">
+                            <button class="btn btn-primary" onclick="bookTutor(${tutor.user_id})">
                                 <i class="fas fa-calendar-plus"></i> Book Session
                             </button>
-                            <button class="btn btn-secondary" onclick="viewProfile(${tutor.id})">
+                            <button class="btn btn-secondary" onclick="viewProfile(${tutor.user_id})">
                                 <i class="fas fa-user"></i> View Profile
                             </button>
                         </div>

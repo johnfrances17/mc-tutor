@@ -109,12 +109,23 @@
 
         async function loadSessions() {
             try {
-                const response = await api.sessions.getMySessions();
+                const response = await api.get('/sessions/my-sessions?role=tutee');
                 console.log('Sessions response:', response);
-                allSessions = response.sessions || [];
-                renderSessions();
+                if (response.success && response.data) {
+                    allSessions = response.data;
+                    renderSessions();
+                } else {
+                    allSessions = [];
+                    renderSessions();
+                }
             } catch (error) {
                 console.error('Load sessions error:', error);
+                document.getElementById('sessionsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading sessions. Please try again later.</p>
+                    </div>
+                `;
             }
         }
 
@@ -195,9 +206,16 @@
             if (!confirm('Are you sure you want to cancel this session?')) return;
             
             try {
-                await api.sessions.cancelSession(sessionId, 'Cancelled by student');
-                showToast('Session cancelled successfully', 'success');
-                await loadSessions();
+                const response = await api.put(`/sessions/${sessionId}/cancel`, {
+                    cancellation_reason: 'Cancelled by student'
+                });
+                
+                if (response.success) {
+                    showToast('Session cancelled successfully', 'success');
+                    await loadSessions();
+                } else {
+                    showToast(response.error?.message || 'Failed to cancel session', 'error');
+                }
             } catch (error) {
                 console.error('Cancel session error:', error);
                 showToast('Failed to cancel session', 'error');

@@ -186,18 +186,25 @@
         async function loadSubjects() {
             try {
                 const response = await api.get('/subjects');
-                allSubjects = response.data;
+                
+                if (response.success && response.data) {
+                    allSubjects = response.data;
 
-                const subjectSelect = document.getElementById('subjectFilter');
-                subjectSelect.innerHTML = '<option value="">All Subjects</option>' +
-                    allSubjects.map(s => `<option value="${s.id}">${s.subject_name}</option>`).join('');
+                    const subjectSelect = document.getElementById('subjectFilter');
+                    subjectSelect.innerHTML = '<option value="">All Subjects</option>' +
+                        allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
 
-                // For upload modal (tutors only)
-                if (currentUser.role === 'tutor') {
-                    const uploadSubjectSelect = document.getElementById('uploadSubject');
-                    const tutorSubjects = await api.get('/tutors/my-subjects');
-                    uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
-                        tutorSubjects.data.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
+                    // For upload modal (tutors only)
+                    if (currentUser.role === 'tutor') {
+                        const uploadSubjectSelect = document.getElementById('uploadSubject');
+                        if (uploadSubjectSelect) {
+                            const tutorSubjectsRes = await api.get('/tutors/my-subjects');
+                            if (tutorSubjectsRes.success && tutorSubjectsRes.data) {
+                                uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
+                                    tutorSubjectsRes.data.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
+                            }
+                        }
+                    }
                 }
 
             } catch (error) {
@@ -218,25 +225,41 @@
                 if (subjectId) params.append('subject_id', subjectId);
                 if (tutorId) params.append('tutor_id', tutorId);
 
-                const response = await api.get(`/materials?${params}`);
-                allMaterials = response.data || [];
-                filteredMaterials = allMaterials;
+                const response = await api.get(`/materials?${params.toString()}`);
+                
+                if (response.success && response.data) {
+                    allMaterials = response.data;
+                    filteredMaterials = allMaterials;
 
-                // Populate tutor filter
-                const tutors = [...new Set(allMaterials.map(m => m.tutor_student_id))];
-                const tutorFilter = document.getElementById('tutorFilter');
-                const tutorOptions = await Promise.all(
-                    tutors.map(async id => {
-                        const material = allMaterials.find(m => m.tutor_student_id === id);
-                        return `<option value="${id}">${material.tutor_name}</option>`;
-                    })
-                );
-                tutorFilter.innerHTML = '<option value="">All Tutors</option>' + tutorOptions.join('');
+                    // Populate tutor filter (unique tutors from materials)
+                    const tutorMap = new Map();
+                    allMaterials.forEach(m => {
+                        if (m.tutor_id && !tutorMap.has(m.tutor_id)) {
+                            tutorMap.set(m.tutor_id, m.tutor_name || m.tutor_full_name || 'Unknown Tutor');
+                        }
+                    });
+                    
+                    const tutorFilter = document.getElementById('tutorFilter');
+                    const tutorOptions = Array.from(tutorMap.entries())
+                        .map(([id, name]) => `<option value="${id}">${name}</option>`)
+                        .join('');
+                    tutorFilter.innerHTML = '<option value="">All Tutors</option>' + tutorOptions;
 
-                displayMaterials();
+                    displayMaterials();
+                } else {
+                    allMaterials = [];
+                    filteredMaterials = [];
+                    displayMaterials();
+                }
 
             } catch (error) {
                 console.error('Load materials error:', error);
+                document.getElementById('materialsList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading materials. Please try again later.</p>
+                    </div>
+                `;
             }
         }
 
