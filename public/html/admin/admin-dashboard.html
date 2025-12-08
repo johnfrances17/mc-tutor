@@ -592,12 +592,12 @@
                     api.get('/users'),
                     api.get('/sessions'),
                     api.get('/subjects'),
-                    api.get('/materials')
+                    api.get('/materials?search=')
                 ]);
 
-                allUsers = users.data || [];
-                allSessions = sessions.data || [];
-                allSubjects = subjects.data || [];
+                allUsers = users.users || [];
+                allSessions = sessions.sessions || [];
+                allSubjects = subjects.subjects || [];
 
                 // User stats
                 const tutors = allUsers.filter(u => u.role === 'tutor').length;
@@ -605,9 +605,6 @@
                 const admins = allUsers.filter(u => u.role === 'admin').length;
                 
                 document.getElementById('totalUsersCount').textContent = allUsers.length;
-                document.getElementById('userBreakdown').innerHTML = `
-                    <small>${tutors} tutors, ${tutees} students, ${admins} admins</small>
-                `;
 
                 // Session stats
                 const pending = allSessions.filter(s => s.status === 'pending').length;
@@ -615,22 +612,12 @@
                 const completed = allSessions.filter(s => s.status === 'completed').length;
                 
                 document.getElementById('totalSessionsCount').textContent = allSessions.length;
-                document.getElementById('sessionBreakdown').innerHTML = `
-                    <small>${pending} pending, ${confirmed} confirmed, ${completed} completed</small>
-                `;
 
                 // Subject stats
                 document.getElementById('totalSubjectsCount').textContent = allSubjects.length;
-                const courses = [...new Set(allSubjects.map(s => s.course))].length;
-                document.getElementById('subjectBreakdown').innerHTML = `
-                    <small>${courses} courses</small>
-                `;
 
                 // Materials stats
-                document.getElementById('totalMaterialsCount').textContent = materials.data.length;
-                document.getElementById('materialsBreakdown').innerHTML = `
-                    <small>Uploaded by tutors</small>
-                `;
+                document.getElementById('totalMaterialsCount').textContent = (materials.materials || []).length;
             } catch (error) {
                 console.error('Stats error:', error);
             }
@@ -722,12 +709,14 @@
                         const sessions = allSessions.filter(s => s.tutor_id === tutor.user_id);
                         const feedback = await api.get(`/feedback/tutor/${tutor.user_id}`);
                         
+                        const feedbackList = feedback.feedback || [];
+                        
                         return {
                             ...tutor,
                             sessionCount: sessions.length,
                             completedSessions: sessions.filter(s => s.status === 'completed').length,
-                            avgRating: feedback.data.length > 0 
-                                ? (feedback.data.reduce((sum, f) => sum + f.rating, 0) / feedback.data.length).toFixed(1)
+                            avgRating: feedbackList.length > 0 
+                                ? (feedbackList.reduce((sum, f) => sum + f.rating, 0) / feedbackList.length).toFixed(1)
                                 : 'N/A'
                         };
                     } catch {

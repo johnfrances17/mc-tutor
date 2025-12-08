@@ -411,7 +411,8 @@ export class MaterialsService {
       (m) =>
         m.title.toLowerCase().includes(lowerQuery) ||
         m.description.toLowerCase().includes(lowerQuery) ||
-        m.subject_name.toLowerCase().includes(lowerQuery)
+        m.subject_name.toLowerCase().includes(lowerQuery) ||
+        m.subject_code.toLowerCase().includes(lowerQuery)
     );
 
     // Sort by newest first
