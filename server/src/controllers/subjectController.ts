@@ -8,7 +8,14 @@ export const getAllSubjects = async (req: Request, res: Response, next: NextFunc
   try {
     const { course_code } = req.query;
 
-    let query = supabase.from('subjects').select('*').order('subject_code');
+    // Get subjects with tutor count
+    let query = supabase
+      .from('subjects')
+      .select(`
+        *,
+        tutor_subjects(count)
+      `)
+      .order('subject_code');
 
     if (course_code && typeof course_code === 'string') {
       query = query.eq('course_code', course_code);
@@ -17,10 +24,18 @@ export const getAllSubjects = async (req: Request, res: Response, next: NextFunc
     const { data, error } = await query;
 
     if (error) {
+      console.error('Error fetching subjects:', error);
       return res.status(400).json({ success: false, message: 'Failed to fetch subjects' });
     }
 
-    res.json({ success: true, subjects: data });
+    // Transform data to include tutor_count
+    const subjects = data?.map((subject: any) => ({
+      ...subject,
+      tutor_count: subject.tutor_subjects?.[0]?.count || 0,
+      tutor_subjects: undefined // Remove nested object
+    })) || [];
+
+    res.json({ success: true, subjects });
   } catch (error) {
     return next(error);
     }

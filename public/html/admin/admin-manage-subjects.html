@@ -529,28 +529,38 @@
         // Load subjects
         async function loadSubjects() {
             try {
+                console.log('🔍 Loading subjects from /subjects endpoint...');
                 const response = await api.get('/subjects');
+                console.log('📦 Full response:', response);
+                console.log('✅ Success:', response.success);
+                console.log('📚 Subjects:', response.subjects);
+                console.log('📊 Subjects length:', response.subjects?.length);
+                
                 const container = document.getElementById('subjectsContainer');
 
-                if (!response.success || !response.subjects || response.subjects.length === 0) {
+                // Check if response has subjects
+                if (response.success && response.subjects && response.subjects.length > 0) {
+                    allSubjects = response.subjects;
+                    console.log('✅ Loaded', allSubjects.length, 'subjects');
+                    displaySubjects(allSubjects);
+                } else {
+                    console.warn('⚠️ No subjects in response or empty array');
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-book-open"></i>
                             <h3>No Subjects Available</h3>
                             <p>Add your first subject to get started.</p>
+                            <p style="font-size: 12px; color: #999;">Response: ${JSON.stringify(response)}</p>
                         </div>
                     `;
-                    return;
                 }
-
-                allSubjects = response.subjects;
-                displaySubjects(allSubjects);
             } catch (error) {
-                console.error('Error loading subjects:', error);
+                console.error('❌ Error loading subjects:', error);
                 document.getElementById('subjectsContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <p>Error loading subjects. Please try again.</p>
+                        <p>Error loading subjects: ${error.message}</p>
+                        <p style="font-size: 12px; color: #999;">Check console for details</p>
                     </div>
                 `;
             }
