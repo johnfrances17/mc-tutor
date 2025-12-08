@@ -124,13 +124,14 @@ export const getTutorById = async (req: Request, res: Response, next: NextFuncti
     }
 
     // Get course name
+    let courseName = null;
     if (tutor.course_code) {
       const { data: course } = await supabase
         .from('courses')
         .select('course_name')
         .eq('course_code', tutor.course_code)
         .single();
-      tutor.course_name = course?.course_name || null;
+      courseName = course?.course_name || null;
     }
 
     // Get tutor subjects
@@ -143,6 +144,7 @@ export const getTutorById = async (req: Request, res: Response, next: NextFuncti
       success: true,
       tutor: {
         ...tutor,
+        course_name: courseName,
         subjects: subjects?.map((s: any) => s.subject) || [],
       },
     });

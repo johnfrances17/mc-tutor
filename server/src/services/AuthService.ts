@@ -304,12 +304,6 @@ export class AuthService {
       token,
       refreshToken,
     };
-        course_name: user.courses?.course_name || null,
-        profile_picture: user.profile_picture,
-      },
-      token,
-      refreshToken,
-    };
   }
 
   /**

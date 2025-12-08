@@ -19,20 +19,28 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
       .eq('user_id', userId)
       .single();
 
-    if (user && user.course_code) {
+    if (error || !user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Get course name
+    let courseName = null;
+    if (user.course_code) {
       const { data: course } = await supabase
         .from('courses')
         .select('course_name')
         .eq('course_code', user.course_code)
         .single();
-      user.course_name = course?.course_name || null;
+      courseName = course?.course_name || null;
     }
 
-    if (error || !user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    res.json({ success: true, user });
+    res.json({ 
+      success: true, 
+      user: {
+        ...user,
+        course_name: courseName
+      }
+    });
   } catch (error) {
     return next(error);
     }
