@@ -429,6 +429,65 @@
             color: #2d3748;
         }
 
+        /* Card body improvements */
+        .card-body {
+            min-height: 100px;
+        }
+
+        .card-body .text-muted {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        /* User item improvements */
+        .user-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Session item improvements */
+        .session-item.compact {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .session-item.compact:last-child {
+            margin-bottom: 0;
+        }
+
+        .session-details {
+            margin-top: 5px;
+        }
+
+        .session-details span {
+            margin-right: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .session-details i {
+            margin-right: 5px;
+            color: #5865F2;
+        }
+
+        /* Activity item improvements */
+        .activity-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            color: #5865F2;
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 1024px) {
             .user-info-inline {
@@ -749,31 +808,6 @@
                 <div class="loading-spinner"></div>
             </div>
         </div>
-
-        <!-- Quick Stats Charts -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Sessions by Status</div>
-                    </div>
-                    <div class="card-body">
-                        <div id="sessionStatusChart" class="chart-container"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Popular Subjects</div>
-                    </div>
-                    <div class="card-body">
-                        <div id="popularSubjectsChart" class="chart-container"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Core Scripts -->
@@ -784,7 +818,7 @@
         // Using window.auth from auth.js loaded above
         const { getCurrentUser } = window.auth;
         const api = window.API;
-        const { formatDate } = window;
+        const { formatDate, formatDateTime } = window;
         
         let currentUser = null;
         let allSessions = [];
@@ -815,8 +849,6 @@
                     loadActivityLog(),
                     loadSubjects()
                 ]);
-
-                renderCharts();
             } catch (error) {
                 console.error('Dashboard init error:', error);
             }
@@ -941,8 +973,8 @@
                             <div class="session-info">
                                 <div class="session-subject">${session.subject_name || 'Subject'}</div>
                                 <div class="session-details">
-                                    <span>?? ${session.student_name} ? ${session.tutor_name}</span>
-                                    <span>?? ${formatDate(session.session_date)}</span>
+                                    <span><i class="fas fa-user"></i> ${session.student_name} → ${session.tutor_name}</span>
+                                    <span><i class="fas fa-calendar"></i> ${formatDate(session.session_date)}</span>
                                 </div>
                             </div>
                             <span class="badge badge-warning">Pending</span>
@@ -1049,7 +1081,7 @@
                         type: 'session_created',
                         description: `${session.student_name} booked a session with ${session.tutor_name}`,
                         timestamp: session.created_at,
-                        icon: '??'
+                        icon: '<i class="fas fa-calendar-plus"></i>'
                     });
                 });
 
@@ -1091,62 +1123,6 @@
             } catch (error) {
                 console.error('❌ Subjects error:', error);
             }
-        }
-
-        // Render simple charts (text-based)
-        function renderCharts() {
-            // Session status chart
-            const statusCounts = {
-                pending: allSessions.filter(s => s.status === 'pending').length,
-                confirmed: allSessions.filter(s => s.status === 'confirmed').length,
-                completed: allSessions.filter(s => s.status === 'completed').length,
-                cancelled: allSessions.filter(s => s.status === 'cancelled').length
-            };
-
-            document.getElementById('sessionStatusChart').innerHTML = `
-                <div class="simple-chart">
-                    ${Object.entries(statusCounts).map(([status, count]) => `
-                        <div class="chart-row">
-                            <span class="chart-label">${status}</span>
-                            <div class="chart-bar">
-                                <div class="chart-fill ${getStatusBadgeClass(status)}" 
-                                     style="width: ${(count / allSessions.length * 100) || 0}%">
-                                </div>
-                            </div>
-                            <span class="chart-value">${count}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
-            // Popular subjects chart
-            const subjectCounts = {};
-            allSessions.forEach(session => {
-                const subject = session.subject_name || 'Unknown';
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
-            });
-
-            const topSubjects = Object.entries(subjectCounts)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5);
-
-            const maxCount = topSubjects[0]?.[1] || 1;
-
-            document.getElementById('popularSubjectsChart').innerHTML = `
-                <div class="simple-chart">
-                    ${topSubjects.map(([subject, count]) => `
-                        <div class="chart-row">
-                            <span class="chart-label">${subject}</span>
-                            <div class="chart-bar">
-                                <div class="chart-fill badge-primary" 
-                                     style="width: ${(count / maxCount * 100)}%">
-                                </div>
-                            </div>
-                            <span class="chart-value">${count}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
         }
 
         // Export data function
