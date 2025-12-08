@@ -332,11 +332,32 @@ const API = {
     getStats: () => apiRequest('/admin/stats'),
     
     getActivity: (limit = 20) => apiRequest(`/admin/activity?limit=${limit}`)
-  }
+  },
+
+  // Generic HTTP methods for convenience
+  get: (endpoint) => apiRequest(endpoint, { method: 'GET' }),
+  
+  post: (endpoint, data) => apiRequest(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  
+  put: (endpoint, data) => apiRequest(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  
+  delete: (endpoint) => apiRequest(endpoint, { method: 'DELETE' }),
+  
+  patch: (endpoint, data) => apiRequest(endpoint, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  })
 };
 
 // Export API_BASE_URL and API for use in other scripts
 if (typeof window !== 'undefined') {
   window.API_BASE_URL = API_BASE_URL;
   window.API = API;
+  window.api = API; // Lowercase alias for convenience
 }

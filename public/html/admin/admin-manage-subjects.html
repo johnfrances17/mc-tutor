@@ -8,317 +8,555 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background: #f5f7fa; min-height: 100vh; }
+        /* Base font styling */
+        * { font-family: 'Montserrat', sans-serif; }
+        body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
 
-        /* Navbar */
+        #logoutBtn { color: #dc3545 !important; }
+        #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+
         .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .nav-container { max-width: 1400px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-brand { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #5865F2, #7289DA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .user-info { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: linear-gradient(135deg, #5865F2, #7289DA); border-radius: 8px; color: white; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: white; border: 2px solid white; }
-        .user-details { display: flex; flex-direction: column; }
-        .user-name { font-weight: 600; font-size: 14px; }
-        .user-role { font-size: 11px; opacity: 0.9; text-transform: uppercase; }
-        .btn-logout { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.3s; }
-        .btn-logout:hover { background: #c82333; transform: translateY(-2px); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+        .nav-right { display: flex; align-items: center; gap: 25px; }
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .nav-link { color: #333; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
+        .nav-link:hover { background: #f0f0f0; color: #5865F2; }
+        .nav-menu-btn { background: transparent; color: #333; border: none; border-radius: 6px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; font-size: 18px; }
+        .nav-menu-btn:hover {
+            background: #f0f0f0;
+            color: #5865F2;
+        }
 
-        /* Secondary Nav */
-        .secondary-navbar { background: linear-gradient(135deg, #5865F2, #7289DA); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .secondary-nav-container { max-width: 1400px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: center; gap: 10px; }
-        .nav-tab { color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 500; background: rgba(255,255,255,0.15); transition: 0.3s; }
-        .nav-tab:hover { background: white; color: #5865F2; transform: translateY(-2px); }
-        .nav-tab.active { background: white; color: #5865F2; }
+        .user-info-inline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
+            border-radius: 0px;
+            color: white;
+            max-width: 180px;
+            min-width: 100px;
+        }
 
-        /* Main Content */
-        .main-container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
-        .page-header { margin-bottom: 30px; }
-        .page-title { font-size: 32px; font-weight: 700; color: #2d3748; margin-bottom: 8px; }
-        .page-subtitle { color: #6b7280; font-size: 16px; }
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: white;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid white;
+        }
 
-        /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 12px; }
-        .stat-value { font-size: 28px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
-        .stat-label { color: #6b7280; font-size: 14px; }
+        .user-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        /* Filters and Actions */
-        .controls-bar { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .search-box { flex: 1; min-width: 250px; position: relative; }
-        .search-box input { width: 100%; padding: 10px 40px 10px 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; }
-        .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
-        .filter-group { display: flex; gap: 10px; align-items: center; }
-        select { padding: 10px 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; cursor: pointer; }
-        .btn-primary { background: linear-gradient(135deg, #5865F2, #7289DA); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(88,101,242,0.4); }
+        .user-details-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+            flex: 1;
+        }
 
-        /* Subjects Grid */
-        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        .subject-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; transition: 0.3s; }
-        .subject-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .subject-header { padding: 20px; background: linear-gradient(135deg, #5865F2, #7289DA); color: white; }
-        .subject-code { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .subject-name { font-size: 16px; opacity: 0.95; }
-        .subject-body { padding: 20px; }
-        .subject-info { margin-bottom: 15px; }
-        .info-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .info-value { font-size: 14px; color: #2d3748; font-weight: 500; }
-        .course-badge { display: inline-block; padding: 6px 12px; background: #f3f4f6; border-radius: 6px; font-size: 13px; font-weight: 600; color: #5865F2; }
-        .description-text { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 15px; }
-        .subject-footer { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
-        .btn-edit { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 500; transition: 0.3s; }
-        .btn-edit:hover { background: #2563eb; }
-        .btn-delete { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 500; transition: 0.3s; }
-        .btn-delete:hover { background: #dc2626; }
+        .user-name-inline {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { padding: 24px; border-bottom: 2px solid #e5e7eb; }
-        .modal-title { font-size: 24px; font-weight: 700; color: #2d3748; }
-        .modal-body { padding: 24px; }
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 14px; }
-        .form-label .required { color: #ef4444; }
-        .form-input { width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: 0.3s; }
-        .form-input:focus { border-color: #5865F2; outline: none; }
-        textarea.form-input { min-height: 100px; resize: vertical; font-family: 'Montserrat', sans-serif; }
-        .modal-footer { padding: 20px 24px; border-top: 2px solid #e5e7eb; display: flex; gap: 12px; justify-content: flex-end; }
-        .btn-cancel { background: #6b7280; color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.3s; }
-        .btn-cancel:hover { background: #4b5563; }
-        .btn-save { background: linear-gradient(135deg, #5865F2, #7289DA); color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.3s; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(88,101,242,0.4); }
+        .user-role-badge-inline {
+            font-size: 11px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
 
-        /* Alerts */
-        .alert { padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500; }
-        .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
-        .alert-danger { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
-        .alert-info { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
+        .secondary-navbar { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 68px; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70px; overflow: hidden; }
+        .secondary-navbar.collapsed { max-height: 0; opacity: 0; transform: translateY(-100%); }
+        .secondary-nav-container { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: center; align-items: center; }
+        .secondary-nav-links { display: flex; gap: 8px; align-items: center; }
+        .secondary-nav-link { color: white; text-decoration: none; padding: 10px 24px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
+        .secondary-nav-link:hover { background: white; color: #5865F2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .secondary-nav-link.active { background: white; color: #5865F2; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .user-header { display: none; }
+        .page-title { font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 8px; }
+        .page-subtitle { color: #6b7280; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .card-title { font-size: 18px; font-weight: 600; color: #2d3748; margin-bottom: 20px; }
+        .stat-number { font-size: 32px; font-weight: 700; }
+        .stat-label { font-size: 14px; opacity: 0.9; margin-top: 8px; }
+        
+        .page-header {
+            max-width: 1400px;
+            margin: 40px auto 0;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .page-header-text h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .page-header-text p {
+            color: #6b7280;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
 
-        /* Empty State */
-        .empty-state { text-align: center; padding: 60px 20px; }
-        .empty-state i { font-size: 64px; color: #d1d5db; margin-bottom: 16px; }
-        .empty-state h3 { font-size: 20px; color: #4b5563; margin-bottom: 8px; }
-        .empty-state p { color: #6b7280; }
+        .content-container {
+            max-width: 1400px;
+            margin: 40px auto 0;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5865F2;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #f9fafb;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #d1d5db;
+            margin-bottom: 16px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* User Header Component */
+        .user-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            z-index: 1001;
+            border-bottom-left-radius: 12px;
+        }
+        .user-info-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        .user-role-badge {
+            font-size: 11px;
+            color: #5865F2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Floating Message Button */
+        .floating-message-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+        }
+        .floating-message-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+        }
     </style>
 </head>
 <body>
-    <!-- Top Navbar -->
+    <!-- User Header Component -->
+    <div class="user-header">
+        <div class="user-info-display">
+            <div class="user-avatar" data-user-avatar>
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <span class="user-name" data-user-name>User</span>
+                <span class="user-role-badge" data-user-role>Admin</span>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-container">
             <a href="/html/admin/admin-dashboard.html" class="nav-brand">MC Tutor Admin</a>
             <div class="nav-right">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-shield" style="font-size: 20px; color: #5865F2; padding: 7px;"></i>
+                <div class="user-info-inline">
+                    <div class="user-avatar-small" data-user-avatar>
+                        <img src="/image/default.png" alt="User Avatar" id="navAvatarImg">
                     </div>
-                    <div class="user-details">
-                        <div class="user-name" data-user-name>System Administrator</div>
-                        <div class="user-role">ADMIN</div>
+                    <div class="user-details-inline">
+                        <span class="user-name-inline" data-user-name>Admin</span>
+                        <span class="user-role-badge-inline" data-user-role>ADMIN</span>
                     </div>
                 </div>
-                <button class="btn-logout" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
+                <div class="nav-links">
+                    <button class="nav-menu-btn" id="navToggleBtn" title="Toggle Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/html/shared/profile.html" class="nav-link">Profile</a>
+                    <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Secondary Navbar -->
-    <nav class="secondary-navbar">
+    <nav class="secondary-navbar" id="secondaryNav">
         <div class="secondary-nav-container">
-            <a href="/html/admin/admin-dashboard.html" class="nav-tab">Dashboard</a>
-            <a href="/html/admin/admin-manage-users.html" class="nav-tab">Users</a>
-            <a href="/html/admin/admin-manage-sessions.html" class="nav-tab">Sessions</a>
-            <a href="/html/admin/admin-manage-subjects.html" class="nav-tab active">Subjects</a>
-            <a href="/html/admin/admin-view-materials.html" class="nav-tab">Materials</a>
+            <div class="secondary-nav-links">
+                <a href="/html/admin/admin-dashboard.html" class="secondary-nav-link">Dashboard</a>
+                <a href="/html/admin/admin-manage-users.html" class="secondary-nav-link">Users</a>
+                <a href="/html/admin/admin-manage-sessions.html" class="secondary-nav-link">Sessions</a>
+                <a href="/html/admin/admin-manage-subjects.html" class="secondary-nav-link active">Subjects</a>
+                <a href="/html/admin/admin-view-materials.html" class="secondary-nav-link">Materials</a>
+            </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Manage Subjects</h1>
-            <p class="page-subtitle">View and manage all subjects in the system</p>
-        </div>
+    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
+        <i class="fas fa-comments"></i>
+    </a>
 
-        <!-- Message Container -->
+<div class="content-container">
         <div id="messageContainer"></div>
 
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">
-                    <i class="fas fa-book"></i>
+        <!-- Add Subject Form -->
+        <div class="card">
+            <h2><i class="fas fa-plus-circle"></i> Add New Subject</h2>
+            <form id="addSubjectForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="subject_code">Subject Code *</label>
+                        <input type="text" id="subject_code" name="subject_code" placeholder="e.g., CS101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject_name">Subject Name *</label>
+                        <input type="text" id="subject_name" name="subject_name" placeholder="e.g., Introduction to Programming" required>
+                    </div>
                 </div>
-                <div class="stat-value" id="totalSubjects">0</div>
-                <div class="stat-label">Total Subjects</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #d1fae5; color: #10b981;">
-                    <i class="fas fa-graduation-cap"></i>
+                <div class="form-group">
+                    <label for="course">Course *</label>
+                    <select id="course" name="course" required>
+                        <option value="">Select a course</option>
+                        <option value="BSA">BS in Accountancy (BSA)</option>
+                        <option value="BSBA">BS in Business Administration (BSBA)</option>
+                        <option value="BSED">Bachelor in Secondary Education (BSED)</option>
+                        <option value="BSN">BS in Nursing (BSN)</option>
+                        <option value="BSCS">BS in Computer Science (BSCS)</option>
+                        <option value="BSCrim">BS in Criminology (BSCrim)</option>
+                    </select>
                 </div>
-                <div class="stat-value" id="totalCourses">6</div>
-                <div class="stat-label">Courses</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">
-                    <i class="fas fa-chalkboard-teacher"></i>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Brief description of the subject..."></textarea>
                 </div>
-                <div class="stat-value" id="totalTutors">0</div>
-                <div class="stat-label">Active Tutors</div>
-            </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Subject
+                </button>
+            </form>
         </div>
 
-        <!-- Controls Bar -->
-        <div class="controls-bar">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search by code or name...">
-                <i class="fas fa-search"></i>
-            </div>
-            <div class="filter-group">
-                <select id="courseFilter">
+        <!-- Subjects List -->
+        <div class="card">
+            <h2><i class="fas fa-book"></i> All Subjects</h2>
+            
+            <div class="filter-bar">
+                <label style="font-weight: 600; color: #2d3748;">Filter by Course:</label>
+                <select id="filterCourse">
                     <option value="">All Courses</option>
-                    <option value="BSA">BS Accountancy</option>
-                    <option value="BSBA">BS Business Administration</option>
-                    <option value="BSED">Bachelor in Secondary Education</option>
-                    <option value="BSN">BS Nursing</option>
-                    <option value="BSCS">BS Computer Science</option>
-                    <option value="BSCrim">BS Criminology</option>
+                    <option value="BSA">Accountancy (BSA)</option>
+                    <option value="BSBA">Business Administration (BSBA)</option>
+                    <option value="BSED">Secondary Education (BSED)</option>
+                    <option value="BSN">Nursing (BSN)</option>
+                    <option value="BSCS">Computer Science (BSCS)</option>
+                    <option value="BSCrim">Criminology (BSCrim)</option>
                 </select>
             </div>
-            <button class="btn-primary" onclick="openAddModal()">
-                <i class="fas fa-plus"></i> Add Subject
-            </button>
-        </div>
 
-        <!-- Subjects Grid -->
-        <div class="subjects-grid" id="subjectsContainer">
-            <div class="empty-state">
-                <i class="fas fa-spinner fa-spin"></i>
-                <h3>Loading subjects...</h3>
+            <div class="table-wrapper">
+                <div id="subjectsContainer">
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading subjects...
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div class="modal" id="subjectModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Add New Subject</h2>
-            </div>
-            <div class="modal-body">
-                <form id="subjectForm">
-                    <input type="hidden" id="subjectId">
-                    
-                    <div class="form-group">
-                        <label class="form-label">Subject Code <span class="required">*</span></label>
-                        <input type="text" class="form-input" id="subjectCode" placeholder="e.g., BSA001" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Subject Name <span class="required">*</span></label>
-                        <input type="text" class="form-input" id="subjectName" placeholder="e.g., Financial Accounting" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Course <span class="required">*</span></label>
-                        <select class="form-input" id="courseCode" required>
-                            <option value="">Select a course</option>
-                            <option value="BSA">BS Accountancy</option>
-                            <option value="BSBA">BS Business Administration</option>
-                            <option value="BSED">Bachelor in Secondary Education</option>
-                            <option value="BSN">BS Nursing</option>
-                            <option value="BSCS">BS Computer Science</option>
-                            <option value="BSCrim">BS Criminology</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-input" id="description" placeholder="Brief description of the subject..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn-save" onclick="saveSubject()">Save Subject</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="/scripts/auth.js"></script>
+    <!-- Core Scripts -->
+    <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
-    <script>
+    <script src="/scripts/auth.js"></script>
+    <script type="module">
+        const { getCurrentUser } = window.auth;
+        const { api } = window;
+
+        let currentUser = null;
         let allSubjects = [];
-        let allCourses = [];
-        const coursesMap = {
-            'BSA': 'BS Accountancy',
-            'BSBA': 'BS Business Administration',
-            'BSED': 'Bachelor in Secondary Education',
-            'BSN': 'BS Nursing',
-            'BSCS': 'BS Computer Science',
-            'BSCrim': 'BS Criminology'
-        };
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (!window.auth.requireRole('admin')) return;
-            await loadData();
-            setupEventListeners();
-        });
-
-        async function loadData() {
+        async function init() {
             try {
-                await Promise.all([
-                    loadSubjects(),
-                    loadCourses()
-                ]);
+                currentUser = await getCurrentUser();
+                
+                if (!currentUser) {
+                    window.location.href = '/html/auth/login.html';
+                    return;
+                }
+
+                if (currentUser.role !== 'admin') {
+                    window.location.href = '/html/index.html';
+                    return;
+                }
+
+                await loadSubjects();
             } catch (error) {
-                console.error('Load data error:', error);
+                console.error('Init error:', error);
             }
         }
 
+        // Load subjects
         async function loadSubjects() {
             try {
-                console.log('Loading subjects...');
                 const response = await api.get('/subjects');
-                console.log('Subjects response:', response);
+                const container = document.getElementById('subjectsContainer');
 
-                if (!response.success || !response.subjects) {
-                    throw new Error(response.message || 'Failed to load subjects');
+                if (!response.success || !response.subjects || response.subjects.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <h3>No Subjects Available</h3>
+                            <p>Add your first subject to get started.</p>
+                        </div>
+                    `;
+                    return;
                 }
 
                 allSubjects = response.subjects;
                 displaySubjects(allSubjects);
-                updateStats();
             } catch (error) {
                 console.error('Error loading subjects:', error);
                 document.getElementById('subjectsContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error loading subjects</h3>
-                        <p>${error.message || 'Please try again later'}</p>
+                        <p>Error loading subjects. Please try again.</p>
                     </div>
                 `;
             }
         }
 
-        async function loadCourses() {
-            try {
-                const response = await api.get('/courses');
-                if (response.success && response.courses) {
-                    allCourses = response.courses;
-                }
-            } catch (error) {
-                console.log('Using default courses');
-            }
-        }
-
+        // Display subjects in table
         function displaySubjects(subjects) {
             const container = document.getElementById('subjectsContainer');
 
@@ -326,160 +564,106 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-filter"></i>
-                        <h3>No subjects found</h3>
-                        <p>Try adjusting your filters or add a new subject</p>
+                        <p>No subjects match the selected filter.</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = subjects.map(subject => `
-                <div class="subject-card">
-                    <div class="subject-header">
-                        <div class="subject-code">${subject.subject_code || 'N/A'}</div>
-                        <div class="subject-name">${subject.subject_name || 'Unnamed Subject'}</div>
-                    </div>
-                    <div class="subject-body">
-                        <div class="subject-info">
-                            <div class="info-label">Course</div>
-                            <div class="info-value">
-                                <span class="course-badge">${subject.course_code || 'N/A'}</span>
-                                <span style="font-size: 13px; color: #6b7280; margin-left: 8px;">
-                                    ${coursesMap[subject.course_code] || subject.course_code || 'N/A'}
-                                </span>
-                            </div>
-                        </div>
-                        ${subject.description ? `
-                        <div class="subject-info">
-                            <div class="info-label">Description</div>
-                            <div class="description-text">${subject.description}</div>
-                        </div>
-                        ` : ''}
-                        <div class="subject-info">
-                            <div class="info-label">Tutors Teaching This Subject</div>
-                            <div class="info-value">${subject.tutor_count || 0} tutors</div>
-                        </div>
-                        <div class="subject-footer">
-                            <button class="btn-edit" onclick="openEditModal(${subject.subject_id})">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn-delete" onclick="deleteSubject(${subject.subject_id})">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Code</th>
+                            <th>Subject Name</th>
+                            <th>Course</th>
+                            <th>Description</th>
+                            <th>Tutors</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${subjects.map(subject => `
+                            <tr>
+                                <td>${subject.subject_id}</td>
+                                <td><strong>${subject.subject_code}</strong></td>
+                                <td>${subject.subject_name}</td>
+                                <td><span class="badge badge-info">${subject.course_code || subject.course || 'N/A'}</span></td>
+                                <td>${subject.description || '-'}</td>
+                                <td>${subject.tutor_count || 0}</td>
+                                <td>
+                                    <button class="btn btn-danger" onclick="deleteSubject(${subject.subject_id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
         }
 
-        function updateStats() {
-            document.getElementById('totalSubjects').textContent = allSubjects.length;
+        // Filter subjects
+        document.getElementById('filterCourse').addEventListener('change', (e) => {
+            const filterValue = e.target.value;
             
-            const courses = new Set(allSubjects.map(s => s.course_code).filter(Boolean));
-            document.getElementById('totalCourses').textContent = courses.size || 6;
+            if (!filterValue) {
+                displaySubjects(allSubjects);
+                return;
+            }
 
-            const totalTutors = allSubjects.reduce((sum, s) => sum + (s.tutor_count || 0), 0);
-            document.getElementById('totalTutors').textContent = totalTutors;
-        }
-
-        function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', filterSubjects);
-            document.getElementById('courseFilter').addEventListener('change', filterSubjects);
-        }
-
-        function filterSubjects() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const courseFilter = document.getElementById('courseFilter').value;
-
-            const filtered = allSubjects.filter(subject => {
-                const matchesSearch = !searchTerm || 
-                    subject.subject_code?.toLowerCase().includes(searchTerm) ||
-                    subject.subject_name?.toLowerCase().includes(searchTerm);
-                
-                const matchesCourse = !courseFilter || subject.course_code === courseFilter;
-
-                return matchesSearch && matchesCourse;
-            });
-
+            const filtered = allSubjects.filter(subject => 
+                (subject.course_code || subject.course) === filterValue
+            );
             displaySubjects(filtered);
-        }
+        });
 
-        function openAddModal() {
-            document.getElementById('modalTitle').textContent = 'Add New Subject';
-            document.getElementById('subjectForm').reset();
-            document.getElementById('subjectId').value = '';
-            document.getElementById('subjectModal').classList.add('active');
-        }
-
-        function openEditModal(subjectId) {
-            const subject = allSubjects.find(s => s.subject_id === subjectId);
-            if (!subject) return;
-
-            document.getElementById('modalTitle').textContent = 'Edit Subject';
-            document.getElementById('subjectId').value = subject.subject_id;
-            document.getElementById('subjectCode').value = subject.subject_code || '';
-            document.getElementById('subjectName').value = subject.subject_name || '';
-            document.getElementById('courseCode').value = subject.course_code || '';
-            document.getElementById('description').value = subject.description || '';
-            document.getElementById('subjectModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('subjectModal').classList.remove('active');
-        }
-
-        async function saveSubject() {
-            const subjectId = document.getElementById('subjectId').value;
-            const subjectCode = document.getElementById('subjectCode').value.trim();
-            const subjectName = document.getElementById('subjectName').value.trim();
-            const courseCode = document.getElementById('courseCode').value;
+        // Add subject
+        document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subjectCode = document.getElementById('subject_code').value.trim();
+            const subjectName = document.getElementById('subject_name').value.trim();
+            const course = document.getElementById('course').value;
             const description = document.getElementById('description').value.trim();
 
-            if (!subjectCode || !subjectName || !courseCode) {
+            if (!subjectCode || !subjectName || !course) {
                 showMessage('Please fill in all required fields', 'danger');
                 return;
             }
 
             try {
-                const data = {
+                const response = await api.post('/subjects', {
                     subject_code: subjectCode,
                     subject_name: subjectName,
-                    course_code: courseCode,
-                    description: description || null
-                };
-
-                let response;
-                if (subjectId) {
-                    // Update existing
-                    response = await api.put(`/admin/subjects/${subjectId}`, data);
-                } else {
-                    // Create new
-                    response = await api.post('/admin/subjects', data);
-                }
+                    course_code: course,
+                    description: description
+                });
 
                 if (response.success) {
-                    showMessage(subjectId ? 'Subject updated successfully!' : 'Subject added successfully!', 'success');
-                    closeModal();
+                    showMessage('Subject added successfully!', 'success');
+                    document.getElementById('addSubjectForm').reset();
                     await loadSubjects();
                 } else {
-                    showMessage(response.message || 'Error saving subject', 'danger');
+                    showMessage(response.message || 'Error adding subject', 'danger');
                 }
             } catch (error) {
-                console.error('Error saving subject:', error);
-                showMessage('Error saving subject. Please try again.', 'danger');
+                console.error('Error adding subject:', error);
+                showMessage('Error adding subject. Please try again.', 'danger');
             }
-        }
+        });
 
-        async function deleteSubject(subjectId) {
-            const subject = allSubjects.find(s => s.subject_id === subjectId);
-            if (!subject) return;
-
-            if (!confirm(`Are you sure you want to delete "${subject.subject_code} - ${subject.subject_name}"?\n\nThis will also remove it from all tutors teaching this subject.`)) {
+        // Delete subject
+        window.deleteSubject = async function(subjectId) {
+            if (!confirm('Are you sure you want to delete this subject? This will also remove it from all tutors.')) {
                 return;
             }
 
             try {
-                const response = await api.delete(`/admin/subjects/${subjectId}`);
+                const response = await api.delete(`/subjects/${subjectId}`);
 
                 if (response.success) {
                     showMessage('Subject deleted successfully!', 'success');
@@ -491,24 +675,74 @@
                 console.error('Error deleting subject:', error);
                 showMessage('Error deleting subject. Please try again.', 'danger');
             }
-        }
+        };
 
         function showMessage(message, type) {
             const container = document.getElementById('messageContainer');
-            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => container.innerHTML = '', 5000);
         }
 
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
             e.preventDefault();
-            window.auth.handleLogout();
+            const { handleLogout } = await import('../scripts/auth.js');
+            handleLogout();
         });
 
-        // Close modal on outside click
-        document.getElementById('subjectModal').addEventListener('click', (e) => {
-            if (e.target.id === 'subjectModal') closeModal();
+        // Logout handler - direct implementation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.auth.logout();
+                return false;
+            });
+        }
+
+        // Initialize on load
+        init();
+    </script>
+
+    <script>
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        if (navToggleBtn && secondaryNav) {
+            // Check localStorage for saved state
+            const isNavCollapsed = localStorage.getItem('secondaryNavCollapsed') === 'true';
+            if (isNavCollapsed) {
+                secondaryNav.classList.add('collapsed');
+            }
+
+            // Toggle on button click
+            navToggleBtn.addEventListener('click', () => {
+                secondaryNav.classList.toggle('collapsed');
+                const collapsed = secondaryNav.classList.contains('collapsed');
+                localStorage.setItem('secondaryNavCollapsed', collapsed);
+            });
+        }
+
+        // Highlight active page
+        const currentPage = window.location.pathname;
+        document.querySelectorAll('.secondary-nav-link').forEach(link => {
+            if (link.getAttribute('href') && currentPage.includes(link.getAttribute('href'))) {
+                link.classList.add('active');
+            }
         });
+
+        // Initialize page
+        init();
     </script>
 </body>
 </html>
+
+
+
