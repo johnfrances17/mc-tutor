@@ -111,8 +111,8 @@
             try {
                 const response = await api.get('/sessions/my-sessions?role=tutee');
                 console.log('Sessions response:', response);
-                if (response.success && response.data) {
-                    allSessions = response.data;
+                if (response.success && response.sessions) {
+                    allSessions = response.sessions;
                     renderSessions();
                 } else {
                     allSessions = [];

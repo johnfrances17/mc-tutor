@@ -187,8 +187,8 @@
             try {
                 const response = await api.get('/subjects');
                 
-                if (response.success && response.data) {
-                    allSubjects = response.data;
+                if (response.success && response.subjects) {
+                    allSubjects = response.subjects;
 
                     const subjectSelect = document.getElementById('subjectFilter');
                     subjectSelect.innerHTML = '<option value="">All Subjects</option>' +

@@ -110,9 +110,9 @@
                 const availableResponse = await window.API.subjects.getAvailableForTutor();
                 const availableSelect = document.getElementById('subject_id');
                 
-                if (availableResponse.success && availableResponse.data) {
+                if (availableResponse.success && availableResponse.subjects) {
                     availableSelect.innerHTML = '<option value="">Select a subject</option>' +
-                        availableResponse.data.map(subject => 
+                        availableResponse.subjects.map(subject => 
                             `<option value="${subject.subject_id}">${subject.subject_code} - ${subject.subject_name}</option>`
                         ).join('');
                 }
@@ -130,7 +130,7 @@
                 const response = await window.API.tutorSubjects.getMySubjects();
                 const container = document.getElementById('subjectsContainer');
 
-                if (!response.success || !response.data || response.data.length === 0) {
+                if (!response.success || !response.subjects || response.subjects.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-book-open"></i>
@@ -141,7 +141,7 @@
                     return;
                 }
 
-                const subjectsHTML = response.data.map(subject => `
+                const subjectsHTML = response.subjects.map(subject => `
                     <div class="subject-card">
                         <div class="subject-info">
                             <h4>${subject.subject_code} - ${subject.subject_name}</h4>

@@ -130,8 +130,8 @@
         async function loadSubjects() {
             try {
                 const response = await api.get('/subjects');
-                if (response.success && response.data) {
-                    subjects = response.data;
+                if (response.success && response.subjects) {
+                    subjects = response.subjects;
                     populateSubjectFilter();
                 }
             } catch (error) {

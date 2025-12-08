@@ -214,7 +214,7 @@
         async function loadPendingRequests() {
             try {
                 const response = await api.get('/sessions?status=pending');
-                const pending = response.data;
+                const pending = response.sessions || [];
 
                 document.getElementById('pendingBadge').textContent = pending.length;
 
@@ -330,8 +330,8 @@
         // Load recent feedback
         async function loadRecentFeedback() {
             try {
-                const response = await api.get('/feedback/received?limit=5');
-                const feedback = response.data;
+                const response = await api.get('/feedback/received');
+                const feedback = response.feedback || [];
 
                 const container = document.getElementById('recentFeedbackList');
                 

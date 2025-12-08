@@ -4,13 +4,19 @@
  */
 
 /**
- * Cookie helper functions
+ * Cookie helper functions with improved security
  */
 function setCookie(name, value, days) {
   const date = new Date();
   date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
   const expires = "expires=" + date.toUTCString();
-  document.cookie = name + "=" + value + ";" + expires + ";path=/;SameSite=Strict";
+  
+  // Add Secure flag if on HTTPS
+  const isSecure = window.location.protocol === 'https:';
+  const secureFlag = isSecure ? ';Secure' : '';
+  
+  // URL encode the value to prevent issues with special characters
+  document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;SameSite=Strict" + secureFlag;
 }
 
 function getCookie(name) {
@@ -19,13 +25,18 @@ function getCookie(name) {
   for(let i = 0; i < ca.length; i++) {
     let c = ca[i];
     while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    if (c.indexOf(nameEQ) == 0) {
+      return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
   }
   return null;
 }
 
 function deleteCookie(name) {
+  // Delete with all possible path/domain combinations
   document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Strict";
+  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 }
 
 function clearAllCookies() {
@@ -102,13 +113,13 @@ function saveSession(data) {
   // Update last activity timestamp
   updateLastActivity();
   
-  // Save to cookies (7 days expiry)
-  setCookie('token', data.token, 7);
+  // Save to cookies (1 day expiry to match session timeout)
+  setCookie('token', data.token, 1);
   if (data.refreshToken) {
-    setCookie('refreshToken', data.refreshToken, 7);
+    setCookie('refreshToken', data.refreshToken, 1);
   }
   if (data.user) {
-    setCookie('user', JSON.stringify(data.user), 7);
+    setCookie('user', JSON.stringify(data.user), 1);
   }
 }
 
@@ -132,6 +143,52 @@ function clearSession() {
   
   // Clear all cookies as fallback
   clearAllCookies();
+}
+
+/**
+ * Refresh access token if expired or about to expire
+ * @returns {Promise<boolean>} - True if token was refreshed
+ */
+async function refreshTokenIfNeeded() {
+  try {
+    const token = localStorage.getItem('token') || getCookie('token');
+    if (!token) return false;
+    
+    // Decode JWT to check expiry (simple check without verification)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiresAt = payload.exp * 1000; // Convert to milliseconds
+    const now = Date.now();
+    const timeUntilExpiry = expiresAt - now;
+    
+    // Refresh if token expires in less than 5 minutes
+    if (timeUntilExpiry < 5 * 60 * 1000) {
+      const refreshToken = localStorage.getItem('refreshToken') || getCookie('refreshToken');
+      if (!refreshToken) {
+        console.warn('No refresh token available');
+        return false;
+      }
+      
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          saveSession(data.data);
+          console.log('✅ Token refreshed successfully');
+          return true;
+        }
+      }
+    }
+    return false;
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    return false;
+  }
 }
 
 /**
@@ -348,6 +405,13 @@ function initAuth() {
         updateLastActivity();
       }
     }, 5 * 60 * 1000); // 5 minutes
+    
+    // Auto-refresh token every 4 minutes if logged in
+    setInterval(async () => {
+      if (isLoggedIn()) {
+        await refreshTokenIfNeeded();
+      }
+    }, 4 * 60 * 1000); // 4 minutes
   }
   
   // Multi-tab logout sync: listen for storage changes
@@ -355,12 +419,17 @@ function initAuth() {
     // If logout flag changed or token removed in another tab
     if (e.key === 'logoutFlag' || (e.key === 'token' && !e.newValue)) {
       console.log('Logout detected in another tab, syncing...');
-      // Clear session without API call (already done in other tab)
-      localStorage.clear();
-      sessionStorage.clear();
-      clearAllCookies();
-      // Redirect to login
-      window.location.replace('/html/auth/login.html?logout=true');
+      
+      // Small delay to avoid race conditions
+      setTimeout(() => {
+        // Clear session without API call (already done in other tab)
+        localStorage.clear();
+        sessionStorage.clear();
+        clearAllCookies();
+        
+        // Redirect to login
+        window.location.replace('/html/auth/login.html?logout=true');
+      }, 100);
     }
   });
   
@@ -418,6 +487,7 @@ if (typeof window !== 'undefined') {
     handleRegister,
     updateLastActivity,
     checkSessionTimeout,
+    refreshTokenIfNeeded,
     // Export cookie helpers
     setCookie,
     getCookie,

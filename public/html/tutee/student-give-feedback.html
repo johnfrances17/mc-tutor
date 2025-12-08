@@ -125,10 +125,8 @@
                     setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);
                     return;
                 }
-
-                const session = response.data;
-
-                // Check if session is completed
+                
+                const session = response.session;                // Check if session is completed
                 if (session.status !== 'completed') {
                     showMessage('You can only give feedback for completed sessions', 'danger');
                     setTimeout(() => window.location.href = '/html/tutee/student-my-sessions.html', 2000);

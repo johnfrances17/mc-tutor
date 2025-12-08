@@ -161,8 +161,8 @@
         async function loadStats() {
             try {
                 const response = await api.get('/sessions/my-sessions?role=tutee');
-                if (response.success && response.data) {
-                    const sessions = response.data;
+                if (response.success && response.sessions) {
+                    const sessions = response.sessions;
                     
                     document.querySelector('#totalSessions .number').textContent = sessions.length;
                     document.querySelector('#pendingSessions .number').textContent = 
@@ -182,8 +182,8 @@
             const container = document.getElementById('upcomingSessionsList');
             try {
                 const response = await api.get('/sessions/my-sessions?role=tutee&status=confirmed');
-                if (response.success && response.data) {
-                    const sessions = response.data;
+                if (response.success && response.sessions) {
+                    const sessions = response.sessions;
                     
                     if (sessions.length === 0) {
                         container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/html/tutee/student-find-tutors.html">Find a tutor</a> to get started!</p>';
@@ -210,9 +210,9 @@
         async function loadMaterials() {
             const container = document.getElementById('recentMaterialsList');
             try {
-                const response = await api.get('/materials?limit=5');
-                if (response.success && response.data) {
-                    const materials = response.data;
+                const response = await api.get('/materials/recent');
+                if (response.success && response.materials) {
+                    const materials = response.materials;
                     
                     if (materials.length === 0) {
                         container.innerHTML = '<p class="text-muted">No materials available yet</p>';
