@@ -1,14 +1,22 @@
 import { supabase } from '../config/database.js';
 
 /**
- * Get course_id from course_code
+ * Validate course code
  */
-export async function getCourseIdByCode(courseCode: string): Promise<number | null> {
+export function isValidCourseCode(courseCode: string): boolean {
+  const validCourses = ['BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim'];
+  return validCourses.includes(courseCode);
+}
+
+/**
+ * Get course name from course code
+ */
+export async function getCourseNameByCode(courseCode: string): Promise<string | null> {
   if (!courseCode) return null;
   
   const { data, error } = await supabase
     .from('courses')
-    .select('course_id')
+    .select('course_name')
     .eq('course_code', courseCode.toUpperCase())
     .single();
 
@@ -16,43 +24,7 @@ export async function getCourseIdByCode(courseCode: string): Promise<number | nu
     return null;
   }
 
-  return data.course_id;
-}
-
-/**
- * Get course_code from course_id
- */
-export async function getCourseCodeById(courseId: number): Promise<string | null> {
-  if (!courseId) return null;
-  
-  const { data, error } = await supabase
-    .from('courses')
-    .select('course_code')
-    .eq('course_id', courseId)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data.course_code;
-}
-
-/**
- * Get full course details
- */
-export async function getCourseById(courseId: number) {
-  const { data, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('course_id', courseId)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data;
+  return data.course_name;
 }
 
 /**

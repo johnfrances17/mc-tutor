@@ -189,8 +189,15 @@
                     : 'Unknown';
                 const studentId = tutor.school_id || 'N/A';
                 const courseName = tutor.course_name || tutor.course_code || 'N/A';
-                const yearLevel = tutor.year_level ? `Year ${tutor.year_level}` : '';
+                const yearLevel = tutor.year_level ? formatYearLevel(tutor.year_level) : '';
                 const email = tutor.email || '';
+                
+                // Helper function for year formatting
+                function formatYearLevel(level) {
+                    const suffixes = ['st', 'nd', 'rd', 'th'];
+                    const suffix = level <= 3 ? suffixes[level - 1] : suffixes[3];
+                    return `${level}${suffix} Year`;
+                }
                 const phone = tutor.phone || 'Not provided';
                 const rating = parseFloat(tutor.average_rating || 0);
                 const totalSessions = tutor.total_sessions || 0;

@@ -35,11 +35,11 @@ export interface User {
   last_name: string;
   role: 'admin' | 'tutor' | 'tutee';
   phone?: string | null;
-  year_level?: number | null;  // Changed from string to number (1-4)
-  course_id?: number | null;    // Changed from course to course_id
+  year_level?: number | null;  // 1-4
+  course_code?: string | null; // BSA, BSBA, BSED, BSN, BSCS, BSCrim
   profile_picture?: string | null;
   bio?: string | null;
-  chat_pin?: string | null;     // Changed from chat_pin_hash (plain text for now)
+  chat_pin?: string | null;
   status: 'active' | 'inactive';
   last_active: string;
   created_at: string;
@@ -53,10 +53,9 @@ export interface User {
 // Subject type definition
 export interface Subject {
   subject_id: number;
-  subject_code: string;
+  subject_code: string;  // BSA001, BSBA001, etc.
   subject_name: string;
-  course_id?: number | null;     // Changed from course to course_id
-  year_level?: number | null;    // Added year_level
+  course_code: string;   // BSA, BSBA, BSED, BSN, BSCS, BSCrim
   description?: string | null;
   created_at: string;
   updated_at: string;

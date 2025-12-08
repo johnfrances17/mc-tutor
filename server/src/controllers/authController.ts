@@ -48,17 +48,17 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       });
     }
 
-    // Convert course code to course_id using helper
-    const { getCourseIdByCode, parseYearLevel } = await import('../utils/schemaHelpers');
-    const course_id = getCourseIdByCode(course);
-    if (!course_id) {
+    // Validate course code
+    const validCourses = ['BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim'];
+    if (!validCourses.includes(course)) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Invalid course code' },
+        error: { message: 'Invalid course code. Must be BSA, BSBA, BSED, BSN, BSCS, or BSCrim' },
       });
     }
 
     // Parse year level to number
+    const { parseYearLevel } = await import('../utils/schemaHelpers');
     const yearLevelNum = parseYearLevel(year_level);
     if (yearLevelNum === null) {
       return res.status(400).json({
@@ -77,7 +77,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       role,
       phone,
       year_level: yearLevelNum,
-      course_id,
+      course_code: course,
     });
 
     // Send welcome email (lazy load and don't await - send in background)

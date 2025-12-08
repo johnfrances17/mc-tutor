@@ -12,7 +12,7 @@ interface RegisterData {
   role: 'tutor' | 'tutee';
   phone: string;
   year_level: number;
-  course_id: number;
+  course_code: string;  // BSA, BSBA, BSED, BSN, BSCS, BSCrim
 }
 
 interface LoginData {
@@ -29,12 +29,11 @@ interface AuthResponse {
     first_name: string;
     middle_name?: string | null;
     last_name: string;
-    full_name: string; // Computed for display
+    full_name: string;
     role: string;
     phone: string | null;
     year_level: number | null;
-    course_id: number | null;
-    course_code?: string | null;
+    course_code: string | null;
     course_name?: string | null;
     profile_picture: string | null;
   };
@@ -100,13 +99,10 @@ export class AuthService {
         role: data.role,
         phone: data.phone,
         year_level: data.year_level,
-        course_id: data.course_id,
+        course_code: data.course_code,
         status: 'active',
       })
-      .select(`
-        *,
-        courses (course_code, course_name)
-      `)
+      .select('*')
       .single();
 
     if (insertError || !newUser) {
@@ -147,6 +143,17 @@ export class AuthService {
     const token = generateToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);
 
+    // Fetch course name if course_code exists
+    let courseName = null;
+    if (newUser.course_code) {
+      const { data: course } = await supabaseAdmin
+        .from('courses')
+        .select('course_name')
+        .eq('course_code', newUser.course_code)
+        .single();
+      courseName = course?.course_name || null;
+    }
+
     return {
       user: {
         user_id: newUser.user_id,
@@ -159,9 +166,8 @@ export class AuthService {
         role: newUser.role,
         phone: newUser.phone,
         year_level: newUser.year_level,
-        course_id: newUser.course_id,
-        course_code: newUser.courses?.course_code || null,
-        course_name: newUser.courses?.course_name || null,
+        course_code: newUser.course_code,
+        course_name: courseName,
         profile_picture: newUser.profile_picture,
       },
       token,
@@ -192,10 +198,7 @@ export class AuthService {
     // Build query - USE ADMIN CLIENT to bypass RLS
     let query = supabaseAdmin
       .from('users')
-      .select(`
-        *,
-        courses (course_code, course_name)
-      `)
+      .select('*')
       .eq('email', data.email)
       .eq('status', 'active');
     
@@ -271,6 +274,17 @@ export class AuthService {
     const token = generateToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);
 
+    // Fetch course name if course_code exists
+    let courseName = null;
+    if (user.course_code) {
+      const { data: course } = await supabaseAdmin
+        .from('courses')
+        .select('course_name')
+        .eq('course_code', user.course_code)
+        .single();
+      courseName = course?.course_name || null;
+    }
+
     return {
       user: {
         user_id: user.user_id,
@@ -283,8 +297,13 @@ export class AuthService {
         role: user.role,
         phone: user.phone,
         year_level: user.year_level,
-        course_id: user.course_id,
-        course_code: user.courses?.course_code || null,
+        course_code: user.course_code,
+        course_name: courseName,
+        profile_picture: user.profile_picture,
+      },
+      token,
+      refreshToken,
+    };
         course_name: user.courses?.course_name || null,
         profile_picture: user.profile_picture,
       },

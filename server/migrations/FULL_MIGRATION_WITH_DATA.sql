@@ -82,7 +82,7 @@ CREATE TABLE users (
     role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'tutor', 'tutee')),
     phone VARCHAR(20),
     year_level INTEGER CHECK (year_level BETWEEN 1 AND 4),
-    course_id INTEGER REFERENCES courses(course_id) ON DELETE SET NULL,
+    course_code VARCHAR(10) CHECK (course_code IN ('BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim')),
     profile_picture TEXT,
     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
     last_active TIMESTAMP,
@@ -94,7 +94,7 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_school_id ON users(school_id);
 CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_course ON users(course_id);
+CREATE INDEX idx_users_course_code ON users(course_code);
 
 -- Insert default admin user
 INSERT INTO users (school_id, email, password, first_name, last_name, role, status) VALUES
@@ -108,176 +108,150 @@ CREATE TABLE subjects (
     subject_id SERIAL PRIMARY KEY,
     subject_code VARCHAR(20) UNIQUE NOT NULL,
     subject_name VARCHAR(255) NOT NULL,
-    course_id INTEGER REFERENCES courses(course_id) ON DELETE CASCADE,
-    year_level INTEGER CHECK (year_level BETWEEN 1 AND 4),
+    course_code VARCHAR(10) NOT NULL CHECK (course_code IN ('BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim')),
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_subjects_course ON subjects(course_id);
-CREATE INDEX idx_subjects_year_level ON subjects(year_level);
+CREATE INDEX idx_subjects_course_code ON subjects(course_code);
 
 -- ===================================
 -- STEP 5: INSERT SUBJECTS FOR ALL COURSES
 -- ===================================
 
--- BSA (Bachelor of Science in Accountancy) - Course ID: 1
-INSERT INTO subjects (subject_code, subject_name, course_id, year_level, description) VALUES
--- 1st Year
-('ACC101', 'Fundamentals of Accounting', 1, 1, 'Introduction to basic accounting principles and practices'),
-('ACC102', 'Financial Accounting and Reporting 1', 1, 1, 'Basic financial accounting concepts and financial statements'),
-('MATH101', 'Mathematics in the Modern World', 1, 1, 'Mathematical concepts applicable to business and accounting'),
-('ECON101', 'Microeconomics', 1, 1, 'Individual economic behavior and market structures'),
-('ENGL101', 'Purposive Communication', 1, 1, 'Development of communication skills'),
--- 2nd Year
-('ACC201', 'Financial Accounting and Reporting 2', 1, 2, 'Intermediate accounting concepts and standards'),
-('ACC202', 'Cost Accounting and Control', 1, 2, 'Cost analysis and management control systems'),
-('TAX201', 'Income Taxation', 1, 2, 'Philippine taxation laws and principles'),
-('ECON201', 'Macroeconomics', 1, 2, 'National economic systems and policies'),
-('LAW201', 'Business Law and Obligations', 1, 2, 'Legal framework for business transactions'),
--- 3rd Year
-('ACC301', 'Advanced Financial Accounting', 1, 3, 'Complex accounting transactions and consolidations'),
-('AUDIT301', 'Auditing Theory', 1, 3, 'Auditing principles, standards, and procedures'),
-('TAX301', 'Business Taxation', 1, 3, 'Corporate and business tax regulations'),
-('ACC302', 'Management Advisory Services', 1, 3, 'Consulting and advisory techniques for management'),
-('IT301', 'Accounting Information Systems', 1, 3, 'Technology in accounting processes'),
--- 4th Year
-('ACC401', 'Financial Statement Analysis', 1, 4, 'Analysis and interpretation of financial data'),
-('AUDIT401', 'Auditing Practice', 1, 4, 'Practical application of auditing standards'),
-('GOV401', 'Government Accounting', 1, 4, 'Public sector accounting principles'),
-('ETHIC401', 'Professional Ethics', 1, 4, 'Ethical standards for accountants'),
-('PRACT401', 'Practicum in Accounting', 1, 4, 'On-the-job training and application'),
+-- BSA (Bachelor of Science in Accountancy) - 20 subjects
+INSERT INTO subjects (subject_code, subject_name, course_code, description) VALUES
+('BSA001', 'Fundamentals of Accounting', 'BSA', 'Introduction to basic accounting principles and practices'),
+('BSA002', 'Financial Accounting and Reporting 1', 'BSA', 'Basic financial accounting concepts and financial statements'),
+('BSA003', 'Mathematics in the Modern World', 'BSA', 'Mathematical concepts applicable to business and accounting'),
+('BSA004', 'Microeconomics', 'BSA', 'Individual economic behavior and market structures'),
+('BSA005', 'Purposive Communication', 'BSA', 'Development of communication skills'),
+('BSA006', 'Financial Accounting and Reporting 2', 'BSA', 'Intermediate accounting concepts and standards'),
+('BSA007', 'Cost Accounting and Control', 'BSA', 'Cost analysis and management control systems'),
+('BSA008', 'Income Taxation', 'BSA', 'Philippine taxation laws and principles'),
+('BSA009', 'Macroeconomics', 'BSA', 'National economic systems and policies'),
+('BSA010', 'Business Law and Obligations', 'BSA', 'Legal framework for business transactions'),
+('BSA011', 'Advanced Financial Accounting', 'BSA', 'Complex accounting transactions and consolidations'),
+('BSA012', 'Auditing Theory', 'BSA', 'Auditing principles, standards, and procedures'),
+('BSA013', 'Business Taxation', 'BSA', 'Corporate and business tax regulations'),
+('BSA014', 'Management Advisory Services', 'BSA', 'Consulting and advisory techniques for management'),
+('BSA015', 'Accounting Information Systems', 'BSA', 'Technology in accounting processes'),
+('BSA016', 'Financial Statement Analysis', 'BSA', 'Analysis and interpretation of financial data'),
+('BSA017', 'Auditing Practice', 'BSA', 'Practical application of auditing standards'),
+('BSA018', 'Government Accounting', 'BSA', 'Public sector accounting principles'),
+('BSA019', 'Professional Ethics', 'BSA', 'Ethical standards for accountants'),
+('BSA020', 'Practicum in Accounting', 'BSA', 'On-the-job training and application'),
 
--- BSBA (Bachelor of Science in Business Administration) - Course ID: 2
--- 1st Year
-('MGMT101', 'Introduction to Business Management', 2, 1, 'Overview of business management principles'),
-('ACCT101', 'Basic Accounting', 2, 1, 'Fundamentals of accounting for business'),
-('ECON101B', 'Principles of Economics', 2, 1, 'Basic economic concepts and applications'),
-('MATH102', 'Business Mathematics', 2, 1, 'Mathematical applications in business'),
-('COMM101', 'Business Communication', 2, 1, 'Effective communication in business settings'),
--- 2nd Year
-('MKTG201', 'Principles of Marketing', 2, 2, 'Marketing concepts and strategies'),
-('FINC201', 'Business Finance', 2, 2, 'Financial management and decision making'),
-('HRMT201', 'Human Resource Management', 2, 2, 'Managing people in organizations'),
-('OPMT201', 'Operations Management', 2, 2, 'Production and operations systems'),
-('STAT201', 'Business Statistics', 2, 2, 'Statistical methods for business analysis'),
--- 3rd Year
-('STRT301', 'Strategic Management', 2, 3, 'Corporate strategy and competitive advantage'),
-('ENTR301', 'Entrepreneurship', 2, 3, 'Starting and managing new ventures'),
-('MKTG301', 'Marketing Management', 2, 3, 'Advanced marketing strategies'),
-('FINC301', 'Financial Management', 2, 3, 'Advanced financial decision making'),
-('PROJ301', 'Project Management', 2, 3, 'Planning and executing business projects'),
--- 4th Year
-('LEAD401', 'Leadership and Organizational Behavior', 2, 4, 'Leading teams and organizations'),
-('IBUS401', 'International Business', 2, 4, 'Global business environment and strategies'),
-('RSCH401', 'Business Research Methods', 2, 4, 'Research design and analysis for business'),
-('CAPS401', 'Business Capstone Project', 2, 4, 'Integrative business project'),
-('INTE401', 'Business Internship', 2, 4, 'Practical work experience in business'),
+-- BSBA (Bachelor of Science in Business Administration) - 20 subjects
+('BSBA001', 'Introduction to Business Management', 'BSBA', 'Overview of business management principles'),
+('BSBA002', 'Basic Accounting', 'BSBA', 'Fundamentals of accounting for business'),
+('BSBA003', 'Principles of Economics', 'BSBA', 'Basic economic concepts and applications'),
+('BSBA004', 'Business Mathematics', 'BSBA', 'Mathematical concepts applicable to business'),
+('BSBA005', 'Business Communication', 'BSBA', 'Effective communication in business settings'),
+('BSBA006', 'Principles of Marketing', 'BSBA', 'Marketing concepts and strategies'),
+('BSBA007', 'Business Finance', 'BSBA', 'Financial management and decision making'),
+('BSBA008', 'Human Resource Management', 'BSBA', 'Managing people in organizations'),
+('BSBA009', 'Operations Management', 'BSBA', 'Production and operations systems'),
+('BSBA010', 'Business Statistics', 'BSBA', 'Statistical methods for business analysis'),
+('BSBA011', 'Strategic Management', 'BSBA', 'Corporate strategy and competitive advantage'),
+('BSBA012', 'Entrepreneurship', 'BSBA', 'Starting and managing new ventures'),
+('BSBA013', 'Marketing Management', 'BSBA', 'Advanced marketing strategies'),
+('BSBA014', 'Financial Management', 'BSBA', 'Advanced financial decision making'),
+('BSBA015', 'Project Management', 'BSBA', 'Planning and executing business projects'),
+('BSBA016', 'Leadership and Organizational Behavior', 'BSBA', 'Leading teams and organizations'),
+('BSBA017', 'International Business', 'BSBA', 'Global business environment and strategies'),
+('BSBA018', 'Business Research Methods', 'BSBA', 'Research design and analysis for business'),
+('BSBA019', 'Business Capstone Project', 'BSBA', 'Integrative business project'),
+('BSBA020', 'Business Internship', 'BSBA', 'Practical work experience in business'),
 
--- BSED (Bachelor of Secondary Education) - Course ID: 3
--- 1st Year
-('EDUC101', 'The Teaching Profession', 3, 1, 'Introduction to the teaching profession'),
-('CHLD101', 'Child and Adolescent Development', 3, 1, 'Understanding learner development'),
-('PHIL101', 'Philosophy of Education', 3, 1, 'Educational philosophies and theories'),
-('PSYC101', 'Educational Psychology', 3, 1, 'Psychology applied to education'),
-('TECH101', 'Technology for Teaching and Learning', 3, 1, 'Educational technology tools'),
--- 2nd Year
-('CURR201', 'Curriculum Development', 3, 2, 'Designing effective curricula'),
-('ASSM201', 'Assessment in Learning', 3, 2, 'Educational assessment and evaluation'),
-('CLAS201', 'Classroom Management', 3, 2, 'Managing the learning environment'),
-('INCL201', 'Inclusive Education', 3, 2, 'Teaching diverse learners'),
-('LANG201', 'Language and Literacy Development', 3, 2, 'Developing language skills'),
--- 3rd Year
-('METH301', 'Teaching Methodologies', 3, 3, 'Various teaching approaches and strategies'),
-('SPED301', 'Special Education', 3, 3, 'Teaching learners with special needs'),
-('VALS301', 'Values Education', 3, 3, 'Character and values formation'),
-('RSRCH301', 'Educational Research', 3, 3, 'Research in education'),
-('FLDST301', 'Field Study 1', 3, 3, 'Observation and participation in schools'),
--- 4th Year
-('PRAC401', 'Practice Teaching', 3, 4, 'Supervised teaching practice'),
-('SEMT401', 'Teaching Seminar', 3, 4, 'Reflection on teaching experiences'),
-('THES401', 'Thesis Writing', 3, 4, 'Educational research thesis'),
-('FLDST401', 'Field Study 2', 3, 4, 'Advanced practicum'),
-('DEMO401', 'Demonstration Teaching', 3, 4, 'Final teaching demonstration'),
+-- BSED (Bachelor of Secondary Education) - 20 subjects
+('BSED001', 'The Teaching Profession', 'BSED', 'Introduction to the teaching profession'),
+('BSED002', 'Child and Adolescent Development', 'BSED', 'Understanding learner development'),
+('BSED003', 'Philosophy of Education', 'BSED', 'Educational philosophies and theories'),
+('BSED004', 'Educational Psychology', 'BSED', 'Psychology applied to education'),
+('BSED005', 'Technology for Teaching and Learning', 'BSED', 'Educational technology tools'),
+('BSED006', 'Curriculum Development', 'BSED', 'Designing effective curricula'),
+('BSED007', 'Assessment in Learning', 'BSED', 'Educational assessment and evaluation'),
+('BSED008', 'Classroom Management', 'BSED', 'Managing the learning environment'),
+('BSED009', 'Inclusive Education', 'BSED', 'Teaching diverse learners'),
+('BSED010', 'Language and Literacy Development', 'BSED', 'Developing language skills'),
+('BSED011', 'Teaching Methodologies', 'BSED', 'Various teaching approaches and strategies'),
+('BSED012', 'Special Education', 'BSED', 'Teaching learners with special needs'),
+('BSED013', 'Values Education', 'BSED', 'Character and values formation'),
+('BSED014', 'Educational Research', 'BSED', 'Research in education'),
+('BSED015', 'Field Study 1', 'BSED', 'Observation and participation in schools'),
+('BSED016', 'Practice Teaching', 'BSED', 'Supervised teaching practice'),
+('BSED017', 'Teaching Seminar', 'BSED', 'Reflection on teaching experiences'),
+('BSED018', 'Thesis Writing', 'BSED', 'Educational research thesis'),
+('BSED019', 'Field Study 2', 'BSED', 'Advanced practicum'),
+('BSED020', 'Demonstration Teaching', 'BSED', 'Final teaching demonstration'),
 
--- BSN (Bachelor of Science in Nursing) - Course ID: 4
--- 1st Year
-('NURS101', 'Fundamentals of Nursing', 4, 1, 'Basic nursing principles and skills'),
-('ANAT101', 'Anatomy and Physiology 1', 4, 1, 'Structure and function of the human body'),
-('CHEM101', 'Biochemistry', 4, 1, 'Chemistry in biological systems'),
-('MICR101', 'Microbiology and Parasitology', 4, 1, 'Microorganisms and parasites'),
-('NUTR101', 'Nutrition and Diet Therapy', 4, 1, 'Nutritional science for health'),
--- 2nd Year
-('NURS201', 'Health Assessment', 4, 2, 'Systematic patient assessment'),
-('PHARM201', 'Pharmacology', 4, 2, 'Drug therapy and medication management'),
-('ANAT201', 'Anatomy and Physiology 2', 4, 2, 'Advanced body systems'),
-('PATH201', 'Pathophysiology', 4, 2, 'Disease processes and mechanisms'),
-('COMM201', 'Therapeutic Communication', 4, 2, 'Communication in healthcare'),
--- 3rd Year
-('NURS301', 'Medical-Surgical Nursing', 4, 3, 'Nursing care for medical-surgical patients'),
-('MATR301', 'Maternal and Child Nursing', 4, 3, 'Obstetric and pediatric nursing'),
-('MENT301', 'Mental Health Nursing', 4, 3, 'Psychiatric nursing care'),
-('COMM301', 'Community Health Nursing', 4, 3, 'Public health nursing practice'),
-('RSRCH301N', 'Nursing Research', 4, 3, 'Research methods in nursing'),
--- 4th Year
-('LEAD401N', 'Nursing Leadership and Management', 4, 4, 'Leading and managing in nursing'),
-('CRIT401', 'Critical Care Nursing', 4, 4, 'Intensive care nursing'),
-('EMER401', 'Emergency and Disaster Nursing', 4, 4, 'Emergency response nursing'),
-('CLIN401', 'Clinical Practicum', 4, 4, 'Advanced clinical practice'),
-('NCLEX401', 'NCLEX Review and Preparation', 4, 4, 'Board exam preparation'),
+-- BSN (Bachelor of Science in Nursing) - 20 subjects
+('BSN001', 'Fundamentals of Nursing', 'BSN', 'Basic nursing principles and skills'),
+('BSN002', 'Anatomy and Physiology 1', 'BSN', 'Structure and function of the human body'),
+('BSN003', 'Biochemistry', 'BSN', 'Chemistry in biological systems'),
+('BSN004', 'Microbiology and Parasitology', 'BSN', 'Microorganisms and parasites'),
+('BSN005', 'Nutrition and Diet Therapy', 'BSN', 'Nutritional science for health'),
+('BSN006', 'Health Assessment', 'BSN', 'Systematic patient assessment'),
+('BSN007', 'Pharmacology', 'BSN', 'Drug therapy and medication management'),
+('BSN008', 'Anatomy and Physiology 2', 'BSN', 'Advanced body systems'),
+('BSN009', 'Pathophysiology', 'BSN', 'Disease processes and mechanisms'),
+('BSN010', 'Therapeutic Communication', 'BSN', 'Communication in healthcare'),
+('BSN011', 'Medical-Surgical Nursing', 'BSN', 'Nursing care for medical-surgical patients'),
+('BSN012', 'Maternal and Child Nursing', 'BSN', 'Obstetric and pediatric nursing'),
+('BSN013', 'Mental Health Nursing', 'BSN', 'Psychiatric nursing care'),
+('BSN014', 'Community Health Nursing', 'BSN', 'Public health nursing practice'),
+('BSN015', 'Nursing Research', 'BSN', 'Research methods in nursing'),
+('BSN016', 'Nursing Leadership and Management', 'BSN', 'Leading and managing in nursing'),
+('BSN017', 'Critical Care Nursing', 'BSN', 'Intensive care nursing'),
+('BSN018', 'Emergency and Disaster Nursing', 'BSN', 'Emergency response nursing'),
+('BSN019', 'Clinical Practicum', 'BSN', 'Advanced clinical practice'),
+('BSN020', 'NCLEX Review and Preparation', 'BSN', 'Board exam preparation'),
 
--- BSCS (Bachelor of Science in Computer Science) - Course ID: 5
--- 1st Year
-('CS101', 'Introduction to Computing', 5, 1, 'Fundamentals of computer science'),
-('PROG101', 'Computer Programming 1 (C++)', 5, 1, 'Introduction to programming using C++'),
-('MATH103', 'Discrete Mathematics', 5, 1, 'Mathematical structures for CS'),
-('PHYS101', 'Physics for Computing', 5, 1, 'Physical principles in computing'),
-('ENGL102', 'Technical Writing', 5, 1, 'Writing for technical audiences'),
--- 2nd Year
-('PROG201', 'Computer Programming 2 (Java)', 5, 2, 'Object-oriented programming'),
-('DSTR201', 'Data Structures and Algorithms', 5, 2, 'Organizing and processing data'),
-('DIGI201', 'Digital Logic Design', 5, 2, 'Digital circuits and systems'),
-('DBMS201', 'Database Management Systems', 5, 2, 'Database design and SQL'),
-('WEB201', 'Web Development', 5, 2, 'HTML, CSS, JavaScript fundamentals'),
--- 3rd Year
-('SOFT301', 'Software Engineering', 5, 3, 'Software development lifecycle'),
-('OPSYS301', 'Operating Systems', 5, 3, 'OS concepts and implementation'),
-('NETWK301', 'Computer Networks', 5, 3, 'Network protocols and architecture'),
-('AI301', 'Artificial Intelligence', 5, 3, 'AI concepts and applications'),
-('MOBIL301', 'Mobile Application Development', 5, 3, 'Android/iOS development'),
--- 4th Year
-('CYBER401', 'Cybersecurity', 5, 4, 'Security principles and practices'),
-('CLOUD401', 'Cloud Computing', 5, 4, 'Cloud platforms and services'),
-('CAPS401C', 'Capstone Project', 5, 4, 'Final year project'),
-('PRACT401C', 'IT Practicum', 5, 4, 'Industry internship'),
-('SEMR401', 'CS Seminar and Research', 5, 4, 'Research and presentation'),
+-- BSCS (Bachelor of Science in Computer Science) - 20 subjects
+('BSCS001', 'Introduction to Computing', 'BSCS', 'Fundamentals of computer science'),
+('BSCS002', 'Computer Programming 1 (C++)', 'BSCS', 'Introduction to programming using C++'),
+('BSCS003', 'Discrete Mathematics', 'BSCS', 'Mathematical structures for CS'),
+('BSCS004', 'Physics for Computing', 'BSCS', 'Physical principles in computing'),
+('BSCS005', 'Technical Writing', 'BSCS', 'Writing for technical audiences'),
+('BSCS006', 'Computer Programming 2 (Java)', 'BSCS', 'Object-oriented programming'),
+('BSCS007', 'Data Structures and Algorithms', 'BSCS', 'Organizing and processing data'),
+('BSCS008', 'Digital Logic Design', 'BSCS', 'Digital circuits and systems'),
+('BSCS009', 'Database Management Systems', 'BSCS', 'Database design and SQL'),
+('BSCS010', 'Web Development', 'BSCS', 'HTML, CSS, JavaScript fundamentals'),
+('BSCS011', 'Software Engineering', 'BSCS', 'Software development lifecycle'),
+('BSCS012', 'Operating Systems', 'BSCS', 'OS concepts and implementation'),
+('BSCS013', 'Computer Networks', 'BSCS', 'Network protocols and architecture'),
+('BSCS014', 'Artificial Intelligence', 'BSCS', 'AI concepts and applications'),
+('BSCS015', 'Mobile Application Development', 'BSCS', 'Android/iOS development'),
+('BSCS016', 'Cybersecurity', 'BSCS', 'Security principles and practices'),
+('BSCS017', 'Cloud Computing', 'BSCS', 'Cloud platforms and services'),
+('BSCS018', 'Capstone Project', 'BSCS', 'Final year project'),
+('BSCS019', 'IT Practicum', 'BSCS', 'Industry internship'),
+('BSCS020', 'CS Seminar and Research', 'BSCS', 'Research and presentation'),
 
--- BSCrim (Bachelor of Science in Criminology) - Course ID: 6
--- 1st Year
-('CRIM101', 'Introduction to Criminology', 6, 1, 'Foundations of criminology'),
-('LAW101', 'Criminal Law 1', 6, 1, 'Revised Penal Code'),
-('SOCIO101', 'Sociology of Crime', 6, 1, 'Social aspects of crime'),
-('PSYC102', 'Criminal Psychology', 6, 1, 'Psychological aspects of criminal behavior'),
-('PHYS102', 'Physical Fitness and Self-Defense', 6, 1, 'Physical training for law enforcement'),
--- 2nd Year
-('INVES201', 'Criminal Investigation 1', 6, 2, 'Investigation techniques and procedures'),
-('LAW201C', 'Criminal Law 2', 6, 2, 'Special penal laws'),
-('EVID201', 'Law on Evidence', 6, 2, 'Rules of evidence in criminal cases'),
-('FRNS201', 'Forensic Science', 6, 2, 'Scientific investigation of crime'),
-('TRAF201', 'Traffic Management', 6, 2, 'Traffic laws and enforcement'),
--- 3rd Year
-('INVES301', 'Criminal Investigation 2', 6, 3, 'Advanced investigation methods'),
-('CORR301', 'Correctional Administration', 6, 3, 'Jail and prison management'),
-('DRUG301', 'Drug Education and Vice Control', 6, 3, 'Drug prevention and enforcement'),
-('FIRE301', 'Fire Safety and Arson Investigation', 6, 3, 'Fire protection and investigation'),
-('CRIM301', 'Criminalistics', 6, 3, 'Physical evidence examination'),
--- 4th Year
-('LAWENF401', 'Law Enforcement Administration', 6, 4, 'Police organization and management'),
-('JUST401', 'Criminal Justice System', 6, 4, 'Philippine justice system'),
-('THES401C', 'Criminology Thesis', 6, 4, 'Research in criminology'),
-('PRACT401CR', 'On-the-Job Training', 6, 4, 'Field experience in law enforcement'),
-('BOARD401', 'Board Exam Review', 6, 4, 'Criminologist licensure exam preparation');
+-- BSCrim (Bachelor of Science in Criminology) - 20 subjects
+('BSCrim001', 'Introduction to Criminology', 'BSCrim', 'Foundations of criminology'),
+('BSCrim002', 'Criminal Law 1', 'BSCrim', 'Revised Penal Code'),
+('BSCrim003', 'Sociology of Crime', 'BSCrim', 'Social aspects of crime'),
+('BSCrim004', 'Criminal Psychology', 'BSCrim', 'Psychological aspects of criminal behavior'),
+('BSCrim005', 'Physical Fitness and Self-Defense', 'BSCrim', 'Physical training for law enforcement'),
+('BSCrim006', 'Criminal Investigation 1', 'BSCrim', 'Investigation techniques and procedures'),
+('BSCrim007', 'Criminal Law 2', 'BSCrim', 'Special penal laws'),
+('BSCrim008', 'Law on Evidence', 'BSCrim', 'Rules of evidence in criminal cases'),
+('BSCrim009', 'Forensic Science', 'BSCrim', 'Scientific investigation of crime'),
+('BSCrim010', 'Traffic Management', 'BSCrim', 'Traffic laws and enforcement'),
+('BSCrim011', 'Criminal Investigation 2', 'BSCrim', 'Advanced investigation methods'),
+('BSCrim012', 'Correctional Administration', 'BSCrim', 'Jail and prison management'),
+('BSCrim013', 'Drug Education and Vice Control', 'BSCrim', 'Drug prevention and enforcement'),
+('BSCrim014', 'Fire Safety and Arson Investigation', 'BSCrim', 'Fire protection and investigation'),
+('BSCrim015', 'Criminalistics', 'BSCrim', 'Physical evidence examination'),
+('BSCrim016', 'Law Enforcement Administration', 'BSCrim', 'Police organization and management'),
+('BSCrim017', 'Criminal Justice System', 'BSCrim', 'Philippine justice system'),
+('BSCrim018', 'Criminology Thesis', 'BSCrim', 'Research in criminology'),
+('BSCrim019', 'On-the-Job Training', 'BSCrim', 'Field experience in law enforcement'),
+('BSCrim020', 'Board Exam Review', 'BSCrim', 'Criminologist licensure exam preparation');
 
 -- ===================================
 -- STEP 6: CREATE TUTOR_SUBJECTS TABLE
@@ -463,16 +437,23 @@ CREATE INDEX idx_chats_read ON chats(is_read);
 
 -- Data Summary:
 -- ✅ 6 Courses (BSA, BSBA, BSED, BSN, BSCS, BSCrim)
--- ✅ 120 Subjects (20 per course, distributed across 4 year levels)
+-- ✅ 120 Subjects (20 per course, BSA001-BSA020, BSBA001-BSBA020, etc.)
 -- ✅ 1 Admin User (admin@mabinicolleges.edu.ph / admin123)
--- ✅ All tables with proper indexes and foreign keys
--- ✅ All constraints and validations in place
+-- ✅ All tables with proper indexes and constraints
+-- ✅ Denormalized design: course_code used directly (no course_id FK)
+-- ✅ No year_level restriction on subjects (peer-to-peer tutoring)
+
+-- Design Philosophy:
+-- - school_id is permanent student ID (e.g., 2021-12345)
+-- - course_code stored directly in users/subjects (BSA, BSBA, etc.)
+-- - Subjects use sequential codes: BSA001-BSA020, BSBA001-BSBA020
+-- - No prerequisites: 4th year can tutor 1st year subjects
 
 -- Next Steps:
 -- 1. Register tutors and tutees through the application
 -- 2. Tutors can add their subjects from the 120 available subjects
 -- 3. Tutors can set their availability schedule
--- 4. Students can search tutors by subject
+-- 4. Students can search tutors by subject (any year level)
 -- 5. Book sessions and upload study materials
 -- 6. Give feedback after sessions
 
