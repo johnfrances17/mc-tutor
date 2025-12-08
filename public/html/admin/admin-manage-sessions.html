@@ -403,17 +403,32 @@
         // Load sessions
         async function loadSessions() {
             try {
+                console.log('🔍 Loading sessions from /sessions endpoint...');
                 const response = await api.get('/sessions');
+                console.log('📦 Full response:', response);
+                console.log('✅ Success:', response.success);
+                console.log('📅 Sessions:', response.sessions);
+                console.log('📊 Sessions length:', response.sessions?.length);
+                
                 if (response.success && response.sessions) {
                     allSessions = response.sessions;
+                    console.log('✅ Loaded', allSessions.length, 'sessions');
                     updateStats();
                     renderSessions();
                 } else {
+                    console.warn('⚠️ No sessions in response or empty array');
                     allSessions = [];
                     renderSessions();
                 }
             } catch (error) {
-                console.error('Load sessions error:', error);
+                console.error('❌ Load sessions error:', error);
+                document.getElementById('sessionsTableBody').innerHTML = `
+                    <tr><td colspan="9" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle"></i><br>
+                        Error loading sessions: ${error.message}<br>
+                        <small style="color: #999;">Check console for details</small>
+                    </td></tr>
+                `;
             }
         }
 

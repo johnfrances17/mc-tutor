@@ -554,28 +554,38 @@
         // Load users
         async function loadUsers() {
             try {
+                console.log('🔍 Loading users from /admin/users endpoint...');
                 const response = await api.get('/admin/users');
+                console.log('📦 Full response:', response);
+                console.log('✅ Success:', response.success);
+                console.log('👥 Users:', response.users);
+                console.log('📊 Users length:', response.users?.length);
+                
                 const container = document.getElementById('usersContainer');
 
                 if (!response.success || !response.users || response.users.length === 0) {
+                    console.warn('⚠️ No users in response or empty array');
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-users-slash"></i>
                             <p>No users found.</p>
+                            <p style="font-size: 12px; color: #999;">Response: ${JSON.stringify(response)}</p>
                         </div>
                     `;
                     return;
                 }
 
                 allUsers = response.users;
+                console.log('✅ Loaded', allUsers.length, 'users');
                 updateStats(allUsers);
                 displayUsers(allUsers);
             } catch (error) {
-                console.error('Error loading users:', error);
+                console.error('❌ Error loading users:', error);
                 document.getElementById('usersContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <p>Error loading users. Please try again.</p>
+                        <p>Error loading users: ${error.message}</p>
+                        <p style="font-size: 12px; color: #999;">Check console for details</p>
                     </div>
                 `;
             }

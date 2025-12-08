@@ -659,16 +659,22 @@
         // Load system statistics
         async function loadSystemStats() {
             try {
+                console.log('🔍 Loading system stats from multiple endpoints...');
                 const [users, sessions, subjects, materials] = await Promise.all([
                     api.get('/users'),
                     api.get('/sessions'),
                     api.get('/subjects'),
                     api.get('/materials?search=')
                 ]);
+                console.log('📦 Users response:', users);
+                console.log('📦 Sessions response:', sessions);
+                console.log('📦 Subjects response:', subjects);
+                console.log('📦 Materials response:', materials);
 
                 allUsers = users.users || [];
                 allSessions = sessions.sessions || [];
                 allSubjects = subjects.subjects || [];
+                console.log('✅ Loaded stats - Users:', allUsers.length, '| Sessions:', allSessions.length, '| Subjects:', allSubjects.length);
 
                 // User stats
                 const tutors = allUsers.filter(u => u.role === 'tutor').length;
@@ -690,19 +696,23 @@
                 // Materials stats
                 document.getElementById('totalMaterialsCount').textContent = (materials.materials || []).length;
             } catch (error) {
-                console.error('Stats error:', error);
+                console.error('❌ Stats error:', error);
             }
         }
 
         // Load recent users
         async function loadRecentUsers() {
             try {
+                console.log('🔍 Loading recent users from /admin/users...');
                 const response = await api.get('/admin/users?limit=5&sort=created_at:desc');
+                console.log('📦 Recent users response:', response);
                 const users = response.users || allUsers.slice(0, 5);
+                console.log('✅ Loaded', users.length, 'recent users');
 
                 const container = document.getElementById('recentUsersList');
                 
                 if (users.length === 0) {
+                    console.warn('⚠️ No recent users found');
                     container.innerHTML = '<p class="text-muted">No recent registrations</p>';
                 } else {
                     container.innerHTML = users.map(user => {
@@ -729,18 +739,21 @@
                     }).join('');
                 }
             } catch (error) {
-                console.error('Recent users error:', error);
+                console.error('❌ Recent users error:', error);
             }
         }
 
         // Load pending sessions
         async function loadPendingSessions() {
             try {
+                console.log('🔍 Loading pending sessions...');
                 const pending = allSessions.filter(s => s.status === 'pending').slice(0, 5);
+                console.log('✅ Found', pending.length, 'pending sessions');
 
                 const container = document.getElementById('pendingSessionsList');
                 
                 if (pending.length === 0) {
+                    console.warn('⚠️ No pending sessions');
                     container.innerHTML = '<p class="text-muted">No pending sessions</p>';
                 } else {
                     container.innerHTML = pending.map(session => `
@@ -757,7 +770,7 @@
                     `).join('');
                 }
             } catch (error) {
-                console.error('Pending sessions error:', error);
+                console.error('❌ Pending sessions error:', error);
             }
         }
 
@@ -767,10 +780,14 @@
             container.innerHTML = '<div class="loading-spinner"></div>';
             
             try {
+                console.log('🔍 Loading active tutors from /tutors/search...');
                 const response = await api.get('/tutors/search');
+                console.log('📦 Tutors response:', response);
                 const tutors = response.tutors || [];
+                console.log('✅ Found', tutors.length, 'active tutors');
 
                 if (tutors.length === 0) {
+                    console.warn('⚠️ No active tutors found');
                     container.innerHTML = '<p class="text-muted" style="text-align: center; padding: 40px;">No active tutors</p>';
                     return;
                 }
@@ -843,6 +860,7 @@
         // Load activity log (simulated)
         async function loadActivityLog() {
             try {
+                console.log('🔍 Loading activity log...');
                 // Create activity log from sessions and users
                 const activities = [];
                 
@@ -856,10 +874,12 @@
                 });
 
                 activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                console.log('✅ Generated', activities.length, 'activity entries');
 
                 const container = document.getElementById('activityLogList');
                 
                 if (activities.length === 0) {
+                    console.warn('⚠️ No recent activity');
                     container.innerHTML = '<p class="text-muted">No recent activity</p>';
                 } else {
                     container.innerHTML = activities.slice(0, 15).map(activity => `
@@ -873,20 +893,23 @@
                     `).join('');
                 }
             } catch (error) {
-                console.error('Activity log error:', error);
+                console.error('❌ Activity log error:', error);
             }
         }
 
         // Load subjects for filter
         async function loadSubjects() {
             try {
+                console.log('🔍 Loading subjects filter...');
+                console.log('📚 Available subjects:', allSubjects.length);
                 const select = document.getElementById('tutorFilterSubject');
                 select.innerHTML = '<option value="">All Subjects</option>' +
                     allSubjects.map(subject => 
                         `<option value="${subject.id}">${subject.subject_name}</option>`
                     ).join('');
+                console.log('✅ Populated subjects filter');
             } catch (error) {
-                console.error('Subjects error:', error);
+                console.error('❌ Subjects error:', error);
             }
         }
 

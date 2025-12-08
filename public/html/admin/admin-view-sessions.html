@@ -399,12 +399,26 @@
         // Load sessions
         async function loadSessions() {
             try {
+                console.log('🔍 Loading sessions from getAllSessions()...');
                 const response = await api.sessions.getAllSessions();
+                console.log('📦 Full response:', response);
+                console.log('✅ Success:', response.success);
+                console.log('📅 Sessions:', response.sessions);
+                console.log('📊 Sessions length:', response.sessions?.length);
+                
                 allSessions = response.sessions || [];
+                console.log('✅ Loaded', allSessions.length, 'sessions');
                 updateStats();
                 renderSessions();
             } catch (error) {
-                console.error('Load sessions error:', error);
+                console.error('❌ Load sessions error:', error);
+                document.getElementById('sessionsTableBody').innerHTML = `
+                    <tr><td colspan="8" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle"></i><br>
+                        Error loading sessions: ${error.message}<br>
+                        <small style="color: #999;">Check console for details</small>
+                    </td></tr>
+                `;
             }
         }
 
