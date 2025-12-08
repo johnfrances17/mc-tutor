@@ -296,7 +296,7 @@
 
                 const subjectSelect = document.getElementById('subjectFilter');
                 subjectSelect.innerHTML = '<option value="">All Subjects</option>' +
-                    allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_code} - ${s.subject_name}</option>`).join('');
+                    allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
 
                 // For upload modal (tutors only)
                 if (currentUser.role === 'tutor') {
@@ -304,7 +304,7 @@
                     const tutorSubjects = await API.get('/tutors/my-subjects');
                     if (tutorSubjects.success) {
                         uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
-                            (tutorSubjects.subjects || []).map(s => `<option value="${s.subject_id}">${s.subject_code} - ${s.subject_name}</option>`).join('');
+                            (tutorSubjects.subjects || []).map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
                     }
                 }
 
@@ -397,7 +397,7 @@
                             <div class="material-card-body">
                                 <h4 class="material-card-title">${material.title}</h4>
                                 <div class="material-card-meta">
-                                    <span class="badge badge-primary">${material.subject_code} - ${material.subject_name}</span>
+                                    <span class="badge badge-primary">${material.subject_name}</span>
                                     <span class="text-muted">By ${material.tutor_name}</span>
                                 </div>
                                 ${material.description ? 
