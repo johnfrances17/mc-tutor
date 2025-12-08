@@ -26,14 +26,16 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
           user:users!tutor_subjects_tutor_id_fkey(
             user_id,
             school_id,
-            full_name,
+            first_name,
+            middle_name,
+            last_name,
             email,
-            course,
+            course_code,
             year_level,
             profile_picture,
             bio
           ),
-          subject:subjects(subject_id, subject_code, subject_name, course)
+          subject:subjects(subject_id, subject_code, subject_name, course_code)
         `,
           { count: 'exact' }
         )
@@ -65,21 +67,21 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
     // Otherwise, search all tutors
     let query = supabase
       .from('users')
-      .select('user_id, school_id, full_name, email, course, year_level, profile_picture, bio', {
+      .select('user_id, school_id, first_name, middle_name, last_name, email, course_code, year_level, profile_picture, bio', {
         count: 'exact',
       })
       .eq('role', 'tutor');
 
     // Apply filters
     if (course && typeof course === 'string') {
-      query = query.eq('course', course);
+      query = query.eq('course_code', course);
     }
 
     if (search && typeof search === 'string') {
-      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+      query = query.or(`first_name.ilike.%${search}%,middle_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`);
     }
 
-    query = query.range(offset, offset + validLimit - 1).order('full_name');
+    query = query.range(offset, offset + validLimit - 1).order('first_name');
 
     const { data, error, count } = await query;
 
@@ -112,7 +114,7 @@ export const getTutorById = async (req: Request, res: Response, next: NextFuncti
     // Get tutor info
     const { data: tutor, error: tutorError } = await supabase
       .from('users')
-      .select('user_id, school_id, full_name, email, course, year_level, profile_picture, bio')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, course_code, year_level, profile_picture, bio')
       .eq('user_id', id)
       .eq('role', 'tutor')
       .single();
@@ -121,10 +123,20 @@ export const getTutorById = async (req: Request, res: Response, next: NextFuncti
       return res.status(404).json({ success: false, message: 'Tutor not found' });
     }
 
+    // Get course name
+    if (tutor.course_code) {
+      const { data: course } = await supabase
+        .from('courses')
+        .select('course_name')
+        .eq('course_code', tutor.course_code)
+        .single();
+      tutor.course_name = course?.course_name || null;
+    }
+
     // Get tutor subjects
     const { data: subjects } = await supabase
       .from('tutor_subjects')
-      .select('subject:subjects(subject_id, subject_code, subject_name, course)')
+      .select('subject:subjects(subject_id, subject_code, subject_name, course_code)')
       .eq('tutor_id', id);
 
     res.json({

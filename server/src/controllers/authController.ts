@@ -303,7 +303,7 @@ export const quickPasswordReset = async (req: Request, res: Response, next: Next
     // Verify user exists
     const { data: user, error: fetchError } = await supabaseAdmin
       .from('users')
-      .select('user_id, email, full_name')
+      .select('user_id, email, first_name, middle_name, last_name')
       .eq('email', email)
       .eq('status', 'active')
       .single();
@@ -339,7 +339,7 @@ export const quickPasswordReset = async (req: Request, res: Response, next: Next
       message: 'Password reset successful',
       data: {
         email: user.email,
-        full_name: user.full_name
+        full_name: `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim()
       }
     });
   } catch (error) {

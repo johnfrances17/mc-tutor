@@ -668,8 +668,8 @@
         // Load recent users
         async function loadRecentUsers() {
             try {
-                const response = await api.get('/users?limit=5&sort=created_at:desc');
-                const users = response.data || allUsers.slice(0, 5);
+                const response = await api.get('/admin/users?limit=5&sort=created_at:desc');
+                const users = response.users || allUsers.slice(0, 5);
 
                 const container = document.getElementById('recentUsersList');
                 
@@ -736,7 +736,7 @@
         async function loadActiveTutors() {
             try {
                 const response = await api.get('/tutors/search');
-                const tutors = response.data || [];
+                const tutors = response.tutors || [];
 
                 const container = document.getElementById('activeTutorsList');
                 

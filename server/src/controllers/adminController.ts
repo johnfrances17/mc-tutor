@@ -24,7 +24,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 
     let query = supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, status, created_at, last_active', { count: 'exact' });
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, status, created_at, last_active', { count: 'exact' });
 
     // Apply filters
     if (role && typeof role === 'string') {
@@ -219,7 +219,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       }
       updateData.role = role;
     }
-    if (course) updateData.course = sanitizeInput(course);
+    if (course) updateData.course_code = sanitizeInput(course);
     if (year_level) updateData.year_level = year_level;
     if (status) updateData.status = status;
     if (bio !== undefined) updateData.bio = sanitizeInput(bio);
@@ -232,7 +232,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       .from('users')
       .update(updateData)
       .eq('user_id', id)
-      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, status, updated_at')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, status, updated_at')
       .single();
 
     if (error || !data) {
@@ -334,12 +334,21 @@ export const resetUserPassword = async (req: Request, res: Response, next: NextF
  */
 export const createSubject = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const { subject_code, subject_name, course, description } = req.body;
+    const { subject_code, subject_name, course_code, description } = req.body;
 
-    if (!subject_code || !subject_name || !course) {
+    if (!subject_code || !subject_name || !course_code) {
       return res.status(400).json({
         success: false,
-        message: 'Subject code, name, and course are required',
+        message: 'Subject code, name, and course code are required',
+      });
+    }
+
+    // Validate course_code
+    const validCourses = ['BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim'];
+    if (!validCourses.includes(course_code)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid course code',
       });
     }
 
@@ -362,7 +371,7 @@ export const createSubject = async (req: Request, res: Response, next: NextFunct
       .insert({
         subject_code: sanitizeInput(subject_code),
         subject_name: sanitizeInput(subject_name),
-        course: sanitizeInput(course),
+        course_code: sanitizeInput(course_code),
         description: description ? sanitizeInput(description) : null,
       })
       .select()
@@ -389,13 +398,13 @@ export const createSubject = async (req: Request, res: Response, next: NextFunct
 export const updateSubject = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const { id } = req.params;
-    const { subject_code, subject_name, course, description } = req.body;
+    const { subject_code, subject_name, course_code, description } = req.body;
 
     const updateData: any = {};
 
     if (subject_code) updateData.subject_code = sanitizeInput(subject_code);
     if (subject_name) updateData.subject_name = sanitizeInput(subject_name);
-    if (course) updateData.course = sanitizeInput(course);
+    if (course_code) updateData.course_code = sanitizeInput(course_code);
     if (description !== undefined) updateData.description = sanitizeInput(description);
 
     if (Object.keys(updateData).length === 0) {

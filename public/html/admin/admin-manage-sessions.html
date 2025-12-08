@@ -393,8 +393,8 @@
         async function loadSessions() {
             try {
                 const response = await api.get('/sessions');
-                if (response.success && response.data) {
-                    allSessions = response.data;
+                if (response.success && response.sessions) {
+                    allSessions = response.sessions;
                     updateStats();
                     renderSessions();
                 } else {
@@ -410,8 +410,8 @@
         async function loadSubjects() {
             try {
                 const response = await api.get('/subjects');
-                if (response.success && response.data) {
-                    allSubjects = response.data;
+                if (response.success && response.subjects) {
+                    allSubjects = response.subjects;
                     
                     const select = document.getElementById('subjectFilter');
                     select.innerHTML = '<option value="">All Subjects</option>' +

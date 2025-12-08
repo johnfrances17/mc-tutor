@@ -301,7 +301,7 @@
         async function loadSubjects() {
             try {
                 const response = await api.get('/subjects');
-                allSubjects = response.data;
+                allSubjects = response.subjects;
 
                 const subjectSelect = document.getElementById('subjectFilter');
                 subjectSelect.innerHTML = '<option value="">All Subjects</option>' +
@@ -312,7 +312,7 @@
                     const uploadSubjectSelect = document.getElementById('uploadSubject');
                     const tutorSubjects = await api.get('/tutors/my-subjects');
                     uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
-                        tutorSubjects.data.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
+                        tutorSubjects.subjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
                 }
 
             } catch (error) {
@@ -334,7 +334,7 @@
                 if (tutorId) params.append('tutor_id', tutorId);
 
                 const response = await api.get(`/materials?${params}`);
-                allMaterials = response.data || [];
+                allMaterials = response.materials || [];
                 filteredMaterials = allMaterials;
 
                 // Populate tutor filter

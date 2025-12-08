@@ -532,18 +532,18 @@
                 const response = await api.get('/subjects');
                 const container = document.getElementById('subjectsContainer');
 
-                if (!response.success || !response.data || response.data.length === 0) {
+                if (!response.success || !response.subjects || response.subjects.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-book-open"></i>
-                            <p>No subjects found.</p>
-                            <p>Add subjects above to get started.</p>
+                            <h3>No Subjects Available</h3>
+                            <p>Add your first subject to get started.</p>
                         </div>
                     `;
                     return;
                 }
 
-                allSubjects = response.data;
+                allSubjects = response.subjects;
                 displaySubjects(allSubjects);
             } catch (error) {
                 console.error('Error loading subjects:', error);
@@ -589,7 +589,7 @@
                                 <td>${subject.subject_id}</td>
                                 <td><strong>${subject.subject_code}</strong></td>
                                 <td>${subject.subject_name}</td>
-                                <td><span class="badge badge-info">${subject.course}</span></td>
+                                <td><span class="badge badge-info">${subject.course_code || subject.course || 'N/A'}</span></td>
                                 <td>${subject.description || '-'}</td>
                                 <td>${subject.tutor_count || 0}</td>
                                 <td>
@@ -616,7 +616,7 @@
             }
 
             const filtered = allSubjects.filter(subject => 
-                subject.course.includes(filterValue)
+                (subject.course_code || subject.course) === filterValue
             );
             displaySubjects(filtered);
         });
@@ -639,7 +639,7 @@
                 const response = await api.post('/subjects', {
                     subject_code: subjectCode,
                     subject_name: subjectName,
-                    course_id: parseInt(course),
+                    course_code: course,
                     description: description
                 });
 

@@ -538,10 +538,10 @@
         // Load users
         async function loadUsers() {
             try {
-                const response = await api.get('/users');
+                const response = await api.get('/admin/users');
                 const container = document.getElementById('usersContainer');
 
-                if (!response.success || !response.data || response.data.length === 0) {
+                if (!response.success || !response.users || response.users.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-users-slash"></i>
@@ -551,7 +551,7 @@
                     return;
                 }
 
-                allUsers = response.data;
+                allUsers = response.users;
                 updateStats(allUsers);
                 displayUsers(allUsers);
             } catch (error) {

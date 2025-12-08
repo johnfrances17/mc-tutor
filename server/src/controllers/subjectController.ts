@@ -6,12 +6,12 @@ import { supabase } from '../config/database';
  */
 export const getAllSubjects = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const { course } = req.query;
+    const { course_code } = req.query;
 
-    let query = supabase.from('subjects').select('*').order('subject_name');
+    let query = supabase.from('subjects').select('*').order('subject_code');
 
-    if (course && typeof course === 'string') {
-      query = query.eq('course', course);
+    if (course_code && typeof course_code === 'string') {
+      query = query.eq('course_code', course_code);
     }
 
     const { data, error } = await query;
@@ -31,13 +31,13 @@ export const getAllSubjects = async (req: Request, res: Response, next: NextFunc
  */
 export const getSubjectsByCourse = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const { course } = req.params;
+    const { course_code } = req.params;
 
     const { data, error } = await supabase
       .from('subjects')
       .select('*')
-      .eq('course', course)
-      .order('subject_name');
+      .eq('course_code', course_code)
+      .order('subject_code');
 
     if (error) {
       return res.status(400).json({ success: false, message: 'Failed to fetch subjects' });

@@ -318,17 +318,24 @@ export class AuthService {
   async getUserById(userId: number) {
     const { data: user, error } = await supabaseAdmin
       .from('users')
-      .select(`
-        user_id, school_id, email, first_name, middle_name, last_name, role, phone, 
-        year_level, course_id, profile_picture, created_at, updated_at,
-        courses (course_code, course_name)
-      `)
+      .select('user_id, school_id, email, first_name, middle_name, last_name, role, phone, year_level, course_code, profile_picture, created_at, updated_at')
       .eq('user_id', userId)
       .eq('status', 'active')
       .single();
 
     if (error || !user) {
       throw createError('User not found', 404);
+    }
+
+    // Get course name if course_code exists
+    let courseName = null;
+    if (user.course_code) {
+      const { data: course } = await supabaseAdmin
+        .from('courses')
+        .select('course_name')
+        .eq('course_code', user.course_code)
+        .single();
+      courseName = course?.course_name || null;
     }
 
     // Add computed full_name for backward compatibility
@@ -338,7 +345,8 @@ export class AuthService {
 
     return {
       ...user,
-      full_name: fullName
+      full_name: fullName,
+      course_name: courseName
     };
   }
 

@@ -15,9 +15,18 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, full_name, email, phone, role, course, year_level, profile_picture, bio, created_at')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, profile_picture, bio, created_at')
       .eq('user_id', userId)
       .single();
+
+    if (user && user.course_code) {
+      const { data: course } = await supabase
+        .from('courses')
+        .select('course_name')
+        .eq('course_code', user.course_code)
+        .single();
+      user.course_name = course?.course_name || null;
+    }
 
     if (error || !user) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -35,13 +44,15 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
 export const updateProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
     const userId = req.user!.user_id;
-    const { full_name, phone, course, year_level, bio } = req.body;
+    const { first_name, middle_name, last_name, phone, course_code, year_level, bio } = req.body;
 
     const updateData: any = {};
 
-    if (full_name) updateData.full_name = sanitizeInput(full_name);
+    if (first_name) updateData.first_name = sanitizeInput(first_name);
+    if (middle_name !== undefined) updateData.middle_name = middle_name ? sanitizeInput(middle_name) : null;
+    if (last_name) updateData.last_name = sanitizeInput(last_name);
     if (phone) updateData.phone = sanitizeInput(phone);
-    if (course) updateData.course = sanitizeInput(course);
+    if (course_code) updateData.course_code = sanitizeInput(course_code);
     if (year_level) updateData.year_level = year_level;
     if (bio !== undefined) updateData.bio = sanitizeInput(bio);
 
@@ -125,7 +136,7 @@ export const getUserByStudentId = async (req: Request, res: Response, next: Next
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, full_name, email, role, course, year_level, profile_picture, bio')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, role, course_code, year_level, profile_picture, bio')
       .eq('school_id', studentId)
       .single();
 
