@@ -443,10 +443,28 @@
         /* User item improvements */
         .user-item {
             border-bottom: 1px solid #f0f0f0;
+            overflow: hidden;
         }
 
         .user-item:last-child {
             border-bottom: none;
+        }
+
+        .user-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-meta {
+            overflow: hidden;
+        }
+
+        .user-meta span {
+            display: inline-block;
+            margin-right: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Session item improvements */
@@ -454,20 +472,31 @@
             background: #f8f9fa;
             border-radius: 8px;
             margin-bottom: 10px;
+            overflow: hidden;
         }
 
         .session-item.compact:last-child {
             margin-bottom: 0;
         }
 
+        .session-subject {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .session-details {
             margin-top: 5px;
+            overflow: hidden;
         }
 
         .session-details span {
             margin-right: 15px;
             font-size: 13px;
             color: #666;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .session-details i {
@@ -478,6 +507,7 @@
         /* Activity item improvements */
         .activity-item {
             border-bottom: 1px solid #f0f0f0;
+            overflow: hidden;
         }
 
         .activity-item:last-child {
@@ -486,6 +516,18 @@
 
         .activity-icon {
             color: #5865F2;
+            flex-shrink: 0;
+        }
+
+        .activity-description {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-time {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* Mobile Responsive Styles */
@@ -617,11 +659,23 @@
 
             .user-info {
                 width: 100%;
+                overflow: hidden;
+            }
+
+            .user-name {
+                white-space: normal;
+                word-wrap: break-word;
             }
 
             .user-meta {
                 flex-direction: column;
                 gap: 5px;
+                width: 100%;
+            }
+
+            .user-meta span {
+                white-space: normal;
+                word-wrap: break-word;
             }
 
             .user-item .btn {
@@ -634,9 +688,20 @@
                 gap: 10px;
             }
 
+            .session-subject {
+                white-space: normal;
+                word-wrap: break-word;
+            }
+
             .session-details {
                 flex-direction: column;
                 gap: 5px;
+                width: 100%;
+            }
+
+            .session-details span {
+                white-space: normal;
+                word-wrap: break-word;
             }
 
             .activity-item {
@@ -646,6 +711,8 @@
 
             .activity-description {
                 font-size: 13px;
+                white-space: normal;
+                word-wrap: break-word;
             }
         }
 
@@ -919,9 +986,11 @@
                     return;
                 }
 
-                // Load all data
+                // Load system stats first (needed by other functions)
+                await loadSystemStats();
+                
+                // Then load everything else
                 await Promise.all([
-                    loadSystemStats(),
                     loadRecentUsers(),
                     loadPendingSessions(),
                     loadActiveTutors(),
