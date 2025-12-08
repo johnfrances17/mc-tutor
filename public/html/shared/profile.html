@@ -349,8 +349,8 @@
                 document.getElementById('lastName').value = currentUser.last_name || '';
                 document.getElementById('email').value = currentUser.email || '';
                 document.getElementById('phone').value = currentUser.phone || '';
-                document.getElementById('course').value = currentUser.course || '';
-                document.getElementById('yearLevel').value = currentUser.year_level || '';
+                document.getElementById('course').value = currentUser.course_name || currentUser.course_code || '';
+                document.getElementById('yearLevel').value = currentUser.year_level ? `Year ${currentUser.year_level}` : '';
                 document.getElementById('role').value = currentUser.role || '';
 
                 // Set avatar (use first_name or full_name from backend computed field)

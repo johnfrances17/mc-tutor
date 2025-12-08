@@ -529,7 +529,7 @@
         // Load subjects
         async function loadSubjects() {
             try {
-                const response = await window.API.subjects.getAllSubjects();
+                const response = await api.get('/subjects');
                 const container = document.getElementById('subjectsContainer');
 
                 if (!response.success || !response.data || response.data.length === 0) {
@@ -636,10 +636,10 @@
             }
 
             try {
-                const response = await window.API.subjects.createSubject({
+                const response = await api.post('/subjects', {
                     subject_code: subjectCode,
                     subject_name: subjectName,
-                    course: course,
+                    course_id: parseInt(course),
                     description: description
                 });
 
@@ -663,7 +663,7 @@
             }
 
             try {
-                const response = await window.API.subjects.deleteSubject(subjectId);
+                const response = await api.delete(`/subjects/${subjectId}`);
 
                 if (response.success) {
                     showMessage('Subject deleted successfully!', 'success');

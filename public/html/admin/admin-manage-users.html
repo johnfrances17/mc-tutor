@@ -538,7 +538,7 @@
         // Load users
         async function loadUsers() {
             try {
-                const response = await window.API.users.getAllUsers();
+                const response = await api.get('/users');
                 const container = document.getElementById('usersContainer');
 
                 if (!response.success || !response.data || response.data.length === 0) {
@@ -620,8 +620,8 @@
                                 <td><strong>${userFullName}</strong></td>
                                 <td>${user.email}</td>
                                 <td><span class="badge badge-${user.role}">${user.role.toUpperCase()}</span></td>
-                                <td>${user.course || '-'}</td>
-                                <td>${user.year_level || '-'}</td>
+                                <td>${user.course_name || user.course_code || '-'}</td>
+                                <td>${user.year_level ? `Year ${user.year_level}` : '-'}</td>
                                 <td class="status-${user.status}">
                                     <strong>${user.status === 'active' ? '? Active' : '? Inactive'}</strong>
                                 </td>
@@ -691,7 +691,7 @@
             }
 
             try {
-                const response = await window.API.users.updateUserStatus(userId, newStatus);
+                const response = await api.put(`/users/${userId}/status`, { status: newStatus });
 
                 if (response.success) {
                     showMessage(`User ${action}d successfully!`, 'success');
@@ -712,7 +712,7 @@
             }
 
             try {
-                const response = await window.API.users.deleteUser(userId);
+                const response = await api.delete(`/users/${userId}`);
 
                 if (response.success) {
                     showMessage('User deleted successfully!', 'success');
