@@ -59,6 +59,7 @@ import feedbackRoutes from './routes/feedbackRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import chatRoutes from './routes/chatRoutes';
 import adminRoutes from './routes/adminRoutes';
+import courseRoutes from './routes/courseRoutes';
 // import testRoutes from './routes/testRoutes'; // Temporarily disabled
 import { apiLimiter } from './middleware/rateLimiter';
 
@@ -119,6 +120,7 @@ app.get('/api/health', async (_req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/courses', courseRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/tutors', tutorRoutes);

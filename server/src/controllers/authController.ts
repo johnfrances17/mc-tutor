@@ -48,6 +48,25 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       });
     }
 
+    // Convert course code to course_id using helper
+    const { getCourseIdByCode, parseYearLevel } = await import('../utils/schemaHelpers');
+    const course_id = getCourseIdByCode(course);
+    if (!course_id) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Invalid course code' },
+      });
+    }
+
+    // Parse year level to number
+    const yearLevelNum = parseYearLevel(year_level);
+    if (yearLevelNum === null) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Invalid year level. Must be 1, 2, 3, or 4' },
+      });
+    }
+
     const result = await authService.register({
       school_id,
       email,
@@ -57,8 +76,8 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       last_name,
       role,
       phone,
-      year_level,
-      course,
+      year_level: yearLevelNum,
+      course_id,
     });
 
     // Send welcome email (lazy load and don't await - send in background)

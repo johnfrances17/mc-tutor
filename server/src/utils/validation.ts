@@ -48,18 +48,18 @@ export const isValidRole = (role: string): boolean => {
 };
 
 /**
- * Validate year level
+ * Validate year level (now accepts numbers 1-4)
  */
-export const isValidYearLevel = (yearLevel: string): boolean => {
-  const validYearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year', 'Graduate'];
-  return validYearLevels.includes(yearLevel);
+export const isValidYearLevel = (yearLevel: string | number): boolean => {
+  const year = typeof yearLevel === 'string' ? parseInt(yearLevel) : yearLevel;
+  return Number.isInteger(year) && year >= 1 && year <= 4;
 };
 
 /**
- * Validate course code
+ * Validate course code (updated for Mabini College courses)
  */
 export const isValidCourse = (course: string): boolean => {
-  const validCourses = ['BSIT', 'BSCS', 'BSIS', 'ACT', 'BSEMC'];
+  const validCourses = ['BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim'];
   return validCourses.includes(course);
 };
 
