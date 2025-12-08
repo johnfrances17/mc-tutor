@@ -326,14 +326,14 @@
             padding: 0 20px 40px;
         }
 
-        .dashboard-grid {
+        .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        .stat-card {
+        .stat-box {
             background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
             color: white;
             padding: 20px;
@@ -341,22 +341,15 @@
             text-align: center;
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-            transition: all 0.3s;
-        }
-
-        .stat-card .stat-content {
-            margin: 0;
-            opacity: 0.9;
-        }
-
-        .stat-card .number {
+        .stat-box h3 {
             margin: 0 0 8px 0;
             font-size: 32px;
             font-weight: 700;
-            color: white;
+        }
+
+        .stat-box p {
+            margin: 0;
+            opacity: 0.9;
         }
 
         /* Card title styling */
@@ -426,22 +419,22 @@
     <div class="container">
 
         <!-- System Stats -->
-        <div class="dashboard-grid">
-            <div class="stat-card">
-                <h3 class="number" id="totalUsersCount">0</h3>
-                <p class="stat-content">Total Users</p>
+        <div class="stats-row">
+            <div class="stat-box">
+                <h3 id="totalUsersCount">0</h3>
+                <p>Total Users</p>
             </div>
-            <div class="stat-card">
-                <h3 class="number" id="totalSessionsCount">0</h3>
-                <p class="stat-content">Total Sessions</p>
+            <div class="stat-box">
+                <h3 id="totalSessionsCount">0</h3>
+                <p>Total Sessions</p>
             </div>
-            <div class="stat-card">
-                <h3 class="number" id="totalSubjectsCount">0</h3>
-                <p class="stat-content">Subjects</p>
+            <div class="stat-box">
+                <h3 id="totalSubjectsCount">0</h3>
+                <p>Subjects</p>
             </div>
-            <div class="stat-card">
-                <h3 class="number" id="totalMaterialsCount">0</h3>
-                <p class="stat-content">Study Materials</p>
+            <div class="stat-box">
+                <h3 id="totalMaterialsCount">0</h3>
+                <p>Study Materials</p>
             </div>
         </div>
 

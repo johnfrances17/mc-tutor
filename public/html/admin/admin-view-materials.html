@@ -245,8 +245,7 @@
     <script src="/scripts/auth.js"></script>
     <script type="module">
         const { getCurrentUser } = window.auth;
-        const { api } = window;
-        const { showToast } = window;
+        const { showToast, debounce, formatDate } = window;
 
         let currentUser = null;
         let allMaterials = [];
@@ -290,58 +289,82 @@
         // Load subjects
         async function loadSubjects() {
             try {
-                const response = await api.get('/subjects');
-                allSubjects = response.subjects;
+                const response = await API.subjects.getAll();
+                if (!response.success) throw new Error('Failed to load subjects');
+                
+                allSubjects = response.subjects || [];
 
                 const subjectSelect = document.getElementById('subjectFilter');
                 subjectSelect.innerHTML = '<option value="">All Subjects</option>' +
-                    allSubjects.map(s => `<option value="${s.id}">${s.subject_name}</option>`).join('');
+                    allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
 
                 // For upload modal (tutors only)
                 if (currentUser.role === 'tutor') {
                     const uploadSubjectSelect = document.getElementById('uploadSubject');
-                    const tutorSubjects = await api.get('/tutors/my-subjects');
-                    uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
-                        tutorSubjects.subjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
+                    const tutorSubjects = await API.get('/tutors/my-subjects');
+                    if (tutorSubjects.success) {
+                        uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
+                            (tutorSubjects.subjects || []).map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
+                    }
                 }
 
             } catch (error) {
                 console.error('Load subjects error:', error);
+                showToast('Failed to load subjects', 'error');
             }
         }
 
         // Load materials
         async function loadMaterials() {
+            const container = document.getElementById('materialsList');
+            container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #5865F2;"></i><p style="margin-top: 16px; color: #6b7280;">Loading materials...</p></div>';
+            
             try {
                 const params = new URLSearchParams();
                 
-                const search = document.getElementById('searchInput').value;
-                const subjectId = document.getElementById('subjectFilter').value;
-                const tutorId = document.getElementById('tutorFilter').value;
+                const search = document.getElementById('searchInput')?.value || '';
+                const subjectId = document.getElementById('subjectFilter')?.value || '';
+                const tutorId = document.getElementById('tutorFilter')?.value || '';
 
                 if (search) params.append('search', search);
                 if (subjectId) params.append('subject_id', subjectId);
-                if (tutorId) params.append('tutor_id', tutorId);
+                if (tutorId) params.append('tutor_student_id', tutorId);
 
-                const response = await api.get(`/materials?${params}`);
+                const response = await API.get(`/materials${params.toString() ? '?' + params.toString() : ''}`);
+                
+                if (!response.success) {
+                    throw new Error('Failed to load materials');
+                }
+                
                 allMaterials = response.materials || [];
                 filteredMaterials = allMaterials;
 
-                // Populate tutor filter
-                const tutors = [...new Set(allMaterials.map(m => m.tutor_student_id))];
-                const tutorFilter = document.getElementById('tutorFilter');
-                const tutorOptions = await Promise.all(
-                    tutors.map(async id => {
+                // Populate tutor filter only on first load
+                if (!tutorId) {
+                    const tutors = [...new Set(allMaterials.map(m => m.tutor_student_id))];
+                    const tutorFilter = document.getElementById('tutorFilter');
+                    const tutorOptions = tutors.map(id => {
                         const material = allMaterials.find(m => m.tutor_student_id === id);
-                        return `<option value="${id}">${material.tutor_name}</option>`;
-                    })
-                );
-                tutorFilter.innerHTML = '<option value="">All Tutors</option>' + tutorOptions.join('');
+                        return `<option value="${id}">${material?.tutor_name || 'Unknown'}</option>`;
+                    });
+                    tutorFilter.innerHTML = '<option value="">All Tutors</option>' + tutorOptions.join('');
+                }
 
                 displayMaterials();
 
             } catch (error) {
                 console.error('Load materials error:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #dc3545; margin-bottom: 16px;"></i>
+                        <p style="color: #dc3545; font-weight: 600;">Error loading materials</p>
+                        <p style="color: #6b7280; margin-top: 8px;">${error.message}</p>
+                        <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 16px;">
+                            <i class="fas fa-refresh"></i> Retry
+                        </button>
+                    </div>
+                `;
+                showToast('Failed to load materials', 'error');
             }
         }
 
@@ -357,11 +380,10 @@
 
             if (pageMaterials.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <p>No materials available</p>
-                        ${currentUser.role === 'tutor' ? 
-                            '<button class="btn btn-primary" onclick="openUploadModal()">Upload First Material</button>' : ''
-                        }
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-folder-open" style="font-size: 64px; color: #d1d5db; margin-bottom: 16px;"></i>
+                        <p style="color: #6b7280; font-size: 18px; margin-bottom: 8px;">No materials found</p>
+                        <p style="color: #9ca3af; font-size: 14px;">Try adjusting your filters or search terms</p>
                     </div>
                 `;
                 return;
@@ -447,7 +469,8 @@
         // Download material
         window.downloadMaterial = async function(materialId, filename) {
             try {
-                await api.download(`/materials/${materialId}/download`, filename);
+                const response = await API.get(`/materials/${materialId}/download`);
+                // Handle download
                 showToast('Download started', 'success');
             } catch (error) {
                 console.error('Download error:', error);
@@ -460,9 +483,13 @@
             if (!confirm('Are you sure you want to delete this material?')) return;
 
             try {
-                await api.delete(`/materials/${materialId}`);
-                showToast('Material deleted', 'success');
-                await loadMaterials();
+                const response = await API.delete(`/materials/${materialId}`);
+                if (response.success) {
+                    showToast('Material deleted successfully', 'success');
+                    await loadMaterials();
+                } else {
+                    throw new Error(response.message || 'Delete failed');
+                }
             } catch (error) {
                 console.error('Delete error:', error);
                 showToast('Failed to delete material', 'error');
@@ -506,13 +533,17 @@
             if (description) formData.append('description', description);
 
             try {
-                await api.upload('/materials/upload', formData);
-                showToast('Material uploaded successfully', 'success');
-                closeUploadModal();
-                await loadMaterials();
+                const response = await API.post('/materials/upload', formData);
+                if (response.success) {
+                    showToast('Material uploaded successfully', 'success');
+                    closeUploadModal();
+                    await loadMaterials();
+                } else {
+                    throw new Error(response.message || 'Upload failed');
+                }
             } catch (error) {
                 console.error('Upload error:', error);
-                showToast(error.response?.data?.error || 'Upload failed', 'error');
+                showToast(error.message || 'Upload failed', 'error');
             }
         });
 
