@@ -428,6 +428,102 @@
             font-weight: 600;
             color: #2d3748;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 1024px) {
+            .user-info-inline {
+                max-width: 160px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 10px;
+            }
+
+            .nav-brand {
+                font-size: 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+                flex-wrap: nowrap;
+            }
+
+            .user-info-inline {
+                padding: 6px 10px;
+                max-width: 140px;
+                min-width: 100px;
+                flex-shrink: 1;
+            }
+
+            .user-avatar-small {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .user-name-inline {
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100px;
+            }
+
+            .user-role-badge-inline {
+                font-size: 9px;
+            }
+
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-link {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .nav-menu-btn {
+                padding: 6px 10px;
+                font-size: 16px;
+            }
+
+            .secondary-navbar {
+                top: 58px;
+            }
+
+            .secondary-nav-container {
+                padding: 10px;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .secondary-nav-links {
+                gap: 6px;
+                min-width: min-content;
+            }
+
+            .secondary-nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .page-header {
+                margin: 20px auto 0;
+                padding: 0 15px;
+                padding-top: 10px;
+            }
+
+            .page-header h1, .page-header-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
