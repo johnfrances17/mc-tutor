@@ -28,10 +28,8 @@ export const getMaterials = async (req: AuthRequest, res: Response, next: NextFu
       // Get by tutor
       materials = await materialsService.getAllMaterialsByTutor(tutor_student_id);
     } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide subject_id, tutor_student_id, or search query',
-      });
+      // Get all materials (no filter)
+      materials = await materialsService.searchMaterials('');
     }
 
     res.json({ success: true, materials });
