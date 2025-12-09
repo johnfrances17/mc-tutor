@@ -1994,10 +1994,21 @@ body {
 }
 
 /* Mobile Responsive Styles */
-@media (max-width: 1024px) {
+/* Desktop: Show full name and role */
+/* Tablet (768px - 1200px): Show name and role */
+/* Mobile (below 768px): Show only avatar */
+
+@media (max-width: 1200px) {
+    .user-info-inline {
+        max-width: 220px;
+    }
+}
+
+@media (max-width: 768px) {
     .user-info-inline {
         max-width: 60px;
         padding: 8px;
+        justify-content: center;
     }
     
     .user-name-inline {
@@ -2007,8 +2018,6 @@ body {
     .user-role-badge-inline {
         display: none;
     }
-}
-
 @media (max-width: 768px) {
     .nav-container {
         padding: 10px;
@@ -2028,6 +2037,7 @@ body {
         max-width: 50px;
         min-width: 50px;
         flex-shrink: 1;
+        justify-content: center;
     }
 
     .user-avatar-small {
