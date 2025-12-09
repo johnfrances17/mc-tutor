@@ -337,16 +337,33 @@
         }
 
         function updateStats() {
-            document.getElementById('totalSessions').textContent = allSessions.length;
-            document.getElementById('pendingSessions').textContent = allSessions.filter(s => s.status === 'pending').length;
-            document.getElementById('confirmedSessions').textContent = allSessions.filter(s => s.status === 'confirmed').length;
-            document.getElementById('completedSessions').textContent = allSessions.filter(s => s.status === 'completed').length;
+            const totalSessionsEl = document.getElementById('totalSessions');
+            const pendingSessionsEl = document.getElementById('pendingSessions');
+            const confirmedSessionsEl = document.getElementById('confirmedSessions');
+            const completedSessionsEl = document.getElementById('completedSessions');
+
+            if (totalSessionsEl) {
+                totalSessionsEl.textContent = allSessions.length;
+            }
+            if (pendingSessionsEl) {
+                pendingSessionsEl.textContent = allSessions.filter(s => s.status === 'pending').length;
+            }
+            if (confirmedSessionsEl) {
+                confirmedSessionsEl.textContent = allSessions.filter(s => s.status === 'confirmed').length;
+            }
+            if (completedSessionsEl) {
+                completedSessionsEl.textContent = allSessions.filter(s => s.status === 'completed').length;
+            }
         }
 
         function filterAndDisplaySessions() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-            const typeFilter = document.getElementById('typeFilter').value;
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const typeFilter = document.getElementById('typeFilter');
+
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const statusFilterValue = statusFilter ? statusFilter.value : '';
+            const typeFilterValue = typeFilter ? typeFilter.value : '';
 
             filteredSessions = allSessions;
             
@@ -358,12 +375,12 @@
                 });
             }
             
-            if (statusFilter) {
-                filteredSessions = filteredSessions.filter(s => s.status === statusFilter);
+            if (statusFilterValue) {
+                filteredSessions = filteredSessions.filter(s => s.status === statusFilterValue);
             }
             
-            if (typeFilter) {
-                filteredSessions = filteredSessions.filter(s => s.session_type === typeFilter);
+            if (typeFilterValue) {
+                filteredSessions = filteredSessions.filter(s => s.session_type === typeFilterValue);
             }
 
             currentPage = 1;
