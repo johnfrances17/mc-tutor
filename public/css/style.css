@@ -526,7 +526,7 @@ table td .btn {
 }
 
 .empty-state a {
-    color: #667eea;
+    color: #ffffff;
     font-weight: 600;
 }
 
@@ -2004,20 +2004,6 @@ body {
     }
 }
 
-@media (max-width: 768px) {
-    .user-info-inline {
-        max-width: 60px;
-        padding: 8px;
-        justify-content: center;
-    }
-    
-    .user-name-inline {
-        display: none;
-    }
-    
-    .user-role-badge-inline {
-        display: none;
-    }
 @media (max-width: 768px) {
     .nav-container {
         padding: 10px;
