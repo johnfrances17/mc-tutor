@@ -1069,7 +1069,7 @@
             try {
                 console.log('🔍 Loading system stats from multiple endpoints...');
                 const [users, sessions, subjects, materials] = await Promise.all([
-                    api.get('/users'),
+                    api.get('/admin/users'),
                     api.get('/sessions'),
                     api.get('/subjects'),
                     api.get('/materials?search=')

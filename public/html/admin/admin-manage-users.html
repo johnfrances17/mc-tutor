@@ -1135,15 +1135,12 @@
         }
 
         // Highlight active page
-        const currentPage = window.location.pathname;
+        const activePagePath = window.location.pathname;
         document.querySelectorAll('.secondary-nav-link').forEach(link => {
-            if (link.getAttribute('href') && currentPage.includes(link.getAttribute('href'))) {
+            if (link.getAttribute('href') && activePagePath.includes(link.getAttribute('href'))) {
                 link.classList.add('active');
             }
         });
-
-        // Initialize page
-        init();
     </script>
 </body>
 </html>
