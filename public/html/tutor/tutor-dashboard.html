@@ -431,7 +431,7 @@
         async function loadUpcomingSessions() {
             try {
                 const response = await api.get('/sessions?status=confirmed');
-                const sessions = response.data;
+                const sessions = response.sessions || [];
 
                 const upcoming = sessions
                     .filter(s => new Date(s.session_date) > new Date())
@@ -472,7 +472,7 @@
         async function loadTodaySchedule() {
             try {
                 const response = await api.get('/sessions?status=confirmed');
-                const sessions = response.data;
+                const sessions = response.sessions || [];
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
