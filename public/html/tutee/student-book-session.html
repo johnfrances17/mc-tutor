@@ -443,12 +443,12 @@
             const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
 
             const formData = {
-                subjectId: document.getElementById('subject').value,
-                tutorId: document.getElementById('tutor').value,
-                sessionDate: document.getElementById('sessionDate').value,
-                startTime: startTime,
-                endTime: endTime,
-                sessionType: document.getElementById('sessionType').value,
+                tutor_id: document.getElementById('tutor').value,
+                subject_id: document.getElementById('subject').value,
+                session_type: document.getElementById('sessionType').value,
+                session_date: document.getElementById('sessionDate').value,
+                start_time: startTime,
+                end_time: endTime,
                 location: document.getElementById('location').value,
                 notes: document.getElementById('notes').value
             };
