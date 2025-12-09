@@ -815,6 +815,14 @@
                     <option value="online">Online</option>
                     <option value="face-to-face">Face-to-Face</option>
                 </select>
+
+                <label style="font-weight: 600; color: #2d3748; margin-left: 20px;">Show:</label>
+                <select id="perPageSelect" style="width: 80px;">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
             </div>
 
             <div class="table-wrapper">
@@ -849,6 +857,9 @@
         let currentUser = null;
         let allSessions = [];
         let allSubjects = [];
+        let filteredSessions = [];
+        let currentPage = 1;
+        let perPage = 10;
 
         // Initialize
         async function init() {
@@ -885,13 +896,16 @@
                 
                 if (response.success && response.sessions) {
                     allSessions = response.sessions;
+                    filteredSessions = response.sessions;
                     console.log('✅ Loaded', allSessions.length, 'sessions');
                     updateStats();
-                    filterAndDisplaySessions();
+                    currentPage = 1;
+                    displaySessions();
                 } else {
                     console.warn('⚠️ No sessions in response');
                     allSessions = [];
-                    displaySessions([]);
+                    filteredSessions = [];
+                    displaySessions();
                 }
             } catch (error) {
                 console.error('❌ Load sessions error:', error);
@@ -914,7 +928,7 @@
                     
                     const select = document.getElementById('subjectFilter');
                     select.innerHTML = '<option value="">All Subjects</option>' +
-                        allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
+                        allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_code} - ${s.subject_name}</option>`).join('');
                 }
             } catch (error) {
                 console.error('Load subjects error:', error);
@@ -968,22 +982,31 @@
                 filtered = filtered.filter(s => s.session_type === typeFilter);
             }
 
-            displaySessions(filtered);
+            filteredSessions = filtered;
+            currentPage = 1;
+            displaySessions();
         }
 
         // Display sessions in table
-        function displaySessions(sessions) {
+        function displaySessions() {
             const container = document.getElementById('sessionsContainer');
             
-            if (sessions.length === 0) {
+            if (!filteredSessions || filteredSessions.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: #999;">
                         <i class="fas fa-calendar-times" style="font-size: 48px; margin-bottom: 15px;"></i>
                         <p>No sessions found</p>
                     </div>
                 `;
+                document.getElementById('paginationContainer').style.display = 'none';
                 return;
             }
+
+            // Pagination calculation
+            const startIndex = (currentPage - 1) * perPage;
+            const endIndex = startIndex + perPage;
+            const paginatedSessions = filteredSessions.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(filteredSessions.length / perPage);
 
             const tableHTML = `
                 <table>
@@ -1000,7 +1023,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${sessions.map(session => {
+                        ${paginatedSessions.map(session => {
                             const studentName = session.student_name || session.tutee_name || 'N/A';
                             const tutorName = session.tutor_name || 'N/A';
                             const subjectName = session.subject_name || 'N/A';
@@ -1045,7 +1068,58 @@
             `;
             
             container.innerHTML = tableHTML;
+
+            // Update pagination info
+            document.getElementById('paginationInfo').textContent = 
+                `Showing ${startIndex + 1} to ${Math.min(endIndex, filteredSessions.length)} of ${filteredSessions.length} sessions`;
+
+            // Generate pagination buttons
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <button onclick="changePage(${i})" 
+                            style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: ${i === currentPage ? 'linear-gradient(135deg, #5865F2, #7289DA)' : 'white'}; color: ${i === currentPage ? 'white' : '#2d3748'}; cursor: pointer; font-weight: ${i === currentPage ? '600' : '400'};">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span style="padding: 8px;">...</span>`;
+                }
+            }
+
+            // Next button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" 
+                    ${currentPage === totalPages ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+
+            document.getElementById('paginationButtons').innerHTML = paginationHTML;
+            document.getElementById('paginationContainer').style.display = 'flex';
         }
+
+        // Change page
+        window.changePage = function(page) {
+            const totalPages = Math.ceil(filteredSessions.length / perPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            displaySessions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
 
         // Get status badge color
         function getStatusColor(status) {
@@ -1071,6 +1145,11 @@
             document.getElementById('statusFilter').addEventListener('change', filterAndDisplaySessions);
             document.getElementById('subjectFilter').addEventListener('change', filterAndDisplaySessions);
             document.getElementById('typeFilter').addEventListener('change', filterAndDisplaySessions);
+            document.getElementById('perPageSelect').addEventListener('change', (e) => {
+                perPage = parseInt(e.target.value);
+                currentPage = 1;
+                displaySessions();
+            });
         }
 
         // Approve session
