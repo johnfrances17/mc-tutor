@@ -420,6 +420,26 @@
       </div>
     </div>
 
+    <!-- Connection Diagnostics Section -->
+    <div class="test-section">
+      <h2><i class="fas fa-stethoscope"></i> Connection Diagnostics</h2>
+      <div class="test-buttons">
+        <button class="test-btn primary" onclick="testFullDiagnostics()">
+          <i class="fas fa-diagnoses"></i> Run Full Diagnostics
+        </button>
+        <button class="test-btn primary" onclick="testMaterialsUpload()">
+          <i class="fas fa-upload"></i> Test Materials Upload Endpoint
+        </button>
+        <button class="test-btn primary" onclick="testAllAPIRoutes()">
+          <i class="fas fa-route"></i> Test All API Routes
+        </button>
+        <button class="test-btn secondary" onclick="clearOutput()">
+          <i class="fas fa-trash"></i> Clear Output
+        </button>
+      </div>
+      <div class="test-output" id="test-output"></div>
+    </div>
+
     <!-- Test Section -->
     <div class="test-section">
       <h2><i class="fas fa-flask"></i> API Endpoint Tests</h2>
@@ -433,11 +453,10 @@
         <button class="test-btn primary" onclick="testAuthentication()">
           <i class="fas fa-key"></i> Test Auth Endpoint
         </button>
-        <button class="test-btn secondary" onclick="clearOutput()">
-          <i class="fas fa-trash"></i> Clear Output
+        <button class="test-btn primary" onclick="testCORS()">
+          <i class="fas fa-globe"></i> Test CORS Headers
         </button>
       </div>
-      <div class="test-output" id="test-output"></div>
     </div>
   </div>
 
@@ -656,6 +675,278 @@
 
     function clearOutput() {
       document.getElementById('test-output').textContent = '';
+    }
+
+    // New diagnostic functions
+    async function testFullDiagnostics() {
+      clearOutput();
+      appendOutput('='.repeat(60), 'info');
+      appendOutput('FULL SYSTEM DIAGNOSTICS', 'info');
+      appendOutput('='.repeat(60), 'info');
+      
+      // 1. Environment Info
+      appendOutput('\n[1] Environment Information:', 'info');
+      appendOutput(`  - Current URL: ${window.location.href}`, 'info');
+      appendOutput(`  - API Base URL: ${window.API_BASE_URL}`, 'info');
+      appendOutput(`  - Browser: ${navigator.userAgent}`, 'info');
+      appendOutput(`  - Token Present: ${localStorage.getItem('token') ? 'Yes' : 'No'}`, 'info');
+      
+      // 2. API Health
+      appendOutput('\n[2] Testing API Health...', 'info');
+      try {
+        const start = Date.now();
+        const response = await fetch(window.API_BASE_URL + '/health');
+        const time = Date.now() - start;
+        const data = await response.json();
+        appendOutput(`  ✓ API is reachable (${time}ms)`, 'success');
+        appendOutput(`  ✓ Status: ${data.status}`, 'success');
+        appendOutput(`  ✓ Version: ${data.version}`, 'success');
+      } catch (error) {
+        appendOutput(`  ✗ API Health Failed: ${error.message}`, 'error');
+      }
+      
+      // 3. Database Connection
+      appendOutput('\n[3] Testing Database Connection...', 'info');
+      try {
+        const response = await fetch(window.API_BASE_URL + '/subjects/courses');
+        if (response.ok) {
+          const data = await response.json();
+          appendOutput(`  ✓ Database is connected`, 'success');
+          appendOutput(`  ✓ Courses available: ${data.data?.length || 0}`, 'success');
+        } else {
+          appendOutput(`  ✗ Database query failed: HTTP ${response.status}`, 'error');
+        }
+      } catch (error) {
+        appendOutput(`  ✗ Database test failed: ${error.message}`, 'error');
+      }
+      
+      // 4. Authentication
+      appendOutput('\n[4] Testing Authentication...', 'info');
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await fetch(window.API_BASE_URL + '/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            appendOutput(`  ✓ Token is valid`, 'success');
+            appendOutput(`  ✓ Logged in as: ${data.data?.email || 'Unknown'}`, 'success');
+            appendOutput(`  ✓ Role: ${data.data?.role || 'Unknown'}`, 'success');
+          } else {
+            appendOutput(`  ✗ Token validation failed: HTTP ${response.status}`, 'error');
+          }
+        } catch (error) {
+          appendOutput(`  ✗ Auth test failed: ${error.message}`, 'error');
+        }
+      } else {
+        appendOutput(`  - No token found (not logged in)`, 'info');
+      }
+      
+      // 5. Critical Endpoints
+      appendOutput('\n[5] Testing Critical Endpoints...', 'info');
+      const endpoints = [
+        { method: 'GET', path: '/subjects/courses', name: 'Courses' },
+        { method: 'GET', path: '/tutors/search', name: 'Tutors Search' },
+        { method: 'GET', path: '/materials', name: 'Materials List' }
+      ];
+      
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(window.API_BASE_URL + endpoint.path);
+          if (response.ok) {
+            appendOutput(`  ✓ ${endpoint.name}: OK`, 'success');
+          } else {
+            appendOutput(`  ✗ ${endpoint.name}: HTTP ${response.status}`, 'error');
+          }
+        } catch (error) {
+          appendOutput(`  ✗ ${endpoint.name}: ${error.message}`, 'error');
+        }
+      }
+      
+      appendOutput('\n' + '='.repeat(60), 'info');
+      appendOutput('DIAGNOSTICS COMPLETE', 'success');
+      appendOutput('='.repeat(60), 'info');
+    }
+
+    async function testMaterialsUpload() {
+      clearOutput();
+      appendOutput('Testing Materials Upload Endpoint...', 'info');
+      appendOutput('-'.repeat(60), 'info');
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        appendOutput('✗ No authentication token found. Please login first.', 'error');
+        return;
+      }
+      
+      appendOutput('Step 1: Checking endpoint existence...', 'info');
+      try {
+        // Test OPTIONS request for CORS
+        const optionsResponse = await fetch(window.API_BASE_URL + '/materials/upload', {
+          method: 'OPTIONS',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Access-Control-Request-Method': 'POST',
+            'Access-Control-Request-Headers': 'Content-Type,Authorization'
+          }
+        });
+        appendOutput(`  - OPTIONS /materials/upload: ${optionsResponse.status}`, optionsResponse.ok ? 'success' : 'error');
+      } catch (error) {
+        appendOutput(`  ✗ OPTIONS request failed: ${error.message}`, 'error');
+      }
+      
+      appendOutput('\nStep 2: Testing POST with FormData...', 'info');
+      try {
+        const formData = new FormData();
+        formData.append('subject_id', '1');
+        formData.append('title', 'Test Material');
+        formData.append('description', 'Test upload from diagnostics');
+        
+        // Create a small test file
+        const blob = new Blob(['Test content'], { type: 'text/plain' });
+        formData.append('file', blob, 'test.txt');
+        
+        const response = await fetch(window.API_BASE_URL + '/materials/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+        
+        appendOutput(`  - POST /materials/upload: HTTP ${response.status}`, 'info');
+        const data = await response.json();
+        
+        if (response.ok) {
+          appendOutput(`  ✓ Upload endpoint is working!`, 'success');
+          appendOutput(`  ✓ Response: ${JSON.stringify(data, null, 2)}`, 'success');
+        } else {
+          appendOutput(`  ✗ Upload failed: ${data.message || data.error}`, 'error');
+          appendOutput(`  ✗ Full response: ${JSON.stringify(data, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        appendOutput(`  ✗ POST request failed: ${error.message}`, 'error');
+        appendOutput(`  ✗ This could be: Network issue, CORS, or route not found`, 'error');
+      }
+      
+      appendOutput('\nStep 3: Checking route registration...', 'info');
+      try {
+        // Try GET (should return 404 or Method Not Allowed)
+        const getResponse = await fetch(window.API_BASE_URL + '/materials/upload');
+        appendOutput(`  - GET /materials/upload: HTTP ${getResponse.status}`, 'info');
+        if (getResponse.status === 404) {
+          appendOutput(`  ✗ Route not found! Backend may not have the route registered.`, 'error');
+        } else if (getResponse.status === 405) {
+          appendOutput(`  ✓ Route exists (Method Not Allowed for GET is expected)`, 'success');
+        }
+      } catch (error) {
+        appendOutput(`  ✗ Route check failed: ${error.message}`, 'error');
+      }
+      
+      appendOutput('\n' + '-'.repeat(60), 'info');
+    }
+
+    async function testAllAPIRoutes() {
+      clearOutput();
+      appendOutput('Testing All API Routes...', 'info');
+      appendOutput('='.repeat(60), 'info');
+      
+      const routes = [
+        { method: 'GET', path: '/health', name: 'Health Check', auth: false },
+        { method: 'POST', path: '/auth/login', name: 'Login', auth: false },
+        { method: 'GET', path: '/auth/me', name: 'Get Current User', auth: true },
+        { method: 'GET', path: '/subjects/courses', name: 'Get Courses', auth: false },
+        { method: 'GET', path: '/subjects', name: 'Get Subjects', auth: false },
+        { method: 'GET', path: '/tutors/search', name: 'Search Tutors', auth: false },
+        { method: 'GET', path: '/sessions', name: 'Get Sessions', auth: true },
+        { method: 'GET', path: '/materials', name: 'Get Materials', auth: false },
+        { method: 'POST', path: '/materials/upload', name: 'Upload Material', auth: true },
+        { method: 'GET', path: '/chats', name: 'Get Chats', auth: true },
+        { method: 'GET', path: '/notifications', name: 'Get Notifications', auth: true }
+      ];
+      
+      const token = localStorage.getItem('token');
+      
+      for (const route of routes) {
+        try {
+          const headers = {};
+          if (route.auth && token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+          
+          let body = null;
+          if (route.method === 'POST' && route.path === '/auth/login') {
+            headers['Content-Type'] = 'application/json';
+            body = JSON.stringify({ email: 'test@test.com', password: 'test', role: 'tutee' });
+          }
+          
+          const response = await fetch(window.API_BASE_URL + route.path, {
+            method: route.method,
+            headers,
+            body
+          });
+          
+          const status = response.status;
+          let statusIcon = '✓';
+          let statusType = 'success';
+          
+          if (status >= 400 && status !== 401 && status !== 403 && status !== 404 && status !== 405) {
+            statusIcon = '✗';
+            statusType = 'error';
+          } else if (status === 404) {
+            statusIcon = '!';
+            statusType = 'error';
+          } else if (status === 401 || status === 403) {
+            statusIcon = '○';
+            statusType = 'info';
+          }
+          
+          appendOutput(`${statusIcon} ${route.method} ${route.path} - HTTP ${status} (${route.name})`, statusType);
+        } catch (error) {
+          appendOutput(`✗ ${route.method} ${route.path} - ERROR: ${error.message}`, 'error');
+        }
+      }
+      
+      appendOutput('\n' + '='.repeat(60), 'info');
+      appendOutput('Legend:', 'info');
+      appendOutput('  ✓ = Success (2xx)', 'success');
+      appendOutput('  ○ = Auth required (401/403)', 'info');
+      appendOutput('  ! = Route not found (404)', 'error');
+      appendOutput('  ✗ = Error (5xx)', 'error');
+      appendOutput('='.repeat(60), 'info');
+    }
+
+    async function testCORS() {
+      clearOutput();
+      appendOutput('Testing CORS Configuration...', 'info');
+      appendOutput('-'.repeat(60), 'info');
+      
+      try {
+        const response = await fetch(window.API_BASE_URL + '/health');
+        appendOutput('Response Headers:', 'info');
+        
+        const headers = [
+          'access-control-allow-origin',
+          'access-control-allow-methods',
+          'access-control-allow-headers',
+          'access-control-allow-credentials',
+          'content-type'
+        ];
+        
+        for (const header of headers) {
+          const value = response.headers.get(header);
+          if (value) {
+            appendOutput(`  ${header}: ${value}`, 'success');
+          } else {
+            appendOutput(`  ${header}: NOT SET`, 'error');
+          }
+        }
+      } catch (error) {
+        appendOutput(`Error: ${error.message}`, 'error');
+      }
+      
+      appendOutput('\n' + '-'.repeat(60), 'info');
     }
 
     // Run all checks on load
