@@ -248,12 +248,13 @@
         // Load tutor's subjects
         async function loadSubjects() {
             try {
-                const response = await window.API.tutorSubjects.getMySubjects();
+                const currentUser = await getCurrentUser();
+                const response = await api.get(`/tutors/${currentUser.user_id}/subjects`);
                 const select = document.getElementById('subject_id');
                 
-                if (response.success && response.data && response.data.length > 0) {
+                if (response.success && response.subjects && response.subjects.length > 0) {
                     select.innerHTML = '<option value="">Select a subject</option>' +
-                        response.data.map(subject => 
+                        response.subjects.map(subject => 
                             `<option value="${subject.subject_id}">${subject.subject_code} - ${subject.subject_name}</option>`
                         ).join('');
                 } else {
@@ -267,10 +268,10 @@
         // Load materials
         async function loadMaterials() {
             try {
-                const response = await window.API.materials.getMyMaterials();
+                const response = await api.get('/materials');
                 const container = document.getElementById('materialsContainer');
 
-                if (!response.success || !response.data || response.data.length === 0) {
+                if (!response.success || !response.materials || response.materials.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-file-upload"></i>
@@ -281,7 +282,7 @@
                     return;
                 }
 
-                const materialsHTML = response.data.map(material => {
+                container.innerHTML = response.materials.map(material => `
                     const uploadDate = new Date(material.uploaded_at).toLocaleDateString('en-US', {
                         year: 'numeric', month: 'short', day: 'numeric'
                     });
