@@ -468,11 +468,73 @@ function initAuth() {
   }
 }
 
+/**
+ * Send heartbeat to update last_active timestamp
+ * Called periodically while user is active
+ */
+async function sendHeartbeat() {
+  try {
+    const token = localStorage.getItem('token') || getCookie('token');
+    if (!token || !isLoggedIn()) return;
+
+    await fetch('/api/auth/heartbeat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include'
+    });
+  } catch (error) {
+    console.error('Heartbeat error:', error);
+  }
+}
+
+/**
+ * Start activity tracking heartbeat
+ * Sends heartbeat every 2 minutes to update last_active
+ */
+function startActivityTracking() {
+  // Send initial heartbeat
+  sendHeartbeat();
+  
+  // Send heartbeat every 2 minutes (120000ms)
+  const heartbeatInterval = setInterval(() => {
+    if (!isLoggedIn()) {
+      clearInterval(heartbeatInterval);
+      return;
+    }
+    sendHeartbeat();
+  }, 2 * 60 * 1000); // 2 minutes
+  
+  // Also send heartbeat on user activity (mousemove, keypress, click)
+  let lastHeartbeat = Date.now();
+  const activityHandler = () => {
+    const now = Date.now();
+    // Only send if 2 minutes have passed since last heartbeat
+    if (now - lastHeartbeat > 2 * 60 * 1000) {
+      lastHeartbeat = now;
+      sendHeartbeat();
+    }
+  };
+  
+  document.addEventListener('mousemove', activityHandler, { passive: true });
+  document.addEventListener('keypress', activityHandler, { passive: true });
+  document.addEventListener('click', activityHandler, { passive: true });
+  
+  console.log('✅ Activity tracking started');
+}
+
 // Auto-initialize on page load
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initAuth);
 } else {
   initAuth();
+}
+
+// Start activity tracking if user is logged in
+if (isLoggedIn()) {
+  startActivityTracking();
 }
 
 // Export functions for use in other scripts
@@ -494,6 +556,8 @@ if (typeof window !== 'undefined') {
     updateLastActivity,
     checkSessionTimeout,
     refreshTokenIfNeeded,
+    sendHeartbeat,
+    startActivityTracking,
     // Export cookie helpers
     setCookie,
     getCookie,

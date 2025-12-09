@@ -8,6 +8,7 @@ import {
   forgotPassword,
   resetPassword,
   quickPasswordReset,
+  updateHeartbeat,
 } from '../controllers/authController';
 import { authMiddleware } from '../middleware/authMiddleware';
 import { authLimiter } from '../middleware/rateLimiter';
@@ -25,5 +26,6 @@ router.post('/quick-reset', authLimiter, quickPasswordReset); // Quick password 
 // Protected routes
 router.get('/me', authMiddleware, getCurrentUser);
 router.post('/logout', authMiddleware, logout);
+router.post('/heartbeat', authMiddleware, updateHeartbeat);
 
 export default router;

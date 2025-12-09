@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/AuthService';
 import { AuthRequest } from '../types';
+import { supabaseAdmin } from '../config/database';
 
 const authService = new AuthService();
 
@@ -203,17 +204,26 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
  * Logout user (client-side token removal)
  * POST /api/auth/logout
  */
-export const logout = async (_req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
+export const logout = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
+    // Update last_active timestamp on logout to track when user went offline
+    if (req.user?.user_id) {
+      await supabaseAdmin
+        .from('users')
+        .update({ last_active: new Date().toISOString() })
+        .eq('user_id', req.user.user_id);
+      
+      console.log('✅ Updated last_active on logout for user:', req.user.user_id);
+    }
+    
     // In JWT, logout is primarily client-side (remove token)
-    // Here we just acknowledge the logout
     res.json({
       success: true,
       message: 'Logout successful',
     });
   } catch (error) {
     return next(error);
-    }
+  }
 };
 
 /**
@@ -347,3 +357,29 @@ export const quickPasswordReset = async (req: Request, res: Response, next: Next
   }
 };
 
+/**
+ * Update user activity heartbeat
+ * POST /api/auth/heartbeat
+ */
+export const updateHeartbeat = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    if (!req.user?.user_id) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Unauthorized' },
+      });
+    }
+
+    await supabaseAdmin
+      .from('users')
+      .update({ last_active: new Date().toISOString() })
+      .eq('user_id', req.user.user_id);
+
+    res.json({
+      success: true,
+      message: 'Heartbeat updated',
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
