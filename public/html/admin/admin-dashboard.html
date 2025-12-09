@@ -1220,10 +1220,10 @@
             container.innerHTML = '<div class="loading-spinner"></div>';
             
             try {
-                console.log('🔍 Loading active tutors from /tutors/search...');
-                const response = await api.get('/tutors/search');
+                console.log('🔍 Loading active tutors from /admin/users...');
+                const response = await api.get('/admin/users?role=tutor&limit=10');
                 console.log('📦 Tutors response:', response);
-                const tutors = response.tutors || [];
+                const tutors = response.users || [];
                 console.log('✅ Found', tutors.length, 'active tutors');
 
                 if (tutors.length === 0) {
