@@ -117,8 +117,18 @@
             .secondary-navbar { top: 58px; }
             .secondary-nav-container { padding: 10px; overflow-x: auto; justify-content: flex-start; }
             .secondary-nav-link { padding: 8px 16px; font-size: 14px; white-space: nowrap; }
-            .container { padding: 10px; }
-
+            .container { padding: 0 10px 20px; margin-top: 20px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-box { padding: 15px 10px; }
+            .stat-box h3 { font-size: 24px; }
+            .stat-box p { font-size: 12px; }
+            .card { padding: 16px; border-radius: 8px; }
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .filter-bar label { display: none; }
+            .filter-bar input, .filter-bar select { width: 100%; }
+            #paginationContainer { flex-direction: column; gap: 12px; padding: 12px 0; }
+            #paginationInfo { text-align: center; }
+            #paginationButtons { justify-content: center; flex-wrap: wrap; }
         }
         @media (max-width: 480px) {
             .nav-brand { font-size: 16px; }
@@ -128,6 +138,21 @@
             .nav-link[href*="profile"]::before { content: '\f007'; }
             #logoutBtn::before { content: '\f2f5'; }
             .user-info-inline { max-width: 50px; padding: 6px; }
+            .container { padding: 0 8px 16px; }
+            .stats-row { grid-template-columns: 1fr; gap: 8px; }
+            .stat-box { padding: 12px 8px; }
+            .stat-box h3 { font-size: 20px; }
+            .stat-box p { font-size: 11px; }
+            .card { padding: 12px; margin-bottom: 16px; }
+            .card h2 { font-size: 16px; margin-bottom: 12px; }
+            .filter-bar { gap: 8px; }
+            table { font-size: 12px; min-width: 800px; }
+            table th, table td { padding: 8px 4px; }
+            .badge { font-size: 10px; padding: 3px 8px; }
+            .btn { font-size: 11px; padding: 5px 10px; }
+            #paginationContainer { padding: 10px 0; }
+            #paginationInfo { font-size: 12px; }
+            #paginationButtons button { padding: 6px 10px; font-size: 12px; }
         }
     </style>
     
