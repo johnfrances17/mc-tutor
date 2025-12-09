@@ -362,7 +362,7 @@
                 formData.append('description', description);
                 formData.append('file', selectedFile);
 
-                const response = await window.API.materials.uploadMaterial(formData);
+                const response = await api.post('/materials', formData);
 
                 if (response.success) {
                     showMessage('Material uploaded successfully!', 'success');
@@ -389,7 +389,7 @@
             }
 
             try {
-                const response = await window.API.materials.deleteMaterial(materialId);
+                const response = await api.delete(`/materials/${materialId}`);
 
                 if (response.success) {
                     showMessage('Material deleted successfully!', 'success');

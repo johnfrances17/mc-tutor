@@ -606,7 +606,7 @@
             if (!confirm('Confirm this tutoring session?')) return;
             
             try {
-                const response = await api.put(`/sessions/${sessionId}`, { status: 'confirmed' });
+                const response = await api.put(`/sessions/${sessionId}/confirm`);
                 if (response.success) {
                     showToast('Session confirmed successfully', 'success');
                     await loadSessions();
@@ -642,7 +642,7 @@
             if (!confirm('Mark this session as completed?')) return;
             
             try {
-                const response = await api.put(`/sessions/${sessionId}`, { status: 'completed' });
+                const response = await api.put(`/sessions/${sessionId}/complete`);
                 if (response.success) {
                     showToast('Session marked as complete', 'success');
                     await loadSessions();
