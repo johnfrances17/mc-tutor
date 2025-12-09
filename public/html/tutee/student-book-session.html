@@ -237,8 +237,8 @@
         async function loadSubjects() {
             try {
                 const response = await api.get('/subjects');
-                if (response.success) {
-                    subjects = response.data;
+                if (response.success && response.subjects) {
+                    subjects = response.subjects;
                     populateSubjects();
                 }
             } catch (error) {
@@ -249,12 +249,14 @@
         function populateSubjects() {
             const select = document.getElementById('subject');
             select.innerHTML = '<option value="">Select a subject</option>';
-            subjects.forEach(subject => {
-                const option = document.createElement('option');
-                option.value = subject.id;
-                option.textContent = `${subject.subjectCode} - ${subject.subjectName}`;
-                select.appendChild(option);
-            });
+            if (subjects && Array.isArray(subjects)) {
+                subjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject.subject_id;
+                    option.textContent = `${subject.subject_code} - ${subject.subject_name}`;
+                    select.appendChild(option);
+                });
+            }
         }
 
         // Load tutors when subject is selected
