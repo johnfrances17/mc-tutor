@@ -16,38 +16,54 @@ function initSocket() {
   
   const token = localStorage.getItem('token');
   if (!token) {
-    console.error('No token found. Cannot connect to socket.');
+    console.log('No token found. Socket.IO disabled.');
+    return null;
+  }
+  
+  // Check if Socket.IO library is loaded
+  if (typeof io === 'undefined') {
+    console.log('Socket.IO library not loaded. Using REST API only.');
     return null;
   }
   
   const socketURL = API_BASE_URL.replace('/api', '');
   
-  socket = io(socketURL, {
-    auth: {
-      token: token
-    },
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionAttempts: 5
-  });
-  
-  // Connection events
-  socket.on('connect', () => {
-    console.log('Socket connected:', socket.id);
-    isConnected = true;
-  });
-  
-  socket.on('disconnect', () => {
-    console.log('Socket disconnected');
-    isConnected = false;
-  });
-  
-  socket.on('connect_error', (error) => {
-    console.error('Socket connection error:', error);
-    isConnected = false;
-  });
-  
-  return socket;
+  try {
+    socket = io(socketURL, {
+      auth: {
+        token: token
+      },
+      reconnection: false, // Disable reconnection to avoid spam
+      timeout: 5000,
+      transports: ['websocket', 'polling']
+    });
+    
+    // Connection events
+    socket.on('connect', () => {
+      console.log('✓ Real-time messaging enabled');
+      isConnected = true;
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+      isConnected = false;
+    });
+    
+    socket.on('connect_error', (error) => {
+      console.log('Socket unavailable, using polling mode');
+      isConnected = false;
+      // Disconnect to prevent retry spam
+      if (socket) {
+        socket.disconnect();
+        socket = null;
+      }
+    });
+    
+    return socket;
+  } catch (error) {
+    console.log('Socket connection failed, using polling mode');
+    return null;
+  }
 }
 
 /**

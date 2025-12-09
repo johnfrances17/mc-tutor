@@ -515,15 +515,22 @@
                 // Populate secondary navigation based on role
                 populateSecondaryNav();
 
+                // Try to connect socket, but don't fail if it's not available
                 const token = localStorage.getItem('token');
                 if (token && socketManager) {
-                    socketManager.initSocket();
-                    setupSocketHandlers();
+                    try {
+                        socketManager.initSocket();
+                        setupSocketHandlers();
+                        console.log('Real-time messaging enabled');
+                    } catch (error) {
+                        console.log('Using polling mode for messaging');
+                    }
                 }
 
                 await loadConversations();
 
                 refreshInterval = setInterval(async function() {
+                    // Always poll if socket isn't connected
                     if (!socketManager || !socketManager.isSocketConnected()) {
                         await loadConversations();
                         if (currentConversation) {
