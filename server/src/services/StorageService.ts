@@ -3,10 +3,37 @@ import { randomUUID } from 'crypto';
 import path from 'path';
 import fs from 'fs/promises';
 
+/**
+ * ===================================================================
+ * STORAGE CONFIGURATION - EASY TO SWITCH BETWEEN LOCAL AND SUPABASE
+ * ===================================================================
+ * 
+ * LOCALHOST MODE (XAMPP):
+ *   - Set USE_LOCAL_STORAGE=true in .env
+ *   - Files stored in: c:\xampp\htdocs\mc-tutor\uploads\
+ *   - Fast testing, no internet needed
+ * 
+ * PRODUCTION MODE (Vercel):
+ *   - Set USE_LOCAL_STORAGE=false (or remove from .env)
+ *   - Files stored in: Supabase Cloud Storage
+ *   - Permanent, CDN-backed, accessible from anywhere
+ * 
+ * EASY REMOVAL:
+ *   - To remove Supabase: Set USE_LOCAL_STORAGE=true permanently
+ *   - Delete this section and Supabase imports
+ * ===================================================================
+ */
+const USE_LOCAL_STORAGE = process.env.USE_LOCAL_STORAGE === 'true';
+
 export class StorageService {
   private static instance: StorageService;
 
-  private constructor() {}
+  private constructor() {
+    const mode = USE_LOCAL_STORAGE ? '📁 LOCAL FILESYSTEM (XAMPP)' : '☁️ SUPABASE CLOUD STORAGE';
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`📦 STORAGE MODE: ${mode}`);
+    console.log(`${'='.repeat(60)}\n`);
+  }
 
   public static getInstance(): StorageService {
     if (!StorageService.instance) {
@@ -16,37 +43,45 @@ export class StorageService {
   }
 
   /**
-   * Upload profile picture to Supabase Storage
+   * Upload profile picture
    */
   async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<string> {
+    // Force local storage if configured
+    if (USE_LOCAL_STORAGE) {
+      console.log('📁 [LOCAL] Uploading profile picture to filesystem...');
+      return this.uploadProfilePictureLocal(file, userId);
+    }
+
     try {
+      console.log('☁️ [SUPABASE] Uploading profile picture to cloud...');
       const fileExt = path.extname(file.originalname);
       const fileName = `${userId}_${Date.now()}${fileExt}`;
       const filePath = `profiles/${fileName}`;
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (avatars bucket)
       const { error } = await supabase.storage
-        .from('profile-pictures')
+        .from('avatars')
         .upload(filePath, file.buffer, {
           contentType: file.mimetype,
           upsert: false
         });
 
       if (error) {
-        console.error('Supabase upload error:', error);
-        // Fallback to local storage
+        console.error('❌ Supabase upload error:', error);
+        console.log('🔄 Falling back to local storage...');
         return this.uploadProfilePictureLocal(file, userId);
       }
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('profile-pictures')
+        .from('avatars')
         .getPublicUrl(filePath);
 
+      console.log('✅ Profile picture uploaded to Supabase:', urlData.publicUrl);
       return urlData.publicUrl;
     } catch (error) {
-      console.error('Upload profile picture error:', error);
-      // Fallback to local storage
+      console.error('❌ Upload profile picture error:', error);
+      console.log('🔄 Falling back to local storage...');
       return this.uploadProfilePictureLocal(file, userId);
     }
   }
@@ -64,13 +99,19 @@ export class StorageService {
 
     await fs.writeFile(filePath, file.buffer);
     
+    console.log('✅ Profile picture saved locally:', fileName);
     return `/uploads/profiles/${fileName}`;
   }
 
   /**
-   * Delete profile picture from Supabase Storage
+   * Delete profile picture
    */
   async deleteProfilePicture(fileUrl: string): Promise<boolean> {
+    // Force local if configured
+    if (USE_LOCAL_STORAGE) {
+      return this.deleteProfilePictureLocal(fileUrl);
+    }
+
     try {
       // Extract file path from URL
       const urlParts = fileUrl.split('/');
@@ -78,65 +119,83 @@ export class StorageService {
       const filePath = `profiles/${fileName}`;
 
       const { error } = await supabase.storage
-        .from('profile-pictures')
+        .from('avatars')
         .remove([filePath]);
 
       if (error) {
-        console.error('Delete error:', error);
-        return false;
+        console.error('❌ Delete error:', error);
+        return this.deleteProfilePictureLocal(fileUrl);
       }
 
+      console.log('✅ Profile picture deleted from Supabase');
       return true;
     } catch (error) {
-      console.error('Delete profile picture error:', error);
+      console.error('❌ Delete profile picture error:', error);
+      return this.deleteProfilePictureLocal(fileUrl);
+    }
+  }
+
+  private async deleteProfilePictureLocal(fileUrl: string): Promise<boolean> {
+    try {
+      const fileName = path.basename(fileUrl);
+      const filePath = path.join(process.cwd(), '..', 'uploads', 'profiles', fileName);
+      await fs.unlink(filePath);
+      console.log('✅ Profile picture deleted locally');
+      return true;
+    } catch (error) {
+      console.error('❌ Local delete error:', error);
       return false;
     }
   }
 
   /**
-   * Upload study material to Supabase Storage
+   * Upload study material
    */
   async uploadStudyMaterial(
     file: Express.Multer.File,
     tutorId: string,
     subjectId: number
   ): Promise<{ url: string; filename: string }> {
+    // Force local storage if configured
+    if (USE_LOCAL_STORAGE) {
+      console.log('📁 [LOCAL] Uploading study material to filesystem...');
+      return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
+    }
+
     try {
+      console.log('☁️ [SUPABASE] Uploading study material to cloud...');
       const uniqueId = randomUUID().substring(0, 8);
       const fileName = `${Date.now()}_${uniqueId}_${file.originalname}`;
-      const filePath = `materials/${tutorId}/${subjectId}/${fileName}`;
+      const filePath = `${tutorId}/${subjectId}/${fileName}`;
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (materials bucket - PUBLIC)
       const { error } = await supabase.storage
-        .from('study-materials')
+        .from('materials')
         .upload(filePath, file.buffer, {
           contentType: file.mimetype,
           upsert: false
         });
 
       if (error) {
-        console.error('Supabase upload error:', error);
-        // Fallback to local storage
+        console.error('❌ Supabase upload error:', error);
+        console.log('🔄 Falling back to local storage...');
         return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
       }
 
-      // Get signed URL (private bucket)
-      const { data: urlData, error: urlError } = await supabase.storage
-        .from('study-materials')
-        .createSignedUrl(filePath, 31536000); // 1 year expiry
+      // Get public URL (bucket is public, no signed URL needed)
+      const { data: urlData } = supabase.storage
+        .from('materials')
+        .getPublicUrl(filePath);
 
-      if (urlError) {
-        console.error('Signed URL error:', urlError);
-        return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
-      }
-
+      console.log('✅ Study material uploaded to Supabase:', urlData.publicUrl);
+      
       return {
-        url: urlData.signedUrl,
+        url: urlData.publicUrl,
         filename: fileName
       };
     } catch (error) {
-      console.error('Upload study material error:', error);
-      // Fallback to local storage
+      console.error('❌ Upload study material error:', error);
+      console.log('🔄 Falling back to local storage...');
       return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
     }
   }
@@ -158,6 +217,8 @@ export class StorageService {
 
     await fs.writeFile(filePath, file.buffer);
 
+    console.log('✅ Study material saved locally:', fileName);
+    
     return {
       url: `/uploads/study_materials/${tutorId}/${subjectId}/${fileName}`,
       filename: fileName
@@ -165,25 +226,32 @@ export class StorageService {
   }
 
   /**
-   * Delete study material from Supabase Storage
+   * Delete study material
    */
   async deleteStudyMaterial(tutorId: string, subjectId: number, filename: string): Promise<boolean> {
+    // Force local if configured
+    if (USE_LOCAL_STORAGE) {
+      console.log('📁 [LOCAL] Deleting from filesystem...');
+      return this.deleteStudyMaterialLocal(tutorId, subjectId, filename);
+    }
+
     try {
-      const filePath = `materials/${tutorId}/${subjectId}/${filename}`;
+      console.log('☁️ [SUPABASE] Deleting from cloud...');
+      const filePath = `${tutorId}/${subjectId}/${filename}`;
 
       const { error } = await supabase.storage
-        .from('study-materials')
+        .from('materials')
         .remove([filePath]);
 
       if (error) {
-        console.error('Delete error:', error);
-        // Try local delete
+        console.error('❌ Delete error:', error);
         return this.deleteStudyMaterialLocal(tutorId, subjectId, filename);
       }
 
+      console.log('✅ File deleted from Supabase');
       return true;
     } catch (error) {
-      console.error('Delete study material error:', error);
+      console.error('❌ Delete study material error:', error);
       return this.deleteStudyMaterialLocal(tutorId, subjectId, filename);
     }
   }
@@ -195,9 +263,10 @@ export class StorageService {
     try {
       const filePath = path.join(process.cwd(), '..', 'uploads', 'study_materials', tutorId, subjectId.toString(), filename);
       await fs.unlink(filePath);
+      console.log('✅ File deleted locally');
       return true;
     } catch (error) {
-      console.error('Local delete error:', error);
+      console.error('❌ Local delete error:', error);
       return false;
     }
   }
@@ -206,23 +275,22 @@ export class StorageService {
    * Get download URL for study material
    */
   async getMaterialDownloadUrl(tutorId: string, subjectId: number, filename: string): Promise<string | null> {
+    // Force local if configured
+    if (USE_LOCAL_STORAGE) {
+      return `/uploads/study_materials/${tutorId}/${subjectId}/${filename}`;
+    }
+
     try {
-      const filePath = `materials/${tutorId}/${subjectId}/${filename}`;
+      const filePath = `${tutorId}/${subjectId}/${filename}`;
 
-      // Try to get signed URL from Supabase
-      const { data, error } = await supabase.storage
-        .from('study-materials')
-        .createSignedUrl(filePath, 3600); // 1 hour expiry
+      // Get public URL (materials bucket is public)
+      const { data } = supabase.storage
+        .from('materials')
+        .getPublicUrl(filePath);
 
-      if (error || !data) {
-        console.error('Get signed URL error:', error);
-        // Return local path
-        return `/uploads/study_materials/${tutorId}/${subjectId}/${filename}`;
-      }
-
-      return data.signedUrl;
+      return data.publicUrl;
     } catch (error) {
-      console.error('Get download URL error:', error);
+      console.error('❌ Get download URL error:', error);
       return `/uploads/study_materials/${tutorId}/${subjectId}/${filename}`;
     }
   }
@@ -230,7 +298,7 @@ export class StorageService {
   /**
    * List all files in a storage bucket (for admin)
    */
-  async listFiles(bucket: 'profile-pictures' | 'study-materials', folderPath?: string): Promise<any[]> {
+  async listFiles(bucket: 'avatars' | 'materials', folderPath?: string): Promise<any[]> {
     try {
       const { data, error } = await supabase.storage
         .from(bucket)
@@ -240,13 +308,13 @@ export class StorageService {
         });
 
       if (error) {
-        console.error('List files error:', error);
+        console.error('❌ List files error:', error);
         return [];
       }
 
       return data || [];
     } catch (error) {
-      console.error('List files error:', error);
+      console.error('❌ List files error:', error);
       return [];
     }
   }
@@ -254,63 +322,19 @@ export class StorageService {
   /**
    * Get storage bucket info (for admin)
    */
-  async getBucketInfo(bucket: 'profile-pictures' | 'study-materials'): Promise<any> {
+  async getBucketInfo(bucket: 'avatars' | 'materials'): Promise<any> {
     try {
       const { data, error } = await supabase.storage.getBucket(bucket);
 
       if (error) {
-        console.error('Get bucket info error:', error);
+        console.error('❌ Get bucket info error:', error);
         return null;
       }
 
       return data;
     } catch (error) {
-      console.error('Get bucket info error:', error);
+      console.error('❌ Get bucket info error:', error);
       return null;
-    }
-  }
-
-  /**
-   * Create storage buckets (run once on setup)
-   */
-  async createBuckets(): Promise<void> {
-    try {
-      // Create profile-pictures bucket (public)
-      const { error: profileError } = await supabase.storage.createBucket('profile-pictures', {
-        public: true,
-        fileSizeLimit: 2097152, // 2MB
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-      });
-
-      if (profileError && !profileError.message.includes('already exists')) {
-        console.error('Create profile-pictures bucket error:', profileError);
-      } else {
-        console.log('✅ Profile pictures bucket created/verified');
-      }
-
-      // Create study-materials bucket (private)
-      const { error: materialsError } = await supabase.storage.createBucket('study-materials', {
-        public: false,
-        fileSizeLimit: 10485760, // 10MB
-        allowedMimeTypes: [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/vnd.ms-powerpoint',
-          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-          'text/plain',
-          'application/zip',
-          'application/x-rar-compressed'
-        ]
-      });
-
-      if (materialsError && !materialsError.message.includes('already exists')) {
-        console.error('Create study-materials bucket error:', materialsError);
-      } else {
-        console.log('✅ Study materials bucket created/verified');
-      }
-    } catch (error) {
-      console.error('Create buckets error:', error);
     }
   }
 }
