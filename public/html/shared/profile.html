@@ -587,10 +587,20 @@
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
-    <script type="module">
+    <script>
         const { getCurrentUser } = window.auth;
         const api = window.API;
-        const { formatDate } = window;
+        
+        // Safe formatDate function
+        const formatDate = window.formatDate || function(date) {
+            if (!date) return '-';
+            try {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch (e) {
+                return '-';
+            }
+        };
 
         let currentUser = null;
         let originalProfile = {};
@@ -681,7 +691,12 @@
                 const response = await api.get('/users/profile');
                 console.log('📦 Profile response:', response);
                 
+                // Handle different response structures
                 currentUser = response.user || response.data || response;
+                
+                if (!currentUser || !currentUser.user_id) {
+                    throw new Error('Invalid user data received from API');
+                }
                 originalProfile = { ...currentUser };
 
                 // Populate form fields
@@ -735,7 +750,9 @@
 
             } catch (error) {
                 console.error('❌ Load profile error:', error);
-                showMessage('Error loading profile. Please try again.', 'danger');
+                console.error('Error details:', error.response || error.message || error);
+                const errorMsg = error.response?.data?.message || error.message || 'Error loading profile. Please try again.';
+                showMessage(errorMsg, 'danger');
             }
         }
 
