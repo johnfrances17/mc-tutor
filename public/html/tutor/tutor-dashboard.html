@@ -340,7 +340,8 @@
                     (currentUser.first_name && currentUser.last_name ? 
                       `${currentUser.first_name} ${currentUser.middle_name || ''} ${currentUser.last_name}`.replace(/\s+/g, ' ').trim() : 
                       'User');
-                document.getElementById('tutorName').textContent = tutorFullName;
+                const tutorNameEl = document.getElementById('tutorName');
+                if (tutorNameEl) tutorNameEl.textContent = tutorFullName;
 
                 // Load all data
                 await Promise.all([
@@ -366,13 +367,17 @@
                 const completed = allSessions.filter(s => s.status === 'completed');
 
                 // Update stat boxes
-                document.getElementById('totalSessions').textContent = allSessions.length;
-                document.getElementById('pendingRequests').textContent = pending.length;
-                document.getElementById('upcomingSessions').textContent = upcoming.length;
-                document.getElementById('completedSessions').textContent = completed.length;
-
-                // Update pending badge
-                document.getElementById('pendingBadge').textContent = pending.length;
+                const totalSessionsEl = document.getElementById('totalSessions');
+                const pendingRequestsEl = document.getElementById('pendingRequests');
+                const upcomingSessionsEl = document.getElementById('upcomingSessions');
+                const completedSessionsEl = document.getElementById('completedSessions');
+                const pendingBadgeEl = document.getElementById('pendingBadge');
+                
+                if (totalSessionsEl) totalSessionsEl.textContent = allSessions.length;
+                if (pendingRequestsEl) pendingRequestsEl.textContent = pending.length;
+                if (upcomingSessionsEl) upcomingSessionsEl.textContent = upcoming.length;
+                if (completedSessionsEl) completedSessionsEl.textContent = completed.length;
+                if (pendingBadgeEl) pendingBadgeEl.textContent = pending.length;
             } catch (error) {
                 console.error('Stats error:', error);
             }
@@ -384,9 +389,11 @@
                 const response = await api.get('/sessions?status=pending');
                 const pending = response.sessions || [];
 
-                document.getElementById('pendingBadge').textContent = pending.length;
+                const pendingBadgeEl = document.getElementById('pendingBadge');
+                if (pendingBadgeEl) pendingBadgeEl.textContent = pending.length;
 
                 const container = document.getElementById('pendingRequestsList');
+                if (!container) return;
                 
                 if (pending.length === 0) {
                     container.innerHTML = '<p class="text-muted">No pending requests</p>';
@@ -432,6 +439,7 @@
                     .slice(0, 5);
 
                 const container = document.getElementById('upcomingSessionsList');
+                if (!container) return;
                 
                 if (upcoming.length === 0) {
                     container.innerHTML = '<p class="text-muted">No upcoming sessions</p>';
@@ -476,10 +484,15 @@
                 });
 
                 if (todaySessions.length > 0) {
-                    document.getElementById('todayScheduleCard').style.display = 'block';
-                    document.getElementById('todayDate').textContent = formatDate(today);
+                    const todayScheduleCard = document.getElementById('todayScheduleCard');
+                    const todayDate = document.getElementById('todayDate');
+                    const todayScheduleList = document.getElementById('todayScheduleList');
                     
-                    document.getElementById('todayScheduleList').innerHTML = todaySessions
+                    if (todayScheduleCard) todayScheduleCard.style.display = 'block';
+                    if (todayDate) todayDate.textContent = formatDate(today);
+                    
+                    if (todayScheduleList) {
+                        todayScheduleList.innerHTML = todaySessions
                         .sort((a, b) => a.session_time.localeCompare(b.session_time))
                         .map(session => `
                             <div class="session-item compact">
@@ -489,6 +502,7 @@
                                 <span class="badge ${getStatusBadgeClass(session.status)}">${session.status}</span>
                             </div>
                         `).join('');
+                    }
                 }
             } catch (error) {
                 console.error('Today schedule error:', error);
@@ -502,6 +516,7 @@
                 const feedback = response.feedback || [];
 
                 const container = document.getElementById('recentFeedbackList');
+                if (!container) return;
                 
                 if (feedback.length === 0) {
                     container.innerHTML = '<p class="text-muted">No feedback received yet</p>';
