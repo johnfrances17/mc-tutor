@@ -152,8 +152,14 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="endTime">End Time <span class="required">*</span></label>
-                                    <input type="time" id="endTime" name="endTime" required>
+                                    <label for="duration">Duration <span class="required">*</span></label>
+                                    <select id="duration" name="duration" required>
+                                        <option value="">Select duration</option>
+                                        <option value="30">30 minutes</option>
+                                        <option value="60">1 hour</option>
+                                        <option value="90">1 hour 30 minutes</option>
+                                        <option value="120">2 hours</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -393,22 +399,27 @@
         document.getElementById('bookSessionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const startTime = document.getElementById('startTime').value;
+            const duration = parseInt(document.getElementById('duration').value);
+
+            // Calculate end time based on duration
+            const [hours, minutes] = startTime.split(':').map(Number);
+            const startMinutes = hours * 60 + minutes;
+            const endMinutes = startMinutes + duration;
+            const endHours = Math.floor(endMinutes / 60) % 24;
+            const endMins = endMinutes % 60;
+            const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
+
             const formData = {
                 subjectId: document.getElementById('subject').value,
                 tutorId: document.getElementById('tutor').value,
                 sessionDate: document.getElementById('sessionDate').value,
-                startTime: document.getElementById('startTime').value,
-                endTime: document.getElementById('endTime').value,
+                startTime: startTime,
+                endTime: endTime,
                 sessionType: document.getElementById('sessionType').value,
                 location: document.getElementById('location').value,
                 notes: document.getElementById('notes').value
             };
-
-            // Validate end time is after start time
-            if (formData.endTime <= formData.startTime) {
-                alert('End time must be after start time');
-                return;
-            }
 
             try {
                 const response = await api.post('/sessions', formData);
