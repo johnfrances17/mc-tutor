@@ -10,60 +10,9 @@ let isConnected = false;
  * Initialize Socket.IO connection
  */
 function initSocket() {
-  if (socket) {
-    return socket;
-  }
-  
-  const token = localStorage.getItem('token');
-  if (!token) {
-    console.log('No token found. Socket.IO disabled.');
-    return null;
-  }
-  
-  // Check if Socket.IO library is loaded
-  if (typeof io === 'undefined') {
-    console.log('Socket.IO library not loaded. Using REST API only.');
-    return null;
-  }
-  
-  const socketURL = API_BASE_URL.replace('/api', '');
-  
-  try {
-    socket = io(socketURL, {
-      auth: {
-        token: token
-      },
-      reconnection: false, // Disable reconnection to avoid spam
-      timeout: 5000,
-      transports: ['websocket', 'polling']
-    });
-    
-    // Connection events
-    socket.on('connect', () => {
-      console.log('✓ Real-time messaging enabled');
-      isConnected = true;
-    });
-    
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-      isConnected = false;
-    });
-    
-    socket.on('connect_error', (error) => {
-      console.log('Socket unavailable, using polling mode');
-      isConnected = false;
-      // Disconnect to prevent retry spam
-      if (socket) {
-        socket.disconnect();
-        socket = null;
-      }
-    });
-    
-    return socket;
-  } catch (error) {
-    console.log('Socket connection failed, using polling mode');
-    return null;
-  }
+  // Socket.IO disabled - using REST API polling only
+  console.log('💬 Using REST API polling mode for messaging');
+  return null;
 }
 
 /**

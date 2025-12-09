@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <!-- Socket.IO disabled - using REST API polling -->
     <style>
         /* Base font styling - Montserrat for all elements */
         * { font-family: 'Montserrat', sans-serif; }
@@ -515,27 +515,16 @@
                 // Populate secondary navigation based on role
                 populateSecondaryNav();
 
-                // Try to connect socket, but don't fail if it's not available
-                const token = localStorage.getItem('token');
-                if (token && socketManager) {
-                    try {
-                        socketManager.initSocket();
-                        setupSocketHandlers();
-                        console.log('Real-time messaging enabled');
-                    } catch (error) {
-                        console.log('Using polling mode for messaging');
-                    }
-                }
+                // Socket.IO disabled - using REST API polling only
+                console.log('💬 Messenger initialized in polling mode');
 
                 await loadConversations();
 
+                // Poll for new messages every 5 seconds
                 refreshInterval = setInterval(async function() {
-                    // Always poll if socket isn't connected
-                    if (!socketManager || !socketManager.isSocketConnected()) {
-                        await loadConversations();
-                        if (currentConversation) {
-                            await loadMessages(currentConversation.other_user_id, false);
-                        }
+                    await loadConversations();
+                    if (currentConversation) {
+                        await loadMessages(currentConversation.other_user_id, false);
                     }
                 }, 5000);
 
@@ -652,15 +641,7 @@
 
         // Open conversation
         async function openConversation(conversation) {
-            if (currentConversation && socketManager && socketManager.isSocketConnected()) {
-                // Leave previous conversation (socket.js doesn't have this method, skip for now)
-            }
-
             currentConversation = conversation;
-            
-            if (socketManager && socketManager.isSocketConnected()) {
-                socketManager.joinConversation(conversation.other_user_id);
-            }
             
             document.querySelectorAll('.conversation-item').forEach(function(item) {
                 item.classList.remove('active');
@@ -757,15 +738,12 @@
             if (!message) return;
 
             try {
-                if (socketManager && socketManager.isSocketConnected()) {
-                    await socketManager.sendMessage(currentConversation.other_user_id, message);
-                } else {
-                    await api.post('/chat/send', {
-                        receiver_student_id: currentConversation.other_user_id,
-                        message: message
-                    });
-                    await loadMessages(currentConversation.other_user_id);
-                }
+                // Always use REST API
+                await api.post('/chat/send', {
+                    receiver_student_id: currentConversation.other_user_id,
+                    message: message
+                });
+                await loadMessages(currentConversation.other_user_id);
 
                 input.value = '';
                 input.style.height = 'auto';
@@ -858,9 +836,6 @@
         window.addEventListener('beforeunload', function() {
             if (refreshInterval) {
                 clearInterval(refreshInterval);
-            }
-            if (socketManager && socketManager.isSocketConnected()) {
-                socketManager.disconnectSocket();
             }
         });
 
