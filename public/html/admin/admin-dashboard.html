@@ -1016,41 +1016,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Active Tutors -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Active Tutors Overview</div>
-                <div class="card-header-actions">
-                    <select id="tutorFilterSubject" class="form-select">
-                        <option value="">All Subjects</option>
-                    </select>
-                </div>
-            </div>
-            <div class="card-body" id="activeTutorsList">
-                <div class="loading-spinner"></div>
-            </div>
-        </div>
-
-        <!-- System Activity -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">System Activity Log</div>
-                <div class="card-header-actions">
-                    <select id="activityFilter" class="form-select">
-                        <option value="all">All Activities</option>
-                        <option value="user_registration">Registrations</option>
-                        <option value="session_created">Sessions Created</option>
-                        <option value="session_completed">Sessions Completed</option>
-                        <option value="material_uploaded">Materials Uploaded</option>
-                        <option value="feedback_submitted">Feedback Submitted</option>
-                    </select>
-                </div>
-            </div>
-            <div class="card-body" id="activityLogList">
-                <div class="loading-spinner"></div>
-            </div>
-        </div>
     </div>
 
     <!-- Core Scripts -->
@@ -1089,10 +1054,7 @@
                 // Then load everything else
                 await Promise.all([
                     loadRecentUsers(),
-                    loadPendingSessions(),
-                    loadActiveTutors(),
-                    loadActivityLog(),
-                    loadSubjects()
+                    loadPendingSessions()
                 ]);
             } catch (error) {
                 console.error('Dashboard init error:', error);
@@ -1231,153 +1193,10 @@
             }
         }
 
-        // Load active tutors
-        async function loadActiveTutors() {
-            const container = document.getElementById('activeTutorsList');
-            container.innerHTML = '<div class="loading-spinner"></div>';
-            
-            try {
-                console.log('🔍 Loading active tutors from /admin/users...');
-                const response = await api.get('/admin/users?role=tutor&limit=10');
-                console.log('📦 Tutors response:', response);
-                const tutors = response.users || [];
-                console.log('✅ Found', tutors.length, 'active tutors');
-
-                if (tutors.length === 0) {
-                    console.warn('⚠️ No active tutors found');
-                    container.innerHTML = '<p class="text-muted" style="text-align: center; padding: 40px;">No active tutors</p>';
-                    return;
-                }
-
-                // Calculate tutor stats
-                const tutorStats = await Promise.all(tutors.slice(0, 10).map(async tutor => {
-                    try {
-                        const sessions = allSessions.filter(s => s.tutor_id === tutor.user_id);
-                        const feedback = await api.get(`/feedback/tutor/${tutor.user_id}`);
-                        
-                        const feedbackList = feedback.feedback || [];
-                        
-                        return {
-                            ...tutor,
-                            sessionCount: sessions.length,
-                            completedSessions: sessions.filter(s => s.status === 'completed').length,
-                            avgRating: feedbackList.length > 0 
-                                ? (feedbackList.reduce((sum, f) => sum + f.rating, 0) / feedbackList.length).toFixed(1)
-                                : 'N/A'
-                        };
-                    } catch {
-                        return { ...tutor, sessionCount: 0, completedSessions: 0, avgRating: 'N/A' };
-                    }
-                }));
-
-                container.innerHTML = `
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tutor</th>
-                                    <th>Student ID</th>
-                                    <th>Subjects</th>
-                                    <th>Sessions</th>
-                                    <th>Completed</th>
-                                    <th>Rating</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tutorStats.map(tutor => {
-                                    const tutorFullName = tutor.fullName || tutor.full_name || 
-                                        (tutor.first_name && tutor.last_name ? 
-                                          `${tutor.first_name} ${tutor.middle_name || ''} ${tutor.last_name}`.replace(/\s+/g, ' ').trim() : 
-                                          'User');
-                                    return `
-                                    <tr>
-                                        <td>${tutorFullName}</td>
-                                        <td>${tutor.school_id || 'N/A'}</td>
-                                        <td>${tutor.subject_count || 0}</td>
-                                        <td>${tutor.sessionCount}</td>
-                                        <td>${tutor.completedSessions}</td>
-                                        <td>${tutor.avgRating}</td>
-                                        <td>
-                                            <a href="/html/admin/admin-manage-users.html?id=${tutor.user_id}" class="btn btn-sm">View</a>
-                                        </td>
-                                    </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Active tutors error:', error);
-                container.innerHTML = '<p class="text-muted" style="text-align: center; padding: 40px; color: #dc3545;">Error loading tutors</p>';
-            }
-        }
-
-        // Load activity log (simulated)
-        async function loadActivityLog() {
-            try {
-                console.log('🔍 Loading activity log...');
-                // Create activity log from sessions and users
-                const activities = [];
-                
-                allSessions.slice(0, 10).forEach(session => {
-                    activities.push({
-                        type: 'session_created',
-                        description: `${session.student_name} booked a session with ${session.tutor_name}`,
-                        timestamp: session.created_at,
-                        icon: '<i class="fas fa-calendar-plus"></i>'
-                    });
-                });
-
-                activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                console.log('✅ Generated', activities.length, 'activity entries');
-
-                const container = document.getElementById('activityLogList');
-                
-                if (activities.length === 0) {
-                    console.warn('⚠️ No recent activity');
-                    container.innerHTML = '<p class="text-muted">No recent activity</p>';
-                } else {
-                    container.innerHTML = activities.slice(0, 15).map(activity => `
-                        <div class="activity-item">
-                            <div class="activity-icon">${activity.icon}</div>
-                            <div class="activity-content">
-                                <div class="activity-description">${activity.description}</div>
-                                <div class="activity-time">${formatDateTime(activity.timestamp)}</div>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('❌ Activity log error:', error);
-            }
-        }
-
-        // Load subjects for filter
-        async function loadSubjects() {
-            try {
-                console.log('🔍 Loading subjects filter...');
-                console.log('📚 Available subjects:', allSubjects.length);
-                const select = document.getElementById('tutorFilterSubject');
-                select.innerHTML = '<option value="">All Subjects</option>' +
-                    allSubjects.map(subject => 
-                        `<option value="${subject.id}">${subject.subject_name}</option>`
-                    ).join('');
-                console.log('✅ Populated subjects filter');
-            } catch (error) {
-                console.error('❌ Subjects error:', error);
-            }
-        }
-
         // Export data function
         window.exportData = function() {
             showToast('Export functionality coming soon', 'info');
         };
-
-        // Filter change handlers
-        document.getElementById('tutorFilterSubject')?.addEventListener('change', loadActiveTutors);
-        document.getElementById('activityFilter')?.addEventListener('change', loadActivityLog);
 
         // Initialize on load
         initDashboard();
