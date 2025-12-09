@@ -228,82 +228,170 @@
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
     <script type="module">
-        // Using window.auth from auth.js loaded above
+        // Using window.auth and window.API from loaded scripts
         const { getCurrentUser } = window.auth;
-        const { api } = window;
+        const api = window.API;
         
         let currentUser = null;
         
         // Initialize dashboard
         async function initDashboard() {
             try {
+                console.log('🚀 Initializing student dashboard...');
                 currentUser = await getCurrentUser();
                 
                 if (!currentUser) {
+                    console.warn('⚠️ No user found, redirecting to login');
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
                 
                 if (currentUser.role !== 'tutee') {
+                    console.warn('⚠️ User is not a tutee, redirecting');
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
                 
-                // Load dashboard data
-                await loadStats();
-                await loadUpcomingSessions();
-                await loadMaterials();
+                console.log('✅ User authenticated:', currentUser.first_name);
+                
+                // Load dashboard data in parallel for better performance
+                await Promise.allSettled([
+                    loadStats(),
+                    loadUpcomingSessions(),
+                    loadMaterials()
+                ]);
+                
+                console.log('✅ Dashboard loaded successfully');
             } catch (error) {
-                console.error('Dashboard init error:', error);
+                console.error('❌ Dashboard init error:', error);
+                showError('Failed to load dashboard. Please refresh the page.');
             }
         }
         
         // Load statistics
         async function loadStats() {
             try {
-                const response = await api.get('/sessions/my-sessions?role=tutee');
+                console.log('📊 Loading session statistics...');
+                const response = await api.get('/sessions');
+                
                 if (response.success && response.sessions) {
                     const sessions = response.sessions;
                     
-                    document.querySelector('#totalSessions').textContent = sessions.length;
-                    document.querySelector('#pendingSessions').textContent = 
-                        sessions.filter(s => s.status === 'pending').length;
-                    document.querySelector('#confirmedSessions').textContent = 
-                        sessions.filter(s => s.status === 'confirmed').length;
-                    document.querySelector('#completedSessions').textContent = 
-                        sessions.filter(s => s.status === 'completed').length;
+                    const pending = sessions.filter(s => s.status === 'pending').length;
+                    const confirmed = sessions.filter(s => s.status === 'confirmed').length;
+                    const completed = sessions.filter(s => s.status === 'completed').length;
+                    
+                    // Animate stats update
+                    animateValue('totalSessions', 0, sessions.length, 800);
+                    animateValue('pendingSessions', 0, pending, 800);
+                    animateValue('confirmedSessions', 0, confirmed, 800);
+                    animateValue('completedSessions', 0, completed, 800);
+                    
+                    console.log(`✅ Stats loaded: ${sessions.length} total sessions`);
+                } else {
+                    console.log('ℹ️ No sessions data available');
+                    setDefaultStats();
                 }
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.error('❌ Error loading stats:', error);
+                setDefaultStats();
             }
+        }
+        
+        // Set default stats (0)
+        function setDefaultStats() {
+            ['totalSessions', 'pendingSessions', 'confirmedSessions', 'completedSessions'].forEach(id => {
+                document.getElementById(id).textContent = '0';
+            });
+        }
+        
+        // Animate number counter
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            if (!element) return;
+            
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 16);
         }
         
         // Load upcoming sessions
         async function loadUpcomingSessions() {
             const container = document.getElementById('upcomingSessionsList');
             try {
-                const response = await api.get('/sessions/my-sessions?role=tutee&status=confirmed');
+                console.log('📅 Loading upcoming sessions...');
+                const response = await api.get('/sessions');
+                
                 if (response.success && response.sessions) {
-                    const sessions = response.sessions;
+                    // Filter for confirmed sessions only
+                    const confirmedSessions = response.sessions
+                        .filter(s => s.status === 'confirmed')
+                        .sort((a, b) => new Date(a.session_date) - new Date(b.session_date));
                     
-                    if (sessions.length === 0) {
-                        container.innerHTML = '<p class="text-muted">No upcoming sessions. <a href="/html/tutee/student-find-tutors.html">Find a tutor</a> to get started!</p>';
+                    if (confirmedSessions.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px 20px;">
+                                <i class="fas fa-calendar-times" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+                                <p style="color: #666; margin-bottom: 16px;">No upcoming sessions scheduled</p>
+                                <a href="/html/tutee/student-find-tutors.html" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Find a Tutor
+                                </a>
+                            </div>
+                        `;
                         return;
                     }
                     
-                    container.innerHTML = sessions.slice(0, 5).map(session => `
-                        <div class="session-item">
-                            <div class="session-info">
-                                <h4>${session.subject_name || 'Subject'}</h4>
-                                <p>Tutor: ${session.tutor_name || 'N/A'}</p>
-                                <p>Date: ${new Date(session.session_date).toLocaleDateString()}</p>
-                                <p>Time: ${session.session_time || 'TBD'}</p>
+                    container.innerHTML = confirmedSessions.slice(0, 5).map(session => {
+                        const date = new Date(session.session_date);
+                        const formattedDate = date.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                        });
+                        
+                        return `
+                            <div class="session-item" style="padding: 16px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 16px; align-items: start;">
+                                <div style="flex-shrink: 0; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2, #7289DA); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+                                    <div style="font-size: 24px; font-weight: bold; line-height: 1;">${date.getDate()}</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">${date.toLocaleDateString('en-US', { month: 'short' })}</div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #2d3748;">
+                                        ${session.subject_name || 'Subject'}
+                                    </h4>
+                                    <p style="margin: 4px 0; font-size: 14px; color: #718096;">
+                                        <i class="fas fa-user-graduate"></i> Tutor: <strong>${session.tutor_name || 'N/A'}</strong>
+                                    </p>
+                                    <p style="margin: 4px 0; font-size: 14px; color: #718096;">
+                                        <i class="fas fa-clock"></i> ${session.start_time || 'TBD'} ${session.end_time ? '- ' + session.end_time : ''}
+                                    </p>
+                                    ${session.location ? `<p style="margin: 4px 0; font-size: 14px; color: #718096;"><i class="fas fa-map-marker-alt"></i> ${session.location}</p>` : ''}
+                                </div>
+                                <span class="badge badge-success" style="flex-shrink: 0;">Confirmed</span>
                             </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
+                    
+                    console.log(`✅ Loaded ${confirmedSessions.length} upcoming sessions`);
+                } else {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No sessions available</p>';
                 }
             } catch (error) {
-                console.error('Error loading sessions:', error);
+                console.error('❌ Error loading sessions:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #dc3545;">
+                        <i class="fas fa-exclamation-circle"></i> Failed to load sessions
+                    </div>
+                `;
             }
         }
         
@@ -311,29 +399,85 @@
         async function loadMaterials() {
             const container = document.getElementById('recentMaterialsList');
             try {
-                const response = await api.get('/materials/recent');
+                console.log('📚 Loading study materials...');
+                const response = await api.get('/materials');
+                
                 if (response.success && response.materials) {
                     const materials = response.materials;
                     
                     if (materials.length === 0) {
-                        container.innerHTML = '<p class="text-muted">No materials available yet</p>';
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px 20px;">
+                                <i class="fas fa-book-open" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+                                <p style="color: #666;">No study materials available yet</p>
+                            </div>
+                        `;
                         return;
                     }
                     
-                    container.innerHTML = materials.map(material => `
-                        <div class="material-item">
-                            <h4>${material.title}</h4>
-                            <p>${material.description || ''}</p>
-                            <a href="${material.file_url}" target="_blank" class="btn btn-sm btn-primary">Download</a>
-                        </div>
-                    `).join('');
+                    // Show recent 5 materials
+                    container.innerHTML = materials.slice(0, 5).map(material => {
+                        const uploadDate = new Date(material.uploaded_at || material.created_at);
+                        const icon = getFileIcon(material.file_type || material.filename);
+                        
+                        return `
+                            <div class="material-item" style="padding: 16px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 16px; align-items: start;">
+                                <div style="flex-shrink: 0; width: 48px; height: 48px; background: #f7fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #5865F2;">
+                                    ${icon}
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 style="margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        ${material.title || 'Untitled'}
+                                    </h4>
+                                    ${material.description ? `<p style="margin: 0 0 8px 0; font-size: 13px; color: #718096; line-height: 1.4;">${material.description}</p>` : ''}
+                                    <p style="margin: 0; font-size: 12px; color: #a0aec0;">
+                                        <i class="fas fa-user"></i> ${material.tutor_name || 'Tutor'} • 
+                                        <i class="fas fa-calendar"></i> ${uploadDate.toLocaleDateString()}
+                                        ${material.download_count ? ` • <i class="fas fa-download"></i> ${material.download_count} downloads` : ''}
+                                    </p>
+                                </div>
+                                <a href="${material.file_url}" target="_blank" class="btn btn-sm btn-primary" style="flex-shrink: 0;">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    console.log(`✅ Loaded ${materials.length} study materials`);
+                } else {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No materials available</p>';
                 }
             } catch (error) {
-                console.error('Error loading materials:', error);
+                console.error('❌ Error loading materials:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #dc3545;">
+                        <i class="fas fa-exclamation-circle"></i> Failed to load materials
+                    </div>
+                `;
             }
         }
         
-        // Logout handler - direct implementation
+        // Get file icon based on type
+        function getFileIcon(fileType) {
+            if (!fileType) return '<i class="fas fa-file"></i>';
+            
+            const type = fileType.toLowerCase();
+            if (type.includes('pdf')) return '<i class="fas fa-file-pdf" style="color: #dc3545;"></i>';
+            if (type.includes('doc')) return '<i class="fas fa-file-word" style="color: #2b579a;"></i>';
+            if (type.includes('ppt')) return '<i class="fas fa-file-powerpoint" style="color: #d04423;"></i>';
+            if (type.includes('xls')) return '<i class="fas fa-file-excel" style="color: #217346;"></i>';
+            if (type.includes('image') || type.includes('jpg') || type.includes('png')) return '<i class="fas fa-file-image" style="color: #6366f1;"></i>';
+            if (type.includes('video')) return '<i class="fas fa-file-video" style="color: #ec4899;"></i>';
+            return '<i class="fas fa-file"></i>';
+        }
+        
+        // Show error message
+        function showError(message) {
+            console.error('🚨', message);
+            // Could add toast notification here
+        }
+        
+        // Logout handler
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
@@ -341,6 +485,16 @@
                 e.stopPropagation();
                 window.auth.logout();
                 return false;
+            });
+        }
+        
+        // Secondary Navigation Toggle
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const secondaryNav = document.getElementById('secondaryNav');
+        
+        if (navToggleBtn && secondaryNav) {
+            navToggleBtn.addEventListener('click', () => {
+                secondaryNav.classList.toggle('collapsed');
             });
         }
         
