@@ -63,7 +63,19 @@
             .stat-box { padding: 15px; }
             .stat-box h3 { font-size: 24px; }
         }
-        @media (max-width: 480px) { .nav-brand { font-size: 16px; } .user-info-inline { max-width: 100px; padding: 5px 8px; } .nav-link { display: none; } .stats-row { grid-template-columns: 1fr; gap: 10px; } .stat-box h3 { font-size: 28px; } }
+        @media (max-width: 480px) {
+            .nav-brand { font-size: 16px; }
+            .user-name-inline { display: none; }
+            .nav-link { font-size: 0; padding: 6px; }
+            .nav-link::before { font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 16px; }
+            .nav-link[href*="profile"]::before { content: '\f007'; }
+            #logoutBtn::before { content: '\f2f5'; }
+            .user-info-inline { max-width: 50px; padding: 6px; }
+            .stats-row { grid-template-columns: 1fr; gap: 10px; }
+            .stat-box { padding: 15px; }
+            .stat-box h3 { font-size: 24px; }
+            .stat-box p { font-size: 13px; }
+        }
     </style>
         .card-body {
             overflow-x: auto;
