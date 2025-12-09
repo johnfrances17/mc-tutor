@@ -264,16 +264,19 @@
         async function loadTutors() {
             try {
                 const response = await api.get('/tutors/search');
+                console.log('Tutors response:', response);
                 if (response.success && response.tutors) {
                     allTutors = response.tutors;
                     filteredTutors = allTutors;
                     displayTutors();
                 } else {
+                    console.error('No tutors in response:', response);
                     document.getElementById('tutorsContainer').innerHTML = 
                         '<div class="empty-state"><i class="fas fa-user-slash"></i><p>No tutors available</p></div>';
                 }
             } catch (error) {
                 console.error('Error loading tutors:', error);
+                console.error('Error details:', error.message);
                 document.getElementById('tutorsContainer').innerHTML = 
                     '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading tutors. Please try again.</p></div>';
             }
