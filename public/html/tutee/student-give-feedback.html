@@ -51,8 +51,11 @@
             .secondary-nav-container { padding: 10px; overflow-x: auto; justify-content: flex-start; }
             .secondary-nav-link { padding: 8px 16px; font-size: 14px; white-space: nowrap; }
             .container { padding: 10px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .stat-box { padding: 15px; }
+            .stat-box h3 { font-size: 24px; }
         }
-        @media (max-width: 480px) { .nav-brand { font-size: 16px; } .user-info-inline { max-width: 100px; padding: 5px 8px; } .nav-link { display: none; } }
+        @media (max-width: 480px) { .nav-brand { font-size: 16px; } .user-info-inline { max-width: 100px; padding: 5px 8px; } .nav-link { display: none; } .stats-row { grid-template-columns: 1fr; gap: 10px; } .stat-box h3 { font-size: 28px; } }
     </style>
     
 </head>

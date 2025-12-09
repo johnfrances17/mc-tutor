@@ -38,10 +38,14 @@
         .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
         .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
         .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
+
+        /* Stats Grid */
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .stat-box { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
         .stat-box h3 { margin: 0 0 8px 0; font-size: 32px; font-weight: 700; }
         .stat-box p { margin: 0; opacity: 0.9; }
+
+        /* Card Styles */
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { min-width: 600px; }
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
@@ -64,7 +68,7 @@
             .nav-brand { font-size: 16px; } 
             .user-info-inline { max-width: 100px; padding: 5px 8px; } 
             .nav-link { display: none; }
-            .stats-row { grid-template-columns: 1fr; gap: 12px; }
+            .stats-row { grid-template-columns: 1fr; gap: 10px; }
             .stat-box h3 { font-size: 28px; }
         }
     </style>
