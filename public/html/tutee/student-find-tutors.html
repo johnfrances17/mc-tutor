@@ -264,8 +264,8 @@
         async function loadTutors() {
             try {
                 const response = await api.get('/tutors/search');
-                if (response.success && response.data) {
-                    allTutors = response.data;
+                if (response.success && response.tutors) {
+                    allTutors = response.tutors;
                     filteredTutors = allTutors;
                     displayTutors();
                 } else {
