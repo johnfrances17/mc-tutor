@@ -447,18 +447,24 @@ function initAuth() {
   if (user) {
     const userNameElements = document.querySelectorAll('[data-user-name]');
     userNameElements.forEach(el => {
-      // Use computed fullName from backend, or construct from name parts
-      const fullName = user.fullName || user.full_name || 
-                      (user.first_name && user.last_name ? 
-                        `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
-                        'User');
-      el.textContent = fullName;
+      // Show FIRST NAME ONLY
+      const firstName = user.first_name || 'User';
+      el.textContent = firstName;
     });
     
     const userRoleElements = document.querySelectorAll('[data-user-role]');
     userRoleElements.forEach(el => {
-      el.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+      el.textContent = user.role ? user.role.toUpperCase() : 'USER';
     });
+    
+    // Update avatar initial - use FIRST letter of FIRST name
+    const firstName = user.first_name || 'User';
+    const initial = firstName.charAt(0).toUpperCase();
+    
+    const navAvatarInitial = document.getElementById('navAvatarInitial');
+    if (navAvatarInitial) {
+      navAvatarInitial.textContent = initial;
+    }
   }
 }
 
