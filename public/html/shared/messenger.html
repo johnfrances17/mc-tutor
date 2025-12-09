@@ -480,7 +480,7 @@
         const { getCurrentUser } = window.auth;
         const { api } = window;
         const { showToast, formatTime, escapeHtml } = window;
-        const socketManager = window.socketManager;
+        const socketManager = window.socketClient || null;
 
         let currentUser = null;
         let currentConversation = null;
@@ -516,15 +516,15 @@
                 populateSecondaryNav();
 
                 const token = localStorage.getItem('token');
-                if (token) {
-                    socketManager.connect(token);
+                if (token && socketManager) {
+                    socketManager.initSocket();
                     setupSocketHandlers();
                 }
 
                 await loadConversations();
 
                 refreshInterval = setInterval(async function() {
-                    if (!socketManager.isSocketConnected()) {
+                    if (!socketManager || !socketManager.isSocketConnected()) {
                         await loadConversations();
                         if (currentConversation) {
                             await loadMessages(currentConversation.other_user_id, false);
@@ -575,36 +575,28 @@
 
         // Setup Socket.IO handlers
         function setupSocketHandlers() {
-            socketManager.on('message_received', function(data) {
+            if (!socketManager) return;
+            
+            socketManager.onNewMessage(function(data) {
                 if (currentConversation && 
                     (data.senderId === currentConversation.other_user_id || 
                      data.receiverId === currentConversation.other_user_id)) {
                     appendMessage(data);
                     
                     if (data.senderId === currentConversation.other_user_id) {
-                        socketManager.markAsRead(currentConversation.other_user_id);
+                        socketManager.markMessagesAsRead(currentConversation.other_user_id);
                     }
                 }
                 loadConversations();
             });
 
-            socketManager.on('typing', function(data) {
+            socketManager.onUserTyping(function(data) {
                 if (currentConversation && data.userId === currentConversation.other_user_id) {
                     showTypingIndicator(data.isTyping);
                 }
             });
 
-            socketManager.on('user_status', function(data) {
-                updateUserStatus(data.userId, data.status);
-            });
-
-            socketManager.on('connected', function() {
-                console.log('Real-time chat enabled');
-            });
-
-            socketManager.on('disconnected', function() {
-                console.log('Real-time chat disabled, using fallback polling');
-            });
+            console.log('Socket handlers setup complete');
         }
 
         // Load conversations
@@ -652,13 +644,13 @@
 
         // Open conversation
         async function openConversation(conversation) {
-            if (currentConversation && socketManager.isSocketConnected()) {
-                socketManager.leaveConversation(currentConversation.other_user_id);
+            if (currentConversation && socketManager && socketManager.isSocketConnected()) {
+                // Leave previous conversation (socket.js doesn't have this method, skip for now)
             }
 
             currentConversation = conversation;
             
-            if (socketManager.isSocketConnected()) {
+            if (socketManager && socketManager.isSocketConnected()) {
                 socketManager.joinConversation(conversation.other_user_id);
             }
             
@@ -756,7 +748,7 @@
             if (!message) return;
 
             try {
-                if (socketManager.isSocketConnected()) {
+                if (socketManager && socketManager.isSocketConnected()) {
                     await socketManager.sendMessage(currentConversation.other_user_id, message);
                 } else {
                     await api.post('/chat/send', {
@@ -858,8 +850,8 @@
             if (refreshInterval) {
                 clearInterval(refreshInterval);
             }
-            if (socketManager.isSocketConnected()) {
-                socketManager.disconnect();
+            if (socketManager && socketManager.isSocketConnected()) {
+                socketManager.disconnectSocket();
             }
         });
 
