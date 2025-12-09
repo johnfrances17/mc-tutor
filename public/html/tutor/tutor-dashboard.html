@@ -273,22 +273,22 @@
             <div class="card-body">
                 <div class="quick-actions-grid">
                     <a href="/html/tutor/tutor-my-subjects.html" class="quick-action-card">
-                        <div class="quick-action-icon">??</div>
+                        <div class="quick-action-icon"><i class="fas fa-book"></i></div>
                         <div class="quick-action-title">Manage Subjects</div>
                         <div class="quick-action-desc">Add or remove subjects you tutor</div>
                     </a>
                     <a href="/html/tutor/tutor-upload-materials.html" class="quick-action-card">
-                        <div class="quick-action-icon">??</div>
+                        <div class="quick-action-icon"><i class="fas fa-upload"></i></div>
                         <div class="quick-action-title">Upload Materials</div>
                         <div class="quick-action-desc">Share study resources with students</div>
                     </a>
                     <a href="/html/session-preferences.html" class="quick-action-card">
-                        <div class="quick-action-icon">??</div>
+                        <div class="quick-action-icon"><i class="fas fa-cog"></i></div>
                         <div class="quick-action-title">Session Preferences</div>
                         <div class="quick-action-desc">Set availability and preferences</div>
                     </a>
                     <a href="/html/shared/messenger.html" class="quick-action-card">
-                        <div class="quick-action-icon">??</div>
+                        <div class="quick-action-icon"><i class="fas fa-comment"></i></div>
                         <div class="quick-action-title">Messages</div>
                         <div class="quick-action-desc">Chat with your students</div>
                     </a>
@@ -405,10 +405,10 @@
                         <div class="session-info">
                             <div class="session-subject">${session.subject_name || 'Subject'}</div>
                             <div class="session-details">
-                                <span>?? ${session.student_name}</span>
-                                <span>?? ${formatDate(session.session_date)}</span>
-                                <span>?? ${formatTime(session.session_time)}</span>
-                                <span>?? ${session.session_type}</span>
+                                <span class="badge badge-info"><i class="fas fa-user"></i> ${session.student_name}</span>
+                                <span class="badge badge-secondary"><i class="fas fa-calendar"></i> ${formatDate(session.session_date)}</span>
+                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> ${formatTime(session.session_time)}</span>
+                                <span class="badge badge-primary"><i class="fas fa-video"></i> ${session.session_type}</span>
                             </div>
                             ${session.notes ? `<div class="session-notes">Note: ${session.notes}</div>` : ''}
                         </div>
@@ -449,10 +449,10 @@
                             <div class="session-info">
                                 <div class="session-subject">${session.subject_name || 'Subject'}</div>
                                 <div class="session-details">
-                                    <span>?? ${session.student_name}</span>
-                                    <span>?? ${formatDate(session.session_date)}</span>
-                                    <span>?? ${formatTime(session.session_time)}</span>
-                                    <span>?? ${session.session_type}</span>
+                                    <span class="badge badge-info"><i class="fas fa-user"></i> ${session.student_name}</span>
+                                    <span class="badge badge-secondary"><i class="fas fa-calendar"></i> ${formatDate(session.session_date)}</span>
+                                    <span class="badge badge-secondary"><i class="fas fa-clock"></i> ${formatTime(session.session_time)}</span>
+                                    <span class="badge badge-primary"><i class="fas fa-video"></i> ${session.session_type}</span>
                                 </div>
                             </div>
                             <div class="session-actions">
