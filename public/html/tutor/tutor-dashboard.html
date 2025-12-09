@@ -60,10 +60,38 @@
         .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
         .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
 
-        /* Horizontal scroll for tables and content */
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
-        .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { min-width: 700px; }
+        /* Table styles */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #f9fafb;
+        }
+
+        table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        table tbody tr:hover {
+            background: #f9fafb;
+        }
 
         /* Mobile Responsive */
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }

@@ -594,20 +594,37 @@
             white-space: nowrap;
         }
 
-        /* Horizontal scroll for tables and content */
-        .table-responsive {
+        /* Table styles */
+        .table-wrapper {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 15px;
-        }
-
-        .card-body {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         table {
-            min-width: 600px;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #f9fafb;
+        }
+
+        table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        table tbody tr:hover {
+            background: #f9fafb;
         }
 
         /* Mobile Responsive Styles */
@@ -1254,7 +1271,7 @@
                 }));
 
                 container.innerHTML = `
-                    <div class="table-responsive">
+                    <div class="table-wrapper">
                         <table class="data-table">
                             <thead>
                                 <tr>

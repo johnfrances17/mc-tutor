@@ -8,18 +8,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Horizontal scroll for tables */
-        .table-responsive {
+        /* Table styles */
+        .table-wrapper {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 15px;
         }
-        .card-body {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+
         table {
-            min-width: 900px;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #f9fafb;
+        }
+
+        table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        table tbody tr:hover {
+            background: #f9fafb;
         }
 
         /* Base font styling */
