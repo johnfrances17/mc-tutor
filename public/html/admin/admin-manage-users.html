@@ -268,6 +268,30 @@
             color: #92400e;
         }
 
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-secondary {
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .status-active {
             color: #10b981;
         }
@@ -754,7 +778,7 @@
             <h2><i class="fas fa-users"></i> All Users</h2>
             
             <div class="filter-bar">
-                <input type="text" id="searchInput" placeholder="Search by name, email, or student ID...">
+                <input type="text" id="searchInput" placeholder="Search by name, email, or school ID...">
                 <select id="filterRole">
                     <option value="">All Roles</option>
                     <option value="tutor">Tutors</option>
@@ -881,7 +905,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Student ID</th>
+                            <th>School ID</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
@@ -909,14 +933,17 @@
                             return `
                             <tr>
                                 <td>${user.user_id}</td>
-                                <td>${user.student_id || '-'}</td>
+                                <td>${user.school_id || '-'}</td>
                                 <td><strong>${userFullName}</strong></td>
                                 <td>${user.email}</td>
                                 <td><span class="badge badge-${user.role}">${user.role.toUpperCase()}</span></td>
                                 <td>${user.course_name || user.course_code || '-'}</td>
                                 <td>${formatYearLevel(user.year_level)}</td>
-                                <td class="status-${user.status}">
-                                    <strong>${user.status === 'active' ? '? Active' : '? Inactive'}</strong>
+                                <td>
+                                    <span class="badge ${user.status === 'active' ? 'badge-success' : 'badge-secondary'}">
+                                        <i class="fas fa-${user.status === 'active' ? 'check-circle' : 'times-circle'}"></i> 
+                                        ${user.status === 'active' ? 'Active' : 'Inactive'}
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="action-buttons">
@@ -984,7 +1011,7 @@
             }
 
             try {
-                const response = await api.put(`/users/${userId}/status`, { status: newStatus });
+                const response = await api.put(`/admin/users/${userId}`, { status: newStatus });
 
                 if (response.success) {
                     showMessage(`User ${action}d successfully!`, 'success');
@@ -1005,7 +1032,7 @@
             }
 
             try {
-                const response = await api.delete(`/users/${userId}`);
+                const response = await api.delete(`/admin/users/${userId}`);
 
                 if (response.success) {
                     showMessage('User deleted successfully!', 'success');
