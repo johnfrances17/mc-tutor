@@ -4,6 +4,7 @@ import {
   searchTutors,
   getTutorById,
   getTutorSubjects,
+  getTutorsBySubject,
   addTutorSubject,
   removeTutorSubject,
 } from '../controllers/tutorController';
@@ -12,6 +13,9 @@ const router = Router();
 
 // Search tutors with filters
 router.get('/search', searchTutors);
+
+// Get tutors by subject
+router.get('/by-subject/:subjectId', getTutorsBySubject);
 
 // Get tutor by ID
 router.get('/:id', getTutorById);

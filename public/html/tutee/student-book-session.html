@@ -279,23 +279,24 @@
         // Pre-select the tutor when coming from find tutors page
         async function preselectTutor(tutorId) {
             try {
-                // Load tutor info
-                const response = await api.get(`/users/${tutorId}`);
-                if (response.success && response.user) {
-                    tutors = [response.user];
+                // Load tutor info - use /tutors/:id endpoint
+                const response = await api.get(`/tutors/${tutorId}`);
+                if (response.success && response.tutor) {
+                    const tutor = response.tutor;
+                    tutors = [tutor];
                     const tutorSelect = document.getElementById('tutor');
                     tutorSelect.innerHTML = '<option value="">Select a tutor</option>';
                     const option = document.createElement('option');
-                    option.value = response.user.user_id;
-                    const tutorName = response.user.last_name && response.user.first_name 
-                        ? `${response.user.last_name}, ${response.user.first_name}${response.user.middle_name ? ' ' + response.user.middle_name : ''}`
+                    option.value = tutor.user_id;
+                    const tutorName = tutor.last_name && tutor.first_name 
+                        ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}`
                         : 'Unknown';
                     option.textContent = tutorName;
                     option.selected = true;
                     tutorSelect.appendChild(option);
                     
                     // Show availability
-                    showTutorAvailability(response.user);
+                    showTutorAvailability(tutor);
                     // Clear sessionStorage
                     sessionStorage.removeItem('selectedTutorId');
                 }

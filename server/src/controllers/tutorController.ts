@@ -218,6 +218,57 @@ export const getTutorSubjects = async (req: Request, res: Response, next: NextFu
 };
 
 /**
+ * Get tutors by subject
+ */
+export const getTutorsBySubject = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { subjectId } = req.params;
+
+    const { data, error } = await supabase
+      .from('tutor_subjects')
+      .select(`
+        proficiency_level,
+        tutor:users!tutor_subjects_tutor_id_fkey(
+          user_id,
+          school_id,
+          first_name,
+          middle_name,
+          last_name,
+          email,
+          phone,
+          course_code,
+          year_level
+        )
+      `)
+      .eq('subject_id', subjectId)
+      .eq('tutor.role', 'tutor');
+
+    if (error) {
+      console.error('Error fetching tutors by subject:', error);
+      return res.status(400).json({ success: false, error: error.message });
+    }
+
+    // Transform the data to flatten the tutor object
+    const tutors = data.map((item: any) => ({
+      id: item.tutor?.user_id,
+      school_id: item.tutor?.school_id,
+      first_name: item.tutor?.first_name,
+      middle_name: item.tutor?.middle_name,
+      last_name: item.tutor?.last_name,
+      email: item.tutor?.email,
+      phone: item.tutor?.phone,
+      course_code: item.tutor?.course_code,
+      year_level: item.tutor?.year_level,
+      proficiency_level: item.proficiency_level,
+    })).filter((tutor: any) => tutor.id); // Filter out null tutors
+
+    res.json({ success: true, data: tutors });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
  * Add subject to tutor (tutor only)
  */
 export const addTutorSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
