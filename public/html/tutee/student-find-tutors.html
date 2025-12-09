@@ -183,7 +183,16 @@
         <div class="card">
             <div class="card-header">
                 <div class="section-title">Available Tutors</div>
-                <span id="resultsCount" class="text-muted"></span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span id="resultsCount" class="text-muted"></span>
+                    <label style="font-weight: 600; color: #2d3748;">Show:</label>
+                    <select id="perPageSelect" style="width: 80px; padding: 6px 10px; border: 2px solid #e5e7eb; border-radius: 6px;">
+                        <option value="6">6</option>
+                        <option value="12" selected>12</option>
+                        <option value="18">18</option>
+                        <option value="24">24</option>
+                    </select>
+                </div>
             </div>
             <div class="card-body">
                 <div class="tutors-grid" id="tutorsContainer">
@@ -193,6 +202,16 @@
                     <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
                     <p style="font-size: 18px;">No tutors found matching your criteria.</p>
                     <p>Try adjusting your search filters or check back later.</p>
+                </div>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div id="paginationContainer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px 24px 0; border-top: 2px solid #e5e7eb;">
+                <div style="color: #6b7280; font-size: 14px;" id="paginationInfo">
+                    Showing 0 of 0 tutors
+                </div>
+                <div style="display: flex; gap: 8px;" id="paginationButtons">
+                    <!-- Pagination buttons will be inserted here -->
                 </div>
             </div>
         </div>
@@ -214,6 +233,8 @@
         let allTutors = [];
         let subjects = [];
         let filteredTutors = [];
+        let currentPage = 1;
+        let perPage = 12;
 
         // Load subjects for filter
         async function loadSubjects() {
@@ -242,9 +263,9 @@
         // Load all tutors
         async function loadTutors() {
             try {
-                const response = await api.get('/tutors');
-                if (response.success && response.data) {
-                    allTutors = response.data;
+                const response = await api.get('/users?role=tutor');
+                if (response.success && response.users) {
+                    allTutors = response.users;
                     filteredTutors = allTutors;
                     displayTutors();
                 } else {
@@ -263,16 +284,28 @@
             const noResults = document.getElementById('noResultsMessage');
             const resultsCount = document.getElementById('resultsCount');
 
-            resultsCount.textContent = `${filteredTutors.length} tutor${filteredTutors.length !== 1 ? 's' : ''} found`;
+            const totalFiltered = filteredTutors.length;
+            const totalPages = Math.ceil(totalFiltered / perPage);
+            const start = (currentPage - 1) * perPage;
+            const end = Math.min(start + perPage, totalFiltered);
+            const paginated = filteredTutors.slice(start, end);
 
-            if (!filteredTutors || filteredTutors.length === 0) {
+            // Update pagination info
+            document.getElementById('paginationInfo').textContent = 
+                `Showing ${totalFiltered > 0 ? start + 1 : 0} to ${end} of ${totalFiltered} tutors`;
+
+            resultsCount.textContent = `${totalFiltered} tutor${totalFiltered !== 1 ? 's' : ''} found`;
+
+            if (!paginated || paginated.length === 0) {
                 container.innerHTML = '';
                 noResults.style.display = 'block';
+                document.getElementById('paginationContainer').style.display = 'none';
                 return;
             }
 
+            document.getElementById('paginationContainer').style.display = 'flex';
             noResults.style.display = 'none';
-            container.innerHTML = filteredTutors.map(tutor => {
+            container.innerHTML = paginated.map(tutor => {
                 const fullName = tutor.last_name && tutor.first_name 
                     ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}`
                     : 'Unknown';
@@ -345,7 +378,53 @@
                     </div>
                 `;
             }).join('');
+
+            // Generate pagination buttons
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <button onclick="changePage(${i})" 
+                            style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: ${i === currentPage ? 'linear-gradient(135deg, #5865F2, #7289DA)' : 'white'}; color: ${i === currentPage ? 'white' : '#2d3748'}; cursor: pointer; font-weight: ${i === currentPage ? '600' : '400'};">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span style="padding: 8px;">...</span>`;
+                }
+            }
+
+            // Next button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" 
+                    ${currentPage === totalPages ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+
+            document.getElementById('paginationButtons').innerHTML = paginationHTML;
         }
+
+        // Change page function
+        window.changePage = function(page) {
+            const totalPages = Math.ceil(filteredTutors.length / perPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            displayTutors();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
 
         // Search and filter functionality
         function filterTutors() {
@@ -399,6 +478,7 @@
                     break;
             }
 
+            currentPage = 1; // Reset to first page after filtering
             displayTutors();
 
             // Show/hide clear button
@@ -412,6 +492,7 @@
             document.getElementById('subjectFilter').value = '';
             document.getElementById('sortBy').value = 'rating';
             filteredTutors = allTutors;
+            currentPage = 1;
             displayTutors();
             document.getElementById('clearBtn').style.display = 'none';
         }
@@ -439,6 +520,12 @@
         
         document.getElementById('subjectFilter').addEventListener('change', filterTutors);
         document.getElementById('sortBy').addEventListener('change', filterTutors);
+        
+        document.getElementById('perPageSelect').addEventListener('change', (e) => {
+            perPage = parseInt(e.target.value);
+            currentPage = 1;
+            displayTutors();
+        });
 
         // Initialize
         loadSubjects();
@@ -553,12 +640,18 @@
             gap: 15px;
         }
 
+        .text-muted {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+    </style>
+            color: #6b7280;
+            font-size: 14px;
+        }
+
     </style>
 
-    <!-- Core Scripts -->
-    <script src="/scripts/utils.js"></script>
-    <script src="/scripts/api.js"></script>
-    <script src="/scripts/auth.js"></script>
     <script>
         // Secondary Navigation Toggle
         const navToggleBtn = document.getElementById('navToggleBtn');
