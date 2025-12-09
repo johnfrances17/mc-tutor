@@ -38,6 +38,10 @@
         .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
         .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
         .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-box { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-box h3 { margin: 0 0 8px 0; font-size: 32px; font-weight: 700; }
+        .stat-box p { margin: 0; opacity: 0.9; }
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { min-width: 600px; }
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
@@ -52,8 +56,17 @@
             .secondary-nav-container { padding: 10px; overflow-x: auto; justify-content: flex-start; }
             .secondary-nav-link { padding: 8px 16px; font-size: 14px; white-space: nowrap; }
             .container { padding: 10px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .stat-box { padding: 15px; }
+            .stat-box h3 { font-size: 24px; }
         }
-        @media (max-width: 480px) { .nav-brand { font-size: 16px; } .user-info-inline { max-width: 100px; padding: 5px 8px; } .nav-link { display: none; } }
+        @media (max-width: 480px) { 
+            .nav-brand { font-size: 16px; } 
+            .user-info-inline { max-width: 100px; padding: 5px 8px; } 
+            .nav-link { display: none; }
+            .stats-row { grid-template-columns: 1fr; gap: 12px; }
+            .stat-box h3 { font-size: 28px; }
+        }
     </style>
     
 </head>
@@ -100,30 +113,22 @@
 
     <div class="container">
         <!-- Stats Cards -->
-        <div class="dashboard-grid">
-            <div class="stat-card" id="totalSessions">
-                <div class="stat-content">
-                    <div class="section-title">Total Sessions</div>
-                    <p class="number">0</p>
-                </div>
+        <div class="stats-row">
+            <div class="stat-box">
+                <h3 id="totalSessions">0</h3>
+                <p>Total Sessions</p>
             </div>
-            <div class="stat-card" id="pendingSessions">
-                <div class="stat-content">
-                    <div class="section-title">Pending</div>
-                    <p class="number">0</p>
-                </div>
+            <div class="stat-box">
+                <h3 id="pendingSessions">0</h3>
+                <p>Pending</p>
             </div>
-            <div class="stat-card" id="confirmedSessions">
-                <div class="stat-content">
-                    <div class="section-title">Confirmed</div>
-                    <p class="number">0</p>
-                </div>
+            <div class="stat-box">
+                <h3 id="confirmedSessions">0</h3>
+                <p>Confirmed</p>
             </div>
-            <div class="stat-card" id="completedSessions">
-                <div class="stat-content">
-                    <div class="section-title">Completed</div>
-                    <p class="number">0</p>
-                </div>
+            <div class="stat-box">
+                <h3 id="completedSessions">0</h3>
+                <p>Completed</p>
             </div>
         </div>
 
@@ -212,12 +217,12 @@
                 if (response.success && response.sessions) {
                     const sessions = response.sessions;
                     
-                    document.querySelector('#totalSessions .number').textContent = sessions.length;
-                    document.querySelector('#pendingSessions .number').textContent = 
+                    document.querySelector('#totalSessions').textContent = sessions.length;
+                    document.querySelector('#pendingSessions').textContent = 
                         sessions.filter(s => s.status === 'pending').length;
-                    document.querySelector('#confirmedSessions .number').textContent = 
+                    document.querySelector('#confirmedSessions').textContent = 
                         sessions.filter(s => s.status === 'confirmed').length;
-                    document.querySelector('#completedSessions .number').textContent = 
+                    document.querySelector('#completedSessions').textContent = 
                         sessions.filter(s => s.status === 'completed').length;
                 }
             } catch (error) {
