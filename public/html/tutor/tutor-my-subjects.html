@@ -189,13 +189,21 @@
         // Load available subjects and tutor's current subjects
         async function loadData() {
             try {
+                // Get current user to filter subjects by course
+                const currentUser = await getCurrentUser();
+                
                 // Load available subjects
                 const availableResponse = await api.get('/subjects');
                 const availableSelect = document.getElementById('subject_id');
                 
                 if (availableResponse.success && availableResponse.subjects) {
+                    // Filter subjects to match tutor's course
+                    const filteredSubjects = availableResponse.subjects.filter(
+                        subject => subject.course_code === currentUser.course_code
+                    );
+                    
                     availableSelect.innerHTML = '<option value="">Select a subject</option>' +
-                        availableResponse.subjects.map(subject => 
+                        filteredSubjects.map(subject => 
                             `<option value="${subject.subject_id}">${subject.subject_code} - ${subject.subject_name}</option>`
                         ).join('');
                 }
@@ -234,11 +242,11 @@
                         <div class="subject-info">
                             <h4>${subject.subject_code} - ${subject.subject_name}</h4>
                             <p>${subject.description || 'No description'}</p>
-                            <span class="proficiency-badge proficiency-${subject.proficiency_level}">
-                                ${subject.proficiency_level.toUpperCase()}
+                            <span class="proficiency-badge proficiency-${subject.proficiency_level || 'beginner'}">
+                                ${subject.proficiency_level?.toUpperCase() || 'N/A'}
                             </span>
                         </div>
-                        <button class="btn btn-danger" onclick="removeSubject(${subject.id})">
+                        <button class="btn btn-danger" onclick="removeSubject(${subject.subject_id})">
                             <i class="fas fa-trash"></i> Remove
                         </button>
                     </div>
