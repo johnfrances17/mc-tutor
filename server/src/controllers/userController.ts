@@ -153,7 +153,7 @@ export const getUserByStudentId = async (req: Request, res: Response, next: Next
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, role, course_code, year_level, profile_picture, bio')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, role, course_code, year_level, profile_picture')
       .eq('school_id', studentId)
       .single();
 

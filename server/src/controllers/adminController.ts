@@ -73,7 +73,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, profile_picture, bio, status, created_at, updated_at, last_active')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course, year_level, profile_picture, status, created_at, updated_at, last_active')
       .eq('user_id', id)
       .single();
 
@@ -196,7 +196,6 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       course,
       year_level,
       status,
-      bio,
     } = req.body;
 
     // Build update object (only include provided fields)
@@ -222,7 +221,6 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     if (course) updateData.course_code = sanitizeInput(course);
     if (year_level) updateData.year_level = year_level;
     if (status) updateData.status = status;
-    if (bio !== undefined) updateData.bio = sanitizeInput(bio);
 
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({ success: false, message: 'No fields to update' });
