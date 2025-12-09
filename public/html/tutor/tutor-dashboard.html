@@ -413,10 +413,10 @@
                             ${session.notes ? `<div class="session-notes">Note: ${session.notes}</div>` : ''}
                         </div>
                         <div class="session-actions">
-                            <button class="btn btn-success btn-sm" onclick="confirmSession('${session.id}')">
+                            <button class="btn btn-success btn-sm" onclick="confirmSession('${session.session_id}')">
                                 Confirm
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="cancelSession('${session.id}')">
+                            <button class="btn btn-danger btn-sm" onclick="cancelSession('${session.session_id}')">
                                 Decline
                             </button>
                         </div>
@@ -456,7 +456,7 @@
                                 </div>
                             </div>
                             <div class="session-actions">
-                                <button class="btn btn-sm" onclick="completeSession('${session.id}')">
+                                <button class="btn btn-sm" onclick="completeSession('${session.session_id}')">
                                     Mark Complete
                                 </button>
                             </div>
