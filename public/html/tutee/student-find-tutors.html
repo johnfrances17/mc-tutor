@@ -357,42 +357,22 @@
                                 ${fullName.charAt(0).toUpperCase()}
                             </div>
                             <div class="tutor-info">
-                                <h3 class="tutor-name">${fullName}</h3>
+                                <h3>${fullName}</h3>
                                 ${rating > 0 ? `
                                     <div class="rating">
-                                        <span class="stars">${stars}</span>
-                                        <span class="rating-value">${rating.toFixed(1)}</span>
+                                        <span style="color: #ffc107;">${stars}</span>
+                                        <span style="color: #666; margin-left: 5px;">${rating.toFixed(1)}</span>
                                     </div>
                                 ` : '<div class="no-rating">No ratings yet</div>'}
                             </div>
                         </div>
                         <div class="tutor-details">
-                            <div class="detail-row">
-                                <span class="detail-label">Student ID:</span>
-                                <span class="detail-value">${studentId}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Course:</span>
-                                <span class="detail-value">${courseName}${yearLevel ? ` - ${yearLevel}` : ''}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Email:</span>
-                                <span class="detail-value">${email}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Phone:</span>
-                                <span class="detail-value">${phone}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Total Sessions:</span>
-                                <span class="detail-value">${totalSessions}</span>
-                            </div>
-                        </div>
-                        <div class="tutor-subjects">
-                            <div class="subjects-label">Subjects:</div>
-                            <div class="subject-tags">
-                                ${subjectTags}
-                            </div>
+                            <p><strong>Student ID:</strong> ${studentId}</p>
+                            <p><strong>Course:</strong> ${courseName}${yearLevel ? ` - ${yearLevel}` : ''}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Phone:</strong> ${phone}</p>
+                            <p><strong>Subjects:</strong> ${subjectTags}</p>
+                            <p><strong>Total Sessions:</strong> ${totalSessions}</p>
                         </div>
                         <div class="tutor-actions">
                             <button class="btn btn-primary" onclick="bookTutor(${tutor.user_id})">
@@ -589,40 +569,40 @@
         .tutor-card {
             background: white;
             border: none;
-            border-radius: 16px;
-            padding: 0;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .tutor-card:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
         }
 
         .tutor-header {
             display: flex;
-            gap: 16px;
-            padding: 24px;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-            border-bottom: 1px solid #f0f0f0;
+            gap: 15px;
             align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .tutor-avatar {
-            width: 64px;
-            height: 64px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: bold;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
         }
 
         .tutor-info {
@@ -630,111 +610,66 @@
             min-width: 0;
         }
 
-        .tutor-name {
-            margin: 0 0 8px 0;
-            font-size: 20px;
-            font-weight: 700;
+        .tutor-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            font-weight: 600;
             color: #1f2937;
         }
 
         .rating {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .stars {
-            color: #fbbf24;
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
-
-        .rating-value {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 600;
+            gap: 5px;
         }
 
         .no-rating {
             color: #9ca3af;
             font-size: 13px;
-            font-style: italic;
         }
 
         .tutor-details {
-            padding: 20px 24px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            background: white;
+            gap: 10px;
         }
 
-        .detail-row {
-            display: grid;
-            grid-template-columns: 130px 1fr;
-            gap: 12px;
-            align-items: start;
-        }
-
-        .detail-label {
-            color: #6b7280;
+        .tutor-details p {
+            margin: 0;
             font-size: 14px;
-            font-weight: 500;
+            color: #4b5563;
+            line-height: 1.5;
         }
 
-        .detail-value {
+        .tutor-details strong {
             color: #1f2937;
-            font-size: 14px;
-            font-weight: 400;
-            word-break: break-word;
-        }
-
-        .tutor-subjects {
-            padding: 16px 24px;
-            background: #f9fafb;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .subjects-label {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .subject-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 110px;
         }
 
         .tag {
-            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+            background: #dbeafe;
             color: #1e40af;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
-            border: 1px solid #bfdbfe;
-            transition: all 0.2s ease;
-        }
-
-        .tag:hover {
-            background: linear-gradient(135deg, #bfdbfe 0%, #dbeafe 100%);
-            transform: translateY(-1px);
+            display: inline-block;
+            margin-right: 5px;
+            margin-top: 3px;
         }
 
         .tutor-actions {
             display: flex;
-            gap: 12px;
-            padding: 20px 24px;
-            background: white;
+            gap: 10px;
+            padding-top: 12px;
             border-top: 1px solid #f0f0f0;
         }
 
         .tutor-actions .btn {
             flex: 1;
-            padding: 12px 20px;
+            padding: 10px 16px;
             font-size: 14px;
             font-weight: 600;
         }
