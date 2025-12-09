@@ -356,12 +356,18 @@
             uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
 
             try {
+                console.log('🚀 Starting upload...');
+                console.log('📁 File:', selectedFile.name, selectedFile.size, selectedFile.type);
+                console.log('📚 Subject ID:', subjectId);
+                console.log('📝 Title:', title);
+                
                 const formData = new FormData();
                 formData.append('subject_id', subjectId);
                 formData.append('title', title);
                 formData.append('description', description);
                 formData.append('file', selectedFile);
 
+                console.log('📤 Calling api.post("/materials/upload", formData)');
                 const response = await api.post('/materials/upload', formData);
 
                 if (response.success) {

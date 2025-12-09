@@ -203,15 +203,16 @@ const API = {
     },
     
     upload: (file, metadata) => {
+      console.log('⚠️ WARNING: materials.upload() is DEPRECATED. Use api.post() instead!');
       const formData = new FormData();
       formData.append('file', file);
       Object.keys(metadata).forEach(key => {
         formData.append(key, metadata[key]);
       });
       
+      // Don't pass empty headers object - let apiRequest handle it
       return apiRequest('/materials/upload', {
         method: 'POST',
-        headers: {},
         body: formData
       });
     },
@@ -343,11 +344,13 @@ const API = {
   post: (endpoint, data) => {
     // Check if data is FormData - don't stringify it
     if (data instanceof FormData) {
+      console.log('🔵 api.post() detected FormData for endpoint:', endpoint);
       return apiRequest(endpoint, {
         method: 'POST',
         body: data
       });
     }
+    console.log('🔵 api.post() using JSON for endpoint:', endpoint);
     return apiRequest(endpoint, {
       method: 'POST',
       body: JSON.stringify(data)
