@@ -529,30 +529,49 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', filterAndDisplaySessions);
-            document.getElementById('statusFilter').addEventListener('change', filterAndDisplaySessions);
-            document.getElementById('typeFilter').addEventListener('change', filterAndDisplaySessions);
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const typeFilter = document.getElementById('typeFilter');
+            const perPageSelect = document.getElementById('perPageSelect');
+            const prevPage = document.getElementById('prevPage');
+            const nextPage = document.getElementById('nextPage');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', filterAndDisplaySessions);
+            }
+            if (statusFilter) {
+                statusFilter.addEventListener('change', filterAndDisplaySessions);
+            }
+            if (typeFilter) {
+                typeFilter.addEventListener('change', filterAndDisplaySessions);
+            }
             
-            document.getElementById('perPageSelect').addEventListener('change', (e) => {
-                perPage = parseInt(e.target.value);
-                currentPage = 1;
-                renderSessions();
-            });
-            
-            document.getElementById('prevPage').addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
+            if (perPageSelect) {
+                perPageSelect.addEventListener('change', (e) => {
+                    perPage = parseInt(e.target.value);
+                    currentPage = 1;
                     renderSessions();
-                }
-            });
+                });
+            }
             
-            document.getElementById('nextPage').addEventListener('click', () => {
-                const totalPages = Math.ceil(filteredSessions.length / perPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderSessions();
-                }
-            });
+            if (prevPage) {
+                prevPage.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderSessions();
+                    }
+                });
+            }
+            
+            if (nextPage) {
+                nextPage.addEventListener('click', () => {
+                    const totalPages = Math.ceil(filteredSessions.length / perPage);
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderSessions();
+                    }
+                });
+            }
         }
 
         // Action functions
