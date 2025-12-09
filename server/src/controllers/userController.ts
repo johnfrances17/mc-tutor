@@ -17,7 +17,7 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, profile_picture, bio, date_of_birth, gender, address, status, created_at, last_login')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, profile_picture, status, created_at')
       .eq('user_id', userId)
       .single();
 
@@ -62,7 +62,7 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
 export const updateProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
     const userId = req.user!.user_id;
-    const { first_name, middle_name, last_name, phone, course_code, year_level, bio, date_of_birth, gender, address } = req.body;
+    const { first_name, middle_name, last_name, phone, course_code, year_level } = req.body;
 
     const updateData: any = {};
 
@@ -72,10 +72,6 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
     if (phone) updateData.phone = sanitizeInput(phone);
     if (course_code) updateData.course_code = sanitizeInput(course_code);
     if (year_level) updateData.year_level = year_level;
-    if (bio !== undefined) updateData.bio = sanitizeInput(bio);
-    if (date_of_birth) updateData.date_of_birth = date_of_birth;
-    if (gender) updateData.gender = sanitizeInput(gender);
-    if (address !== undefined) updateData.address = address ? sanitizeInput(address) : null;
 
     const { data, error } = await supabase
       .from('users')
