@@ -347,7 +347,7 @@
 
                 // Generate subject tags
                 const subjectTags = subjects.length > 0 ? 
-                    subjects.map(s => `<span class="tag">${s.subject_code || s.subjectCode}</span>`).join('') :
+                    subjects.map(s => `<span class="tag">${s.subject_code || ''}</span>`).join('') :
                     '<span class="text-muted">No subjects listed</span>';
 
                 return `
@@ -449,10 +449,10 @@
                 // Search filter (name, ID, or subjects)
                 if (searchQuery) {
                     const matchName = (`${tutor.first_name || ''} ${tutor.middle_name || ''} ${tutor.last_name || ''}`).toLowerCase().includes(searchQuery);
-                    const matchId = (tutor.studentId || tutor.school_id || '').toLowerCase().includes(searchQuery);
+                    const matchId = (tutor.school_id || '').toLowerCase().includes(searchQuery);
                     const matchSubjects = (tutor.subjects || []).some(s => 
-                        s.subjectCode.toLowerCase().includes(searchQuery) ||
-                        s.subjectName.toLowerCase().includes(searchQuery)
+                        (s.subject_code || '').toLowerCase().includes(searchQuery) ||
+                        (s.subject_name || '').toLowerCase().includes(searchQuery)
                     );
                     
                     if (!matchName && !matchId && !matchSubjects) return false;
@@ -460,7 +460,7 @@
 
                 // Subject filter
                 if (subjectId && tutor.subjects) {
-                    const hasSubject = tutor.subjects.some(s => s.id == subjectId);
+                    const hasSubject = tutor.subjects.some(s => s.subject_id == subjectId);
                     if (!hasSubject) return false;
                 }
 
@@ -477,15 +477,15 @@
                     });
                     break;
                 case 'sessions':
-                    filteredTutors.sort((a, b) => (b.totalSessions || 0) - (a.totalSessions || 0));
+                    filteredTutors.sort((a, b) => (b.total_sessions || 0) - (a.total_sessions || 0));
                     break;
                 case 'rating':
                 default:
                     filteredTutors.sort((a, b) => {
-                        const ratingA = parseFloat(a.rating || 0);
-                        const ratingB = parseFloat(b.rating || 0);
+                        const ratingA = parseFloat(a.average_rating || 0);
+                        const ratingB = parseFloat(b.average_rating || 0);
                         if (ratingB !== ratingA) return ratingB - ratingA;
-                        return (b.totalSessions || 0) - (a.totalSessions || 0);
+                        return (b.total_sessions || 0) - (a.total_sessions || 0);
                     });
                     break;
             }
@@ -672,11 +672,6 @@
         }
 
         .text-muted {
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-    </style>
             color: #6b7280;
             font-size: 14px;
         }
