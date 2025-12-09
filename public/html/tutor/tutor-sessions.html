@@ -125,7 +125,7 @@
             .stats-row { grid-template-columns: repeat(2, 1fr); }
             .stat-box { padding: 15px; }
             .stat-box h3 { font-size: 24px; }
-            .page-header h1 { font-size: 24px; }
+
         }
         @media (max-width: 480px) {
             .nav-brand { font-size: 16px; }
@@ -185,11 +185,7 @@
     </a>
 
     <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1>My Tutoring Sessions</h1>
-            <p>Manage your tutoring sessions and student requests</p>
-        </div>
+
 
         <!-- Filter Tabs -->
         <div class="filter-tabs">
@@ -210,6 +206,35 @@
         <!-- Sessions Card -->
         <div class="card">
             <h2 class="card-title">Session List</h2>
+            
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Search by student or subject..." style="flex: 1; min-width: 250px;">
+                
+                <label style="font-weight: 600; color: #2d3748;">Status:</label>
+                <select id="statusFilter" style="min-width: 150px;">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                
+                <label style="font-weight: 600; color: #2d3748;">Type:</label>
+                <select id="typeFilter" style="min-width: 120px;">
+                    <option value="">All Types</option>
+                    <option value="online">Online</option>
+                    <option value="physical">Physical</option>
+                </select>
+                
+                <label style="font-weight: 600; color: #2d3748; margin-left: 20px;">Show:</label>
+                <select id="perPageSelect" style="width: 80px;">
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            
             <div class="table-wrapper">
                 <div id="sessionsContainer">
                     <div class="empty-state">
@@ -219,21 +244,13 @@
                 </div>
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination-container">
-                <div class="pagination-info">
-                    Showing <span id="showingStart">0</span> to <span id="showingEnd">0</span> of <span id="totalCount">0</span> sessions
+            <!-- Pagination Controls -->
+            <div id="paginationContainer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px 0; border-top: 2px solid #e5e7eb;">
+                <div style="color: #6b7280; font-size: 14px;" id="paginationInfo">
+                    Showing 0 of 0 sessions
                 </div>
-                <div class="pagination-controls">
-                    <select id="perPageSelect">
-                        <option value="10">10 per page</option>
-                        <option value="20">20 per page</option>
-                        <option value="50">50 per page</option>
-                        <option value="100">100 per page</option>
-                    </select>
-                    <button id="prevPage"><i class="fas fa-chevron-left"></i></button>
-                    <div class="page-numbers" id="pageNumbers"></div>
-                    <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                <div style="display: flex; gap: 8px;" id="paginationButtons">
+                    <!-- Pagination buttons will be inserted here -->
                 </div>
             </div>
         </div>

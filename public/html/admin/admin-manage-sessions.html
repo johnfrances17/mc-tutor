@@ -103,21 +103,7 @@
             padding: 0 20px 40px;
         }
         
-        .page-header {
-            max-width: 1400px;
-            margin: 40px auto 0;
-            padding: 0 20px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .page-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin: 0;
-        }
+
 
         .filters {
             max-width: 1400px;
@@ -563,15 +549,7 @@
                 white-space: nowrap;
             }
 
-            .page-header {
-                margin: 20px auto 0;
-                padding: 0 15px;
-                padding-top: 10px;
-            }
 
-            .page-header h1 {
-                font-size: 1.5rem;
-            }
 
             .container {
                 padding: 10px;
@@ -723,9 +701,7 @@
                 font-size: 14px;
             }
 
-            .page-header h1 {
-                font-size: 1.3rem;
-            }
+
 
             table {
                 font-size: 11px;
@@ -860,6 +836,16 @@
                     <div style="text-align: center; padding: 20px;">
                         <i class="fas fa-spinner fa-spin"></i> Loading sessions...
                     </div>
+                </div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationContainer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px 0; border-top: 2px solid #e5e7eb;">
+                <div style="color: #6b7280; font-size: 14px;" id="paginationInfo">
+                    Showing 0 of 0 sessions
+                </div>
+                <div style="display: flex; gap: 8px;" id="paginationButtons">
+                    <!-- Pagination buttons will be inserted here -->
                 </div>
             </div>
         </div>
