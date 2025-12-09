@@ -442,6 +442,10 @@
 
         /* User item improvements */
         .user-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
             border-bottom: 1px solid #f0f0f0;
             overflow: hidden;
         }
@@ -450,21 +454,81 @@
             border-bottom: none;
         }
 
+        .user-item .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-item .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .user-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #2d3748;
+            margin-bottom: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .user-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
             overflow: hidden;
         }
 
         .user-meta span {
             display: inline-block;
-            margin-right: 8px;
+            font-size: 13px;
+            color: #6b7280;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .user-meta .badge {
+            margin: 0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .user-item .btn {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            background: #5865F2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-item .btn:hover {
+            background: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(88, 101, 242, 0.3);
         }
 
         /* Session item improvements */
