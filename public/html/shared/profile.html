@@ -468,23 +468,6 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Date of Birth</label>
-                            <input type="date" id="dateOfBirth" class="form-control" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label>Gender</label>
-                            <select id="gender" class="form-control" disabled>
-                                <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                                <option value="prefer_not_to_say">Prefer not to say</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
                             <label>Course</label>
                             <select id="course" class="form-control" disabled>
                                 <option value="">Select Course</option>
@@ -507,11 +490,6 @@
                                 <option value="5">5th Year</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Address</label>
-                        <textarea id="address" class="form-control" rows="3" placeholder="Complete Address" disabled></textarea>
                     </div>
 
                     <div class="form-group">
@@ -753,9 +731,6 @@
                 document.getElementById('lastName').value = currentUser.last_name || '';
                 document.getElementById('email').value = currentUser.email || '';
                 document.getElementById('phone').value = currentUser.phone || '';
-                document.getElementById('dateOfBirth').value = currentUser.date_of_birth || '';
-                document.getElementById('gender').value = currentUser.gender || '';
-                document.getElementById('address').value = currentUser.address || '';
                 
                 // Set course and year level
                 if (currentUser.course_code) {
@@ -780,9 +755,7 @@
                 if (currentUser.created_at) {
                     document.getElementById('memberSince').textContent = formatDate(currentUser.created_at);
                 }
-                if (currentUser.last_login) {
-                    document.getElementById('lastLogin').textContent = formatDate(currentUser.last_login);
-                }
+                document.getElementById('lastLogin').textContent = 'Just now';
 
                 // Set status badge
                 const statusBadge = document.getElementById('accountStatus');
@@ -814,11 +787,8 @@
             document.getElementById('lastName').disabled = !enable;
             document.getElementById('email').disabled = !enable;
             document.getElementById('phone').disabled = !enable;
-            document.getElementById('dateOfBirth').disabled = !enable;
-            document.getElementById('gender').disabled = !enable;
             document.getElementById('course').disabled = !enable;
             document.getElementById('yearLevel').disabled = !enable;
-            document.getElementById('address').disabled = !enable;
             
             document.getElementById('profileActions').style.display = enable ? 'flex' : 'none';
             document.getElementById('editProfileBtn').style.display = enable ? 'none' : 'inline-flex';
@@ -834,11 +804,8 @@
                 last_name: document.getElementById('lastName').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
-                date_of_birth: document.getElementById('dateOfBirth').value,
-                gender: document.getElementById('gender').value,
                 course_code: document.getElementById('course').value,
-                year_level: document.getElementById('yearLevel').value,
-                address: document.getElementById('address').value.trim()
+                year_level: document.getElementById('yearLevel').value
             };
 
             try {
@@ -941,11 +908,8 @@
                 document.getElementById('lastName').value = originalProfile.last_name || '';
                 document.getElementById('email').value = originalProfile.email || '';
                 document.getElementById('phone').value = originalProfile.phone || '';
-                document.getElementById('dateOfBirth').value = originalProfile.date_of_birth || '';
-                document.getElementById('gender').value = originalProfile.gender || '';
                 document.getElementById('course').value = originalProfile.course_code || '';
                 document.getElementById('yearLevel').value = originalProfile.year_level || '';
-                document.getElementById('address').value = originalProfile.address || '';
             });
         }
 

@@ -1888,8 +1888,8 @@ body {
     background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%);
     border-radius: 0px;
     color: white;
-    max-width: 180px;
-    min-width: 100px;
+    max-width: 280px;
+    min-width: 120px;
 }
 
 .user-avatar-small {
@@ -1996,7 +1996,16 @@ body {
 /* Mobile Responsive Styles */
 @media (max-width: 1024px) {
     .user-info-inline {
-        max-width: 160px;
+        max-width: 60px;
+        padding: 8px;
+    }
+    
+    .user-name-inline {
+        display: none;
+    }
+    
+    .user-role-badge-inline {
+        display: none;
     }
 }
 
@@ -2015,9 +2024,9 @@ body {
     }
 
     .user-info-inline {
-        padding: 6px 10px;
-        max-width: 140px;
-        min-width: 100px;
+        padding: 6px;
+        max-width: 50px;
+        min-width: 50px;
         flex-shrink: 1;
     }
 
@@ -2028,15 +2037,11 @@ body {
     }
 
     .user-name-inline {
-        font-size: 12px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100px;
+        display: none;
     }
 
     .user-role-badge-inline {
-        font-size: 9px;
+        display: none;
     }
 
     .nav-links {
