@@ -12,16 +12,26 @@ const storageService = StorageService.getInstance();
 export const getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
     const userId = req.user!.user_id;
+    
+    console.log('📋 Getting profile for user_id:', userId);
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, profile_picture, bio, created_at')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, role, course_code, year_level, profile_picture, bio, date_of_birth, gender, address, status, created_at, last_login')
       .eq('user_id', userId)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      console.error('❌ Database error fetching user:', error);
+      return res.status(404).json({ success: false, message: 'User not found', error: error.message });
+    }
+    
+    if (!user) {
+      console.error('❌ No user data returned for user_id:', userId);
       return res.status(404).json({ success: false, message: 'User not found' });
     }
+    
+    console.log('✅ User found:', user.school_id, user.first_name, user.last_name);
 
     // Get course name
     let courseName = null;
@@ -52,7 +62,7 @@ export const getProfile = async (req: AuthRequest, res: Response, next: NextFunc
 export const updateProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try {
     const userId = req.user!.user_id;
-    const { first_name, middle_name, last_name, phone, course_code, year_level, bio } = req.body;
+    const { first_name, middle_name, last_name, phone, course_code, year_level, bio, date_of_birth, gender, address } = req.body;
 
     const updateData: any = {};
 
@@ -63,6 +73,9 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
     if (course_code) updateData.course_code = sanitizeInput(course_code);
     if (year_level) updateData.year_level = year_level;
     if (bio !== undefined) updateData.bio = sanitizeInput(bio);
+    if (date_of_birth) updateData.date_of_birth = date_of_birth;
+    if (gender) updateData.gender = sanitizeInput(gender);
+    if (address !== undefined) updateData.address = address ? sanitizeInput(address) : null;
 
     const { data, error } = await supabase
       .from('users')
