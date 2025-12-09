@@ -353,26 +353,27 @@
     </div>
   </footer>
 
-  <script type="module" src="/scripts/api.js"></script>
-  <script type="module" src="/scripts/auth.js"></script>
-  <script type="module">
+  <script src="/scripts/api.js"></script>
+  <script src="/scripts/auth.js"></script>
+  <script>
     // Redirect if already logged in
-    import { getCurrentUser } from '../scripts/auth.js';
-    
-    try {
-      const user = await getCurrentUser();
-      if (user) {
-        // Redirect to appropriate dashboard
-        const dashboards = {
-          'admin': 'admin-dashboard.html',
-          'tutor': 'tutor-dashboard.html',
-          'tutee': 'student-dashboard.html'
-        };
-        window.location.href = dashboards[user.role] || 'student-dashboard.html';
+    (async function() {
+      try {
+        const user = await window.auth.getCurrentUser();
+        if (user) {
+          // Redirect to appropriate dashboard
+          const dashboards = {
+            'admin': '/html/admin/admin-dashboard.html',
+            'tutor': '/html/tutor/tutor-dashboard.html',
+            'tutee': '/html/tutee/student-dashboard.html'
+          };
+          window.location.href = dashboards[user.role] || '/html/tutee/student-dashboard.html';
+        }
+      } catch (error) {
+        // User not logged in, stay on landing page
+        console.log('Not logged in');
       }
-    } catch (error) {
-      // User not logged in, stay on landing page
-    }
+    })();
   </script>
 </body>
 </html>
