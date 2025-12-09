@@ -190,7 +190,7 @@
         async function loadData() {
             try {
                 // Load available subjects
-                const availableResponse = await window.API.subjects.getAvailableForTutor();
+                const availableResponse = await api.get('/subjects');
                 const availableSelect = document.getElementById('subject_id');
                 
                 if (availableResponse.success && availableResponse.subjects) {
@@ -210,8 +210,13 @@
 
         async function loadMySubjects() {
             try {
-                const response = await window.API.tutorSubjects.getMySubjects();
+                const currentUser = await getCurrentUser();
+                if (!currentUser) return;
+                
+                const response = await api.get(`/tutors/${currentUser.user_id}/subjects`);
                 const container = document.getElementById('subjectsContainer');
+
+                if (!container) return;
 
                 if (!response.success || !response.subjects || response.subjects.length === 0) {
                     container.innerHTML = `
@@ -264,9 +269,8 @@
             }
 
             try {
-                const response = await window.API.tutorSubjects.addSubject({
-                    subject_id: parseInt(subjectId),
-                    proficiency_level: proficiency
+                const response = await api.post('/tutors/subjects', {
+                    subject_id: parseInt(subjectId)
                 });
 
                 if (response.success) {
@@ -289,7 +293,7 @@
             }
 
             try {
-                const response = await window.API.tutorSubjects.removeSubject(id);
+                const response = await api.delete(`/tutors/subjects/${id}`);
 
                 if (response.success) {
                     showMessage('Subject removed successfully!', 'success');
