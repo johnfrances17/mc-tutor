@@ -67,7 +67,7 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
     // Otherwise, search all tutors
     let query = supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, course_code, year_level, profile_picture, bio', {
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, course_code, year_level, profile_picture, bio', {
         count: 'exact',
       })
       .eq('role', 'tutor');
@@ -89,9 +89,50 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
       return res.status(400).json({ success: false, message: 'Failed to search tutors' });
     }
 
+    // Enrich tutors with subjects, stats, and course name
+    const enrichedTutors = await Promise.all(
+      (data || []).map(async (tutor: any) => {
+        // Get course name
+        let courseName = null;
+        if (tutor.course_code) {
+          const { data: course } = await supabase
+            .from('courses')
+            .select('course_name')
+            .eq('course_code', tutor.course_code)
+            .single();
+          courseName = course?.course_name || null;
+        }
+
+        // Get tutor subjects
+        const { data: tutorSubjects } = await supabase
+          .from('tutor_subjects')
+          .select('subject:subjects(subject_id, subject_code, subject_name, course_code)')
+          .eq('tutor_id', tutor.user_id);
+
+        // Get tutor stats
+        const { data: stats } = await supabase
+          .from('tutor_stats')
+          .select('total_sessions, completed_sessions, average_rating, total_hours, subjects_taught, students_helped')
+          .eq('tutor_id', tutor.user_id)
+          .single();
+
+        return {
+          ...tutor,
+          course_name: courseName,
+          subjects: tutorSubjects?.map((s: any) => s.subject) || [],
+          total_sessions: stats?.total_sessions || 0,
+          completed_sessions: stats?.completed_sessions || 0,
+          average_rating: stats?.average_rating || 0,
+          total_hours: stats?.total_hours || 0,
+          subjects_taught: stats?.subjects_taught || 0,
+          students_helped: stats?.students_helped || 0,
+        };
+      })
+    );
+
     res.json({
       success: true,
-      tutors: data,
+      tutors: enrichedTutors,
       pagination: {
         total: count || 0,
         page: Number(page),
