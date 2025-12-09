@@ -190,7 +190,7 @@ export const changePassword = async (req: AuthRequest, res: Response, next: Next
     // Get current user
     const { data: user } = await supabase
       .from('users')
-      .select('password_hash')
+      .select('password')
       .eq('user_id', userId)
       .single();
 
@@ -199,7 +199,7 @@ export const changePassword = async (req: AuthRequest, res: Response, next: Next
     }
 
     // ⚠️ Verify current password in PLAIN TEXT (not secure!)
-    const isValid = current_password === user.password_hash;
+    const isValid = current_password === user.password;
 
     if (!isValid) {
       return res.status(401).json({ success: false, message: 'Current password is incorrect' });
@@ -211,7 +211,7 @@ export const changePassword = async (req: AuthRequest, res: Response, next: Next
     // Update password
     const { error } = await supabase
       .from('users')
-      .update({ password_hash: plainPassword })
+      .update({ password: plainPassword })
       .eq('user_id', userId);
 
     if (error) {
