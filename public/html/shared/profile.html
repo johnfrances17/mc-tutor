@@ -13,6 +13,55 @@
         body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
         input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
 
+        /* Secondary Navbar */
+        .secondary-navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-navbar.collapsed {
+            display: none;
+        }
+
+        .secondary-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .secondary-nav-links {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 12px 0;
+        }
+
+        .secondary-nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .secondary-nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .secondary-nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
         /* Content Container */
         .content-container {
             max-width: 1000px;
@@ -626,6 +675,7 @@
                     return;
                 }
 
+                updateNavUserInfo();
                 populateSecondaryNav();
                 updateNavBrand();
                 await loadProfile();
@@ -645,6 +695,35 @@
                 navBrandLink.href = '/html/tutor/tutor-dashboard.html';
             } else {
                 navBrandLink.href = '/html/tutee/student-dashboard.html';
+            }
+        }
+
+        // Update nav user info
+        function updateNavUserInfo() {
+            if (!currentUser) return;
+
+            // Update user name with FIRST NAME ONLY
+            const userNameElements = document.querySelectorAll('[data-user-name]');
+            userNameElements.forEach(el => {
+                el.textContent = currentUser.first_name || 'User';
+            });
+
+            // Update role
+            const userRoleElements = document.querySelectorAll('[data-user-role]');
+            userRoleElements.forEach(el => {
+                const role = currentUser.role || 'user';
+                el.textContent = role.toUpperCase();
+            });
+
+            // Update avatar initial
+            const firstName = currentUser.first_name || 'User';
+            const initial = firstName.charAt(0).toUpperCase();
+            
+            // Update small avatar in nav if exists
+            const navAvatarImg = document.getElementById('navAvatarImg');
+            if (navAvatarImg && !currentUser.profile_picture) {
+                // If no profile picture, you could add initials to a div instead
+                // For now, keep default image
             }
         }
 
@@ -698,6 +777,9 @@
                     throw new Error('Invalid user data received from API');
                 }
                 originalProfile = { ...currentUser };
+
+                // Update nav user info with first name only
+                updateNavUserInfo();
 
                 // Populate form fields
                 document.getElementById('schoolId').value = currentUser.school_id || '';
