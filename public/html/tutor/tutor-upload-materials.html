@@ -51,6 +51,54 @@
         .card h2 i { color: #5865F2; }
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
+        /* Form Styles */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #2d3748; font-size: 14px; }
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group textarea { width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: all 0.3s ease; background: white; font-family: 'Montserrat', sans-serif; }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { outline: none; border-color: #5865F2; box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1); }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        /* File Input Styles */
+        .file-input-wrapper { position: relative; }
+        .file-input-wrapper input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
+        .file-input-label { display: block; padding: 40px 20px; border: 2px dashed #e5e7eb; border-radius: 8px; background: #f9fafb; cursor: pointer; transition: all 0.3s ease; text-align: center; }
+        .file-input-label:hover { border-color: #5865F2; background: rgba(88, 101, 242, 0.05); }
+        .file-input-label i { font-size: 48px; color: #5865F2; margin-bottom: 12px; display: block; }
+        .file-name { margin-top: 10px; padding: 10px; background: #f0f9ff; border-left: 3px solid #5865F2; border-radius: 4px; color: #2d3748; font-size: 14px; }
+
+        /* Button Styles */
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #5865F2, #7289DA); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4); }
+
+        /* Alert Messages */
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .alert-danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+
+        /* Material Grid */
+        .material-grid { display: grid; gap: 16px; }
+        .material-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; transition: all 0.3s ease; }
+        .material-card:hover { border-color: #5865F2; box-shadow: 0 2px 8px rgba(88, 101, 242, 0.1); }
+        .material-info { flex: 1; }
+        .material-info h4 { margin: 0 0 8px 0; color: #2d3748; font-size: 16px; font-weight: 600; }
+        .material-info p { margin: 0 0 12px 0; color: #6b7280; font-size: 14px; line-height: 1.5; }
+        .material-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #6b7280; }
+        .material-meta span { display: flex; align-items: center; gap: 6px; }
+        .material-meta i { color: #5865F2; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; color: #6b7280; }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; display: block; }
+        .empty-state p { margin: 8px 0; font-size: 15px; }
+
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
         @media (max-width: 768px) {
             .nav-container { padding: 10px; } .nav-brand { font-size: 18px; }
@@ -66,6 +114,9 @@
             .stats-row { grid-template-columns: repeat(2, 1fr); }
             .stat-box { padding: 15px; }
             .stat-box h3 { font-size: 24px; }
+            .material-card { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .material-card > div:last-child { width: 100%; }
+            .material-card .btn { width: 100%; justify-content: center; }
         }
         @media (max-width: 480px) {
             .nav-brand { font-size: 16px; }
@@ -153,11 +204,9 @@
                     <div class="file-input-wrapper">
                         <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx" required>
                         <label for="file" class="file-input-label" id="fileLabel">
-                            <div style="text-align: center;">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <div style="color: #6b7280; margin-top: 8px;">
-                                    Click to select a file or drag and drop
-                                </div>
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div style="color: #6b7280; font-size: 14px;">
+                                Click to select a file or drag and drop
                             </div>
                         </label>
                     </div>
@@ -225,13 +274,13 @@
                         <div class="empty-state">
                             <i class="fas fa-file-upload"></i>
                             <p>You haven't uploaded any materials yet.</p>
-                            <p>Upload study materials to help your students.</p>
+                            <p style="color: #9ca3af; font-size: 14px;">Upload study materials to help your students.</p>
                         </div>
                     `;
                     return;
                 }
 
-                const materialsHTML = response.materials.map(material => {
+                const materialsHTML = response.data.map(material => {
                     const uploadDate = new Date(material.uploaded_at).toLocaleDateString('en-US', {
                         year: 'numeric', month: 'short', day: 'numeric'
                     });
@@ -240,7 +289,7 @@
                     return `
                         <div class="material-card">
                             <div class="material-info">
-                                <h4>${material.title}</h4>
+                                <h4><i class="fas fa-file-alt" style="color: #5865F2; margin-right: 8px;"></i>${material.title}</h4>
                                 <p>${material.description}</p>
                                 <div class="material-meta">
                                     <span><i class="fas fa-book"></i> ${material.subject_code} - ${material.subject_name}</span>
@@ -249,7 +298,7 @@
                                     <span><i class="fas fa-calendar"></i> ${uploadDate}</span>
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 8px;">
+                            <div style="display: flex; gap: 8px; flex-shrink: 0;">
                                 <button class="btn btn-danger" onclick="deleteMaterial(${material.material_id})">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
