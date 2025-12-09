@@ -890,7 +890,8 @@
                 console.log('📤 Changing password...');
                 await api.put('/users/password', {
                     current_password: currentPassword,
-                    new_password: newPassword
+                    new_password: newPassword,
+                    confirm_password: confirmPassword
                 });
 
                 showMessage('Password changed successfully!', 'success');
