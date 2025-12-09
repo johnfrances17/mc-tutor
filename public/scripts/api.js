@@ -23,9 +23,12 @@ window.API_BASE_URL = API_BASE_URL;
 async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('token');
   
+  // Check if body is FormData - don't set Content-Type (browser will set it with boundary)
+  const isFormData = options.body instanceof FormData;
+  
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      ...((!isFormData) && { 'Content-Type': 'application/json' }),
       ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options.headers
     },
@@ -337,22 +340,49 @@ const API = {
   // Generic HTTP methods for convenience
   get: (endpoint) => apiRequest(endpoint, { method: 'GET' }),
   
-  post: (endpoint, data) => apiRequest(endpoint, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
+  post: (endpoint, data) => {
+    // Check if data is FormData - don't stringify it
+    if (data instanceof FormData) {
+      return apiRequest(endpoint, {
+        method: 'POST',
+        body: data
+      });
+    }
+    return apiRequest(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
   
-  put: (endpoint, data) => apiRequest(endpoint, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
+  put: (endpoint, data) => {
+    // Check if data is FormData - don't stringify it
+    if (data instanceof FormData) {
+      return apiRequest(endpoint, {
+        method: 'PUT',
+        body: data
+      });
+    }
+    return apiRequest(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  },
   
   delete: (endpoint) => apiRequest(endpoint, { method: 'DELETE' }),
   
-  patch: (endpoint, data) => apiRequest(endpoint, {
-    method: 'PATCH',
-    body: JSON.stringify(data)
-  })
+  patch: (endpoint, data) => {
+    // Check if data is FormData - don't stringify it
+    if (data instanceof FormData) {
+      return apiRequest(endpoint, {
+        method: 'PATCH',
+        body: data
+      });
+    }
+    return apiRequest(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  }
 };
 
 // Export API_BASE_URL and API for use in other scripts
