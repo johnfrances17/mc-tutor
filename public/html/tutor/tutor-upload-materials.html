@@ -362,7 +362,7 @@
                 formData.append('description', description);
                 formData.append('file', selectedFile);
 
-                const response = await api.post('/materials', formData);
+                const response = await api.post('/materials/upload', formData);
 
                 if (response.success) {
                     showMessage('Material uploaded successfully!', 'success');
