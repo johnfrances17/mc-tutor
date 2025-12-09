@@ -588,19 +588,12 @@
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
     <script>
-        // Use window.auth directly to avoid redeclaration
-        const api = window.API;
+        // Use global functions directly - no redeclaration needed
+        // utils.js already declares: formatDate, formatDateTime, showToast, etc.
+        // auth.js already declares: window.auth.getCurrentUser, etc.
+        // api.js already declares: window.API
         
-        // Safe formatDate function
-        const formatDate = window.formatDate || function(date) {
-            if (!date) return '-';
-            try {
-                const d = new Date(date);
-                return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            } catch (e) {
-                return '-';
-            }
-        };
+        const api = window.API;
 
         let currentUser = null;
         let originalProfile = {};
