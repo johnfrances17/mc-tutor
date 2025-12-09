@@ -610,9 +610,10 @@
         async function loadConversations() {
             try {
                 const response = await api.get('/chat/conversations');
-                conversations = response.data || [];
+                conversations = response.conversations || [];
 
                 const container = document.getElementById('conversationsList');
+                if (!container) return;
                 
                 if (conversations.length === 0) {
                     container.innerHTML = '<p style="padding: 20px; text-align: center; color: var(--text-light);">No conversations yet</p>';
@@ -712,9 +713,10 @@
             
             try {
                 const response = await api.get('/chat/messages/' + otherUserId);
-                messages = response.data || [];
+                messages = response.messages || [];
 
                 const container = document.getElementById('chatMessages');
+                if (!container) return;
                 
                 if (messages.length === 0) {
                     container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">No messages yet. Start the conversation!</p>';
