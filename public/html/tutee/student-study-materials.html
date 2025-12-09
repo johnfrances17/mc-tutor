@@ -46,7 +46,43 @@
         .stat-box p { margin: 0; opacity: 0.9; }
 
         /* Card Styles */
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 24px; }
+        .card h2 { margin: 0 0 20px 0; color: #2d3748; font-size: 20px; font-weight: 600; }
+        .card h2 i { color: #5865F2; margin-right: 8px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-title { font-size: 20px; font-weight: 600; color: #2d3748; }
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Form Styles */
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: #2d3748; font-size: 14px; }
+        .form-control { width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: all 0.3s ease; background: white; }
+        .form-control:focus { outline: none; border-color: #5865F2; box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-text { display: block; margin-top: 5px; font-size: 12px; color: #6b7280; }
+        .row { display: flex; flex-wrap: wrap; gap: 15px; }
+        .col-md-6 { flex: 1; min-width: 200px; }
+
+        /* Button Styles */
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #5865F2, #7289DA); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); }
+        .btn-secondary { background: #e5e7eb; color: #2d3748; }
+        .btn-secondary:hover { background: #d1d5db; }
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4); }
+
+        /* Badge */
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-primary { background: rgba(88, 101, 242, 0.1); color: #5865F2; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; color: #6b7280; }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state p { margin: 0 0 20px 0; font-size: 16px; }
+
+        /* Text Utilities */
+        .text-muted { color: #6b7280; font-size: 13px; }
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
         @media (max-width: 768px) {
             .nav-container { padding: 10px; } .nav-brand { font-size: 18px; }
@@ -123,25 +159,23 @@
     <div class="container">
 
         <!-- Search and Filter -->
-        <div class="card" style="margin-bottom: 30px;">
-            <div class="card-body">
-                <div class="row" style="gap: 15px;">
-                    <div class="col-md-6" style="flex: 2;">
-                        <label class="form-label">Search</label>
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search materials...">
-                    </div>
-                    <div class="col-md-6" style="flex: 1;">
-                        <label class="form-label">Subject</label>
-                        <select id="subjectFilter" class="form-control">
-                            <option value="">All Subjects</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6" style="flex: 1;">
-                        <label class="form-label">Tutor</label>
-                        <select id="tutorFilter" class="form-control">
-                            <option value="">All Tutors</option>
-                        </select>
-                    </div>
+        <div class="card">
+            <div class="row">
+                <div class="col-md-6" style="flex: 2;">
+                    <label class="form-label">Search</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search materials...">
+                </div>
+                <div class="col-md-6" style="flex: 1;">
+                    <label class="form-label">Subject</label>
+                    <select id="subjectFilter" class="form-control">
+                        <option value="">All Subjects</option>
+                    </select>
+                </div>
+                <div class="col-md-6" style="flex: 1;">
+                    <label class="form-label">Tutor</label>
+                    <select id="tutorFilter" class="form-control">
+                        <option value="">All Tutors</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -149,10 +183,10 @@
         <!-- Materials List -->
         <div class="card">
             <div class="card-header">
-                <div class="section-title">Available Materials</div>
+                <h2><i class="fas fa-book"></i> Available Materials</h2>
                 <span id="resultsCount" class="text-muted"></span>
             </div>
-            <div class="card-body" id="materialsList">
+            <div id="materialsList">
                 <div class="loading-spinner"></div>
             </div>
         </div>
@@ -347,9 +381,10 @@
             if (pageMaterials.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
                         <p>No materials available</p>
                         ${currentUser.role === 'tutor' ? 
-                            '<button class="btn btn-primary" onclick="openUploadModal()">Upload First Material</button>' : ''
+                            '<button class="btn btn-primary" onclick="openUploadModal()"><i class="fas fa-upload"></i> Upload First Material</button>' : ''
                         }
                     </div>
                 `;
@@ -374,10 +409,10 @@
                                     <span class="text-muted">${formatDate(material.uploaded_at)}</span>
                                     <button class="btn btn-sm btn-primary" 
                                             onclick="downloadMaterial('${material.id}', '${material.filename}')">
-                                        ?? Download
+                                        <i class="fas fa-download"></i> Download
                                     </button>
                                     ${currentUser.role === 'tutor' && material.tutor_student_id === currentUser.school_id ? 
-                                        `<button class="btn btn-sm btn-danger" onclick="deleteMaterial('${material.id}')">Delete</button>` : ''
+                                        `<button class="btn btn-sm btn-danger" onclick="deleteMaterial('${material.id}')"><i class="fas fa-trash"></i> Delete</button>` : ''
                                     }
                                 </div>
                             </div>
@@ -415,15 +450,38 @@
                 return;
             }
 
-            container.innerHTML = `
-                <div class="pagination">
-                    <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>
-                    ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                        <button class="${page === currentPage ? 'active' : ''}" onclick="changePage(${page})">${page}</button>
-                    `).join('')}
-                    <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>
-                </div>
+            let paginationHTML = '<div style="display: flex; gap: 8px; justify-content: center; margin-top: 24px;">';
+            
+            paginationHTML += `
+                <button onclick="changePage(${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
             `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <button onclick="changePage(${i})" 
+                            style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: ${i === currentPage ? 'linear-gradient(135deg, #5865F2, #7289DA)' : 'white'}; color: ${i === currentPage ? 'white' : '#2d3748'}; cursor: pointer; font-weight: ${i === currentPage ? '600' : '400'};">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span style="padding: 8px;">...</span>`;
+                }
+            }
+
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" 
+                    ${currentPage === totalPages ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>`;
+            
+            container.innerHTML = paginationHTML;
         }
 
         // Change page
@@ -566,24 +624,27 @@
         }
 
         .material-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            background: white;
         }
 
         .material-card:hover {
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-4px);
+            border-color: #5865F2;
         }
 
         .material-icon-large {
             font-size: 4rem;
             text-align: center;
             padding: 30px;
-            background: var(--light-bg);
+            background: #f9fafb;
+            color: #5865F2;
         }
 
         .material-card-body {
@@ -595,8 +656,9 @@
 
         .material-card-title {
             margin: 0 0 10px 0;
-            color: var(--text-color);
+            color: #2d3748;
             font-size: 1.125rem;
+            font-weight: 600;
         }
 
         .material-card-meta {
@@ -608,10 +670,11 @@
         }
 
         .material-card-desc {
-            color: var(--text-light);
+            color: #6b7280;
             font-size: 0.875rem;
             margin-bottom: 15px;
             flex: 1;
+            line-height: 1.5;
         }
 
         .material-card-footer {
@@ -620,7 +683,8 @@
             align-items: center;
             gap: 10px;
             padding-top: 15px;
-            border-top: 1px solid var(--border-color);
+            border-top: 2px solid #e5e7eb;
+            flex-wrap: wrap;
         }
 
         .modal {
@@ -638,23 +702,20 @@
 
         .modal-content {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             width: 90%;
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
             padding: 20px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .modal-header h3 {
-            margin: 0;
         }
 
         .modal-close {
@@ -662,7 +723,12 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-light);
+            color: #6b7280;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #2d3748;
         }
 
         .modal-body {
