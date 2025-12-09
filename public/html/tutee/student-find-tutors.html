@@ -46,7 +46,11 @@
         .stat-box p { margin: 0; opacity: 0.9; }
 
         /* Card Styles */
-        .tutors-grid, .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 24px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-title { font-size: 20px; font-weight: 600; color: #2d3748; }
+        .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
         @media (max-width: 768px) {
             .nav-container { padding: 10px; } .nav-brand { font-size: 18px; }
