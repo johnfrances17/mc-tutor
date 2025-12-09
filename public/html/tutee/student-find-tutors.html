@@ -242,7 +242,10 @@
             try {
                 const response = await api.get('/subjects');
                 if (response.success && response.subjects) {
-                    subjects = response.subjects;
+                    // Filter subjects by student's course
+                    subjects = response.subjects.filter(
+                        subject => subject.course_code === currentUser.course_code
+                    );
                     populateSubjectFilter();
                 }
             } catch (error) {
@@ -269,7 +272,10 @@
                 
                 if (response.success) {
                     if (response.tutors && response.tutors.length > 0) {
-                        allTutors = response.tutors;
+                        // Filter tutors by student's course
+                        allTutors = response.tutors.filter(
+                            tutor => tutor.course_code === currentUser.course_code
+                        );
                         filteredTutors = allTutors;
                         displayTutors();
                     } else {

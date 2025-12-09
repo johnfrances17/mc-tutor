@@ -211,6 +211,7 @@
         let currentUser = null;
         let subjects = [];
         let tutors = [];
+        let selectedTutorId = null;
 
         // Check authentication and role
         async function init() {
@@ -227,22 +228,79 @@
                     return;
                 }
 
-                await loadSubjects();
+                // Check if coming from student-find-tutors with a selected tutor
+                selectedTutorId = sessionStorage.getItem('selectedTutorId');
+                if (selectedTutorId) {
+                    // Load tutor's subjects only
+                    await loadTutorSubjects(selectedTutorId);
+                    // Pre-select the tutor
+                    await preselectTutor(selectedTutorId);
+                } else {
+                    // Load all subjects filtered by student's course
+                    await loadSubjects();
+                }
             } catch (error) {
                 console.error('Init error:', error);
             }
         }
 
-        // Load subjects on page load
+        // Load tutor's subjects (when coming from find tutors page)
+        async function loadTutorSubjects(tutorId) {
+            try {
+                const response = await api.get(`/tutors/${tutorId}/subjects`);
+                if (response.success && response.subjects) {
+                    // Filter by student's course
+                    subjects = response.subjects.filter(
+                        subject => subject.course_code === currentUser.course_code
+                    );
+                    populateSubjects();
+                }
+            } catch (error) {
+                console.error('Error loading tutor subjects:', error);
+            }
+        }
+
+        // Load all subjects filtered by student's course
         async function loadSubjects() {
             try {
                 const response = await api.get('/subjects');
                 if (response.success && response.subjects) {
-                    subjects = response.subjects;
+                    // Filter by student's course
+                    subjects = response.subjects.filter(
+                        subject => subject.course_code === currentUser.course_code
+                    );
                     populateSubjects();
                 }
             } catch (error) {
                 console.error('Error loading subjects:', error);
+            }
+        }
+
+        // Pre-select the tutor when coming from find tutors page
+        async function preselectTutor(tutorId) {
+            try {
+                // Load tutor info
+                const response = await api.get(`/users/${tutorId}`);
+                if (response.success && response.user) {
+                    tutors = [response.user];
+                    const tutorSelect = document.getElementById('tutor');
+                    tutorSelect.innerHTML = '<option value="">Select a tutor</option>';
+                    const option = document.createElement('option');
+                    option.value = response.user.user_id;
+                    const tutorName = response.user.last_name && response.user.first_name 
+                        ? `${response.user.last_name}, ${response.user.first_name}${response.user.middle_name ? ' ' + response.user.middle_name : ''}`
+                        : 'Unknown';
+                    option.textContent = tutorName;
+                    option.selected = true;
+                    tutorSelect.appendChild(option);
+                    
+                    // Show availability
+                    showTutorAvailability(response.user);
+                    // Clear sessionStorage
+                    sessionStorage.removeItem('selectedTutorId');
+                }
+            } catch (error) {
+                console.error('Error loading tutor:', error);
             }
         }
 
@@ -273,7 +331,10 @@
             try {
                 const response = await api.get(`/tutors/by-subject/${subjectId}`);
                 if (response.success) {
-                    tutors = response.data;
+                    // Filter tutors by student's course
+                    tutors = response.data.filter(
+                        tutor => tutor.course_code === currentUser.course_code
+                    );
                     populateTutors();
                 }
             } catch (error) {
