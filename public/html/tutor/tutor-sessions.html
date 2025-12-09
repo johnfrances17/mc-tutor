@@ -389,6 +389,8 @@
 
         function renderSessions() {
             const container = document.getElementById('sessionsContainer');
+            if (!container) return;
+            
             const totalFiltered = filteredSessions.length;
             const totalPages = Math.ceil(totalFiltered / perPage);
             const start = (currentPage - 1) * perPage;
@@ -396,16 +398,22 @@
             const paginated = filteredSessions.slice(start, end);
 
             // Update pagination info
-            document.getElementById('totalCount').textContent = totalFiltered;
-            document.getElementById('showingStart').textContent = totalFiltered > 0 ? start + 1 : 0;
-            document.getElementById('showingEnd').textContent = end;
+            const totalCountEl = document.getElementById('totalCount');
+            const showingStartEl = document.getElementById('showingStart');
+            const showingEndEl = document.getElementById('showingEnd');
+            
+            if (totalCountEl) totalCountEl.textContent = totalFiltered;
+            if (showingStartEl) showingStartEl.textContent = totalFiltered > 0 ? start + 1 : 0;
+            if (showingEndEl) showingEndEl.textContent = end;
 
             // Update page numbers
             renderPageNumbers(totalPages);
 
             // Update prev/next buttons
-            document.getElementById('prevPage').disabled = currentPage === 1;
-            document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
+            const prevPageBtn = document.getElementById('prevPage');
+            const nextPageBtn = document.getElementById('nextPage');
+            if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
+            if (nextPageBtn) nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
 
             if (paginated.length === 0) {
                 container.innerHTML = `
@@ -520,6 +528,8 @@
 
         function renderPageNumbers(totalPages) {
             const container = document.getElementById('pageNumbers');
+            if (!container) return;
+            
             let html = '';
             
             const maxVisible = 5;
