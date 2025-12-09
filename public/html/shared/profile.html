@@ -13,55 +13,6 @@
         body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
         input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
 
-        /* Secondary Navbar */
-        .secondary-navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            transition: all 0.3s ease;
-        }
-
-        .secondary-navbar.collapsed {
-            display: none;
-        }
-
-        .secondary-nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .secondary-nav-links {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 12px 0;
-        }
-
-        .secondary-nav-link {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 500;
-            font-size: 14px;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-
-        .secondary-nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .secondary-nav-link.active {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
         /* Content Container */
         .content-container {
             max-width: 1000px;
@@ -668,21 +619,30 @@
         // Initialize
         async function init() {
             try {
+                console.log('🚀 Initializing profile page...');
                 currentUser = await getCurrentUser();
+                console.log('👤 Current user:', currentUser);
                 
                 if (!currentUser) {
+                    console.error('❌ No user found, redirecting to login');
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
 
+                // Update nav first with current user data
                 updateNavUserInfo();
                 populateSecondaryNav();
                 updateNavBrand();
+                
+                // Then load fresh profile data from API
                 await loadProfile();
                 setupEventListeners();
+                
+                console.log('✅ Profile page initialized successfully');
 
             } catch (error) {
-                console.error('Init error:', error);
+                console.error('❌ Init error:', error);
+                showMessage('Failed to initialize profile page. Please refresh.', 'danger');
             }
         }
 
@@ -730,7 +690,17 @@
         // Populate secondary navigation
         function populateSecondaryNav() {
             const secondaryNavLinks = document.getElementById('secondaryNavLinks');
-            if (!secondaryNavLinks || !currentUser) return;
+            if (!secondaryNavLinks) {
+                console.error('❌ Secondary nav links container not found');
+                return;
+            }
+            
+            if (!currentUser) {
+                console.error('❌ No current user for nav population');
+                return;
+            }
+
+            console.log('📋 Populating secondary nav for role:', currentUser.role);
 
             let navItems = [];
             
@@ -761,6 +731,8 @@
             secondaryNavLinks.innerHTML = navItems.map(item => 
                 `<a href="${item.href}" class="secondary-nav-link">${item.text}</a>`
             ).join('');
+            
+            console.log('✅ Secondary nav populated with', navItems.length, 'items');
         }
 
         // Load profile data
