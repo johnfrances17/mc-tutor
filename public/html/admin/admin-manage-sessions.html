@@ -165,6 +165,45 @@
         .status-completed { background: #e0e7ff; color: #3730a3; }
         .status-cancelled { background: #fee2e2; color: #991b1b; }
 
+        /* Badge styles for new design */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-primary {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
         .action-btns {
             display: flex;
             gap: 8px;
@@ -552,29 +591,60 @@
         <i class="fas fa-comments"></i>
     </a>
 
-<div class="sessions-container">
-        <div class="sessions-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Student</th>
-                        <th>Tutor</th>
-                        <th>Subject</th>
-                        <th>Date & Time</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="sessionsTableBody">
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px;">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #5865F2;"></i>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="content-container">
+        <div id="messageContainer"></div>
+
+        <!-- Stats -->
+        <div class="stats-row" id="statsContainer">
+            <div class="stat-box">
+                <div class="stat-number" id="totalSessions">0</div>
+                <div class="stat-label">Total Sessions</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="pendingSessions">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="confirmedSessions">0</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="completedSessions">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <!-- Sessions Table -->
+        <div class="card">
+            <h2><i class="fas fa-calendar-alt"></i> All Sessions</h2>
+            
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Search by student, tutor, or subject...">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <select id="subjectFilter">
+                    <option value="">All Subjects</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="online">Online</option>
+                    <option value="face-to-face">Face-to-Face</option>
+                </select>
+            </div>
+
+            <div class="table-wrapper">
+                <div id="sessionsContainer">
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading sessions...
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -620,31 +690,28 @@
         // Load sessions
         async function loadSessions() {
             try {
-                console.log('🔍 Loading sessions from /sessions endpoint...');
-                const response = await api.get('/sessions');
-                console.log('📦 Full response:', response);
-                console.log('✅ Success:', response.success);
-                console.log('📅 Sessions:', response.sessions);
-                console.log('📊 Sessions length:', response.sessions?.length);
+                console.log('🔍 Loading sessions from /admin/sessions endpoint...');
+                const response = await api.get('/admin/sessions');
+                console.log('📦 Sessions response:', response);
                 
                 if (response.success && response.sessions) {
                     allSessions = response.sessions;
                     console.log('✅ Loaded', allSessions.length, 'sessions');
                     updateStats();
-                    renderSessions();
+                    filterAndDisplaySessions();
                 } else {
-                    console.warn('⚠️ No sessions in response or empty array');
+                    console.warn('⚠️ No sessions in response');
                     allSessions = [];
-                    renderSessions();
+                    displaySessions([]);
                 }
             } catch (error) {
                 console.error('❌ Load sessions error:', error);
-                document.getElementById('sessionsTableBody').innerHTML = `
-                    <tr><td colspan="9" style="text-align: center; padding: 40px;">
+                document.getElementById('sessionsContainer').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #dc3545;">
                         <i class="fas fa-exclamation-triangle"></i><br>
                         Error loading sessions: ${error.message}<br>
                         <small style="color: #999;">Check console for details</small>
-                    </td></tr>
+                    </div>
                 `;
             }
         }
@@ -658,9 +725,7 @@
                     
                     const select = document.getElementById('subjectFilter');
                     select.innerHTML = '<option value="">All Subjects</option>' +
-                        allSubjects.map(function(s) {
-                            return '<option value="' + s.subject_id + '">' + s.subject_name + '</option>';
-                        }).join('');
+                        allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
                 }
             } catch (error) {
                 console.error('Load subjects error:', error);
@@ -671,114 +736,201 @@
         function updateStats() {
             document.getElementById('totalSessions').textContent = allSessions.length;
             document.getElementById('pendingSessions').textContent = 
-                allSessions.filter(function(s) { return s.status === 'pending'; }).length;
+                allSessions.filter(s => s.status === 'pending').length;
             document.getElementById('confirmedSessions').textContent = 
-                allSessions.filter(function(s) { return s.status === 'confirmed'; }).length;
+                allSessions.filter(s => s.status === 'confirmed' || s.status === 'approved').length;
             document.getElementById('completedSessions').textContent = 
-                allSessions.filter(function(s) { return s.status === 'completed'; }).length;
+                allSessions.filter(s => s.status === 'completed').length;
         }
 
-        // Render sessions
-        function renderSessions() {
+        // Filter and display sessions based on search and filters
+        function filterAndDisplaySessions() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
             const subjectFilter = document.getElementById('subjectFilter').value;
             const typeFilter = document.getElementById('typeFilter').value;
 
             let filtered = allSessions;
             
+            // Search filter
+            if (searchTerm) {
+                filtered = filtered.filter(s => {
+                    const studentName = (s.student_name || s.tutee_name || '').toLowerCase();
+                    const tutorName = (s.tutor_name || '').toLowerCase();
+                    const subjectName = (s.subject_name || '').toLowerCase();
+                    return studentName.includes(searchTerm) || 
+                           tutorName.includes(searchTerm) || 
+                           subjectName.includes(searchTerm);
+                });
+            }
+            
+            // Status filter
             if (statusFilter) {
-                filtered = filtered.filter(function(s) { return s.status === statusFilter; });
+                filtered = filtered.filter(s => s.status === statusFilter);
             }
+            
+            // Subject filter
             if (subjectFilter) {
-                filtered = filtered.filter(function(s) { return s.subject_id == subjectFilter; });
+                filtered = filtered.filter(s => s.subject_id == subjectFilter);
             }
+            
+            // Type filter
             if (typeFilter) {
-                filtered = filtered.filter(function(s) { return s.session_type === typeFilter; });
+                filtered = filtered.filter(s => s.session_type === typeFilter);
             }
 
-            const tbody = document.getElementById('sessionsTableBody');
+            displaySessions(filtered);
+        }
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-calendar-times"></i><p>No sessions found</p></td></tr>';
+        // Display sessions in table
+        function displaySessions(sessions) {
+            const container = document.getElementById('sessionsContainer');
+            
+            if (sessions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-calendar-times" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p>No sessions found</p>
+                    </div>
+                `;
                 return;
             }
 
-            tbody.innerHTML = filtered.map(function(session) {
-                return '<tr>' +
-                    '<td><strong>#' + session.session_id + '</strong></td>' +
-                    '<td>' + session.tutee_name + '</td>' +
-                    '<td>' + session.tutor_name + '</td>' +
-                    '<td>' + session.subject_name + '</td>' +
-                    '<td>' + formatDate(session.session_date) + '<br><small>' + session.start_time + ' - ' + session.end_time + '</small></td>' +
-                    '<td>' + session.session_type + '</td>' +
-                    '<td><span class="status-badge status-' + session.status + '">' + 
-                    session.status.charAt(0).toUpperCase() + session.status.slice(1) + '</span></td>' +
-                    '<td><div class="action-btns">' +
-                    '<button class="btn-sm btn-info" onclick="viewSession(' + session.session_id + ')" title="View Details"><i class="fas fa-eye"></i></button>' +
-                    (session.status === 'pending' ? '<button class="btn-sm btn-success" onclick="approveSession(' + session.session_id + ')" title="Approve"><i class="fas fa-check"></i></button>' : '') +
-                    '<button class="btn-sm btn-danger" onclick="deleteSession(' + session.session_id + ')" title="Delete"><i class="fas fa-trash"></i></button>' +
-                    '</div></td>' +
-                    '</tr>';
-            }).join('');
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Tutor</th>
+                            <th>Subject</th>
+                            <th>Date & Time</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sessions.map(session => {
+                            const studentName = session.student_name || session.tutee_name || 'N/A';
+                            const tutorName = session.tutor_name || 'N/A';
+                            const subjectName = session.subject_name || 'N/A';
+                            const sessionDate = session.session_date || session.date || 'N/A';
+                            const sessionTime = session.start_time && session.end_time 
+                                ? `${session.start_time} - ${session.end_time}` 
+                                : 'N/A';
+                            
+                            return `
+                            <tr>
+                                <td><strong>#${session.session_id}</strong></td>
+                                <td>${studentName}</td>
+                                <td>${tutorName}</td>
+                                <td>${subjectName}</td>
+                                <td>
+                                    ${formatDate(sessionDate)}<br>
+                                    <small style="color: #666;">${sessionTime}</small>
+                                </td>
+                                <td><span class="badge badge-info">${session.session_type || 'N/A'}</span></td>
+                                <td>
+                                    <span class="badge badge-${getStatusColor(session.status)}">
+                                        ${session.status ? session.status.charAt(0).toUpperCase() + session.status.slice(1) : 'N/A'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        ${session.status === 'pending' ? 
+                                            `<button class="btn btn-success" onclick="approveSession(${session.session_id})">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>` : ''
+                                        }
+                                        <button class="btn btn-danger" onclick="deleteSession(${session.session_id})">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Get status badge color
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'warning',
+                'confirmed': 'primary',
+                'approved': 'success',
+                'completed': 'success',
+                'cancelled': 'secondary',
+                'rejected': 'danger'
+            };
+            return colors[status] || 'secondary';
+        }
+
+        // Render sessions (for backward compatibility)
+        function renderSessions() {
+            filterAndDisplaySessions();
         }
 
         // Setup event listeners
         function setupEventListeners() {
-            document.getElementById('statusFilter').addEventListener('change', renderSessions);
-            document.getElementById('subjectFilter').addEventListener('change', renderSessions);
-            document.getElementById('typeFilter').addEventListener('change', renderSessions);
+            document.getElementById('searchInput').addEventListener('input', filterAndDisplaySessions);
+            document.getElementById('statusFilter').addEventListener('change', filterAndDisplaySessions);
+            document.getElementById('subjectFilter').addEventListener('change', filterAndDisplaySessions);
+            document.getElementById('typeFilter').addEventListener('change', filterAndDisplaySessions);
         }
 
-        // Action functions
-        window.viewSession = function(sessionId) {
-            const session = allSessions.find(function(s) { return s.session_id === sessionId; });
-            if (!session) return;
-            
-            alert('Session Details:\n\n' +
-                'ID: ' + session.session_id + '\n' +
-                'Student: ' + session.tutee_name + '\n' +
-                'Tutor: ' + session.tutor_name + '\n' +
-                'Subject: ' + session.subject_name + '\n' +
-                'Date: ' + formatDate(session.session_date) + '\n' +
-                'Time: ' + session.start_time + ' - ' + session.end_time + '\n' +
-                'Type: ' + session.session_type + '\n' +
-                'Status: ' + session.status + '\n' +
-                (session.location ? 'Location: ' + session.location + '\n' : '') +
-                (session.notes ? 'Notes: ' + session.notes : '')
-            );
-        };
-
+        // Approve session
         window.approveSession = async function(sessionId) {
             if (!confirm('Approve this session?')) return;
             
             try {
-                const response = await api.put(`/sessions/${sessionId}/confirm`);
+                const response = await api.put(`/admin/sessions/${sessionId}`, { status: 'confirmed' });
                 if (response.success) {
-                    showToast('Session approved', 'success');
+                    showMessage('Session approved successfully!', 'success');
                     await loadSessions();
                 } else {
-                    showToast(response.error?.message || 'Failed to approve session', 'error');
+                    showMessage(response.message || 'Failed to approve session', 'danger');
                 }
             } catch (error) {
                 console.error('Approve error:', error);
-                showToast(error.message || 'Failed to approve session', 'error');
+                showMessage('Error approving session. Please try again.', 'danger');
             }
         };
 
+        // Delete session
         window.deleteSession = async function(sessionId) {
             if (!confirm('Delete this session? This cannot be undone.')) return;
             
             try {
-                const response = await api.delete(`/sessions/${sessionId}`);
+                const response = await api.delete(`/admin/sessions/${sessionId}`);
                 if (response.success) {
-                    showToast('Session deleted', 'success');
+                    showMessage('Session deleted successfully!', 'success');
                     await loadSessions();
+                } else {
+                    showMessage(response.message || 'Failed to delete session', 'danger');
                 }
             } catch (error) {
                 console.error('Delete error:', error);
-                showToast(error.message || 'Failed to delete session', 'error');
+                showMessage('Error deleting session. Please try again.', 'danger');
             }
         };
+
+        // Show message helper
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
 
         // Logout handler - direct implementation
         const logoutBtn = document.getElementById('logoutBtn');
