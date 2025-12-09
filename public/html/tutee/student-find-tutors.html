@@ -265,20 +265,28 @@
             try {
                 const response = await api.get('/tutors/search');
                 console.log('Tutors response:', response);
-                if (response.success && response.tutors) {
-                    allTutors = response.tutors;
-                    filteredTutors = allTutors;
-                    displayTutors();
+                
+                if (response.success) {
+                    if (response.tutors && response.tutors.length > 0) {
+                        allTutors = response.tutors;
+                        filteredTutors = allTutors;
+                        displayTutors();
+                    } else {
+                        // No tutors found but request was successful
+                        allTutors = [];
+                        filteredTutors = [];
+                        displayTutors();
+                    }
                 } else {
                     console.error('No tutors in response:', response);
                     document.getElementById('tutorsContainer').innerHTML = 
-                        '<div class="empty-state"><i class="fas fa-user-slash"></i><p>No tutors available</p></div>';
+                        `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>${response.message || 'Unable to load tutors'}</p></div>`;
                 }
             } catch (error) {
                 console.error('Error loading tutors:', error);
                 console.error('Error details:', error.message);
                 document.getElementById('tutorsContainer').innerHTML = 
-                    '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading tutors. Please try again.</p></div>';
+                    `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error: ${error.message}</p><p style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Please check if the server is running</p></div>`;
             }
         }
 
