@@ -201,6 +201,27 @@
     </a>
 
     <div class="container">
+        <div id="messageContainer"></div>
+
+        <!-- Stats -->
+        <div class="stats-row" id="statsContainer">
+            <div class="stat-box">
+                <h3 id="totalSessions">0</h3>
+                <p>Total Sessions</p>
+            </div>
+            <div class="stat-box">
+                <h3 id="pendingRequests">0</h3>
+                <p>Pending Requests</p>
+            </div>
+            <div class="stat-box">
+                <h3 id="upcomingSessions">0</h3>
+                <p>Upcoming Sessions</p>
+            </div>
+            <div class="stat-box">
+                <h3 id="completedSessions">0</h3>
+                <p>Completed</p>
+            </div>
+        </div>
 
         <!-- Pending Session Requests -->
         <div class="card" id="pendingRequestsCard">
@@ -336,25 +357,21 @@
         // Load dashboard statistics
         async function loadStats() {
             try {
-                const [sessions, feedback, conversations] = await Promise.all([
-                    api.get('/sessions'),
-                    api.get('/feedback/received'),
-                    api.get('/chat/conversations')
-                ]);
-
-                const allSessions = sessions.data || [];
+                const response = await api.get('/sessions');
+                const allSessions = response.sessions || [];
+                
                 const pending = allSessions.filter(s => s.status === 'pending');
-                const unreadChats = conversations.data.reduce((sum, conv) => sum + conv.unread_count, 0);
+                const upcoming = allSessions.filter(s => s.status === 'confirmed' || s.status === 'approved');
+                const completed = allSessions.filter(s => s.status === 'completed');
+
+                // Update stat boxes
+                document.getElementById('totalSessions').textContent = allSessions.length;
+                document.getElementById('pendingRequests').textContent = pending.length;
+                document.getElementById('upcomingSessions').textContent = upcoming.length;
+                document.getElementById('completedSessions').textContent = completed.length;
 
                 // Update pending badge
                 document.getElementById('pendingBadge').textContent = pending.length;
-
-                // Update message badge
-                const badge = document.getElementById('unreadMessagesCount');
-                if (badge && unreadChats > 0) {
-                    badge.textContent = unreadChats;
-                    badge.style.display = 'inline-block';
-                }
             } catch (error) {
                 console.error('Stats error:', error);
             }
