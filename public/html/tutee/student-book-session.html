@@ -335,8 +335,8 @@
                     
                     // Show availability
                     showTutorAvailability(tutor);
-                    // Clear sessionStorage
-                    sessionStorage.removeItem('selectedTutorId');
+                    // Don't clear sessionStorage yet - keep it for reload persistence
+                    // Will clear after successful booking
                 }
             } catch (error) {
                 console.error('Error loading tutor:', error);
@@ -457,6 +457,8 @@
                 const response = await api.post('/sessions', formData);
                 
                 if (response.success) {
+                    // Clear the selectedTutorId after successful booking
+                    sessionStorage.removeItem('selectedTutorId');
                     alert('Session request submitted successfully! The tutor will be notified.');
                     window.location.href = '/html/tutee/student-my-sessions.html';
                 } else {
