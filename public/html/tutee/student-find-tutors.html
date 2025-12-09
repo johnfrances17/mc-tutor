@@ -51,6 +51,20 @@
         .section-title { font-size: 20px; font-weight: 600; color: #2d3748; }
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
+        /* Form Styles */
+        .form-row { display: flex; gap: 15px; margin-bottom: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 14px; font-weight: 600; color: #2d3748; }
+        .form-control { padding: 8px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; }
+        .form-control:focus { outline: none; border-color: #5865F2; }
+
+        /* Button Styles */
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, #5865F2, #7289DA); color: white; }
+        .btn-primary:hover { background: linear-gradient(135deg, #4752C4, #5865F2); }
+        .btn-secondary { background: #6b7280; color: white; }
+        .btn-secondary:hover { background: #4b5563; }
+
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
         @media (max-width: 768px) {
             .nav-container { padding: 10px; } .nav-brand { font-size: 18px; }
@@ -153,7 +167,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 15px;">
+                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 10px;">
                         <button class="btn btn-primary" id="searchBtn">
                             <i class="fas fa-search"></i> Search
                         </button>
@@ -539,11 +553,6 @@
             gap: 15px;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
     </style>
 
     <!-- Core Scripts -->
