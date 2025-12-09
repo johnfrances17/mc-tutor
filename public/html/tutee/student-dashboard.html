@@ -39,26 +39,6 @@
         .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
         .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
 
-        /* Page Header */
-        .page-header {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .page-header-text h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin: 0 0 8px 0;
-        }
-        
-        .page-header-text p {
-            color: #6b7280;
-            margin: 0;
-            font-size: 15px;
-        }
-
         /* Card Title */
         .card-title {
             font-size: 18px;
@@ -187,14 +167,6 @@
     </a>
 
     <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="page-header-text">
-                <h1>Student Dashboard</h1>
-                <p>Welcome back! Here's an overview of your tutoring sessions and study materials.</p>
-            </div>
-        </div>
-
         <!-- Stats Cards -->
         <div class="stats-row">
             <div class="stat-box">
@@ -500,16 +472,6 @@
                 e.stopPropagation();
                 window.auth.logout();
                 return false;
-            });
-        }
-        
-        // Secondary Navigation Toggle
-        const navToggleBtn = document.getElementById('navToggleBtn');
-        const secondaryNav = document.getElementById('secondaryNav');
-        
-        if (navToggleBtn && secondaryNav) {
-            navToggleBtn.addEventListener('click', () => {
-                secondaryNav.classList.toggle('collapsed');
             });
         }
         
