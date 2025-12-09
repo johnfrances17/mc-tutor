@@ -363,8 +363,8 @@
             <a href="/html/tutee/student-dashboard.html" class="nav-brand" id="navBrandLink">MC Tutor</a>
             <div class="nav-right">
                 <div class="user-info-inline">
-                    <div class="user-avatar-small" data-user-avatar>
-                        <img src="/image/default.png" alt="User Avatar" id="navAvatarImg">
+                    <div class="user-avatar-small" data-user-avatar id="navAvatar">
+                        <span id="navAvatarInitial">U</span>
                     </div>
                     <div class="user-details-inline">
                         <span class="user-name-inline" data-user-name>User</span>
@@ -588,7 +588,7 @@
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
     <script>
-        const { getCurrentUser } = window.auth;
+        // Use window.auth directly to avoid redeclaration
         const api = window.API;
         
         // Safe formatDate function
@@ -620,7 +620,7 @@
         async function init() {
             try {
                 console.log('🚀 Initializing profile page...');
-                currentUser = await getCurrentUser();
+                currentUser = await window.auth.getCurrentUser();
                 console.log('👤 Current user:', currentUser);
                 
                 if (!currentUser) {
@@ -675,16 +675,16 @@
                 el.textContent = role.toUpperCase();
             });
 
-            // Update avatar initial
+            // Update avatar initial in nav - use FIRST letter of FIRST name
             const firstName = currentUser.first_name || 'User';
             const initial = firstName.charAt(0).toUpperCase();
             
-            // Update small avatar in nav if exists
-            const navAvatarImg = document.getElementById('navAvatarImg');
-            if (navAvatarImg && !currentUser.profile_picture) {
-                // If no profile picture, you could add initials to a div instead
-                // For now, keep default image
+            const navAvatarInitial = document.getElementById('navAvatarInitial');
+            if (navAvatarInitial) {
+                navAvatarInitial.textContent = initial;
             }
+            
+            console.log('✅ Nav updated - Name:', firstName, 'Initial:', initial);
         }
 
         // Populate secondary navigation
@@ -776,10 +776,11 @@
                 const roleDisplay = currentUser.role ? currentUser.role.toUpperCase() : '';
                 document.getElementById('role').value = roleDisplay;
 
-                // Set avatar
-                const fullName = currentUser.full_name || `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim();
-                const initial = fullName ? fullName.charAt(0).toUpperCase() : 'U';
+                // Set avatar - use FIRST letter of FIRST name
+                const firstName = currentUser.first_name || 'User';
+                const initial = firstName.charAt(0).toUpperCase();
                 document.getElementById('avatarInitial').textContent = initial;
+                console.log('✅ Profile avatar initial set to:', initial, 'from first name:', firstName);
 
                 // Account info
                 document.getElementById('userId').textContent = currentUser.user_id || '-';
