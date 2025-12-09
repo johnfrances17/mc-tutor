@@ -750,6 +750,96 @@
             font-size: 14px;
         }
 
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .tutors-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .tutor-card {
+                border-radius: 12px;
+            }
+
+            .tutor-header {
+                padding: 20px;
+            }
+
+            .tutor-avatar {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+
+            .tutor-name {
+                font-size: 18px;
+            }
+
+            .tutor-details,
+            .tutor-subjects,
+            .tutor-actions {
+                padding: 16px 20px;
+            }
+
+            .detail-row {
+                grid-template-columns: 110px 1fr;
+                gap: 10px;
+            }
+
+            .tutor-actions {
+                flex-direction: column;
+            }
+
+            .tutor-actions .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tutor-header {
+                padding: 16px;
+            }
+
+            .tutor-avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .tutor-name {
+                font-size: 16px;
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .detail-label {
+                font-weight: 600;
+                color: #4b5563;
+            }
+
+            .detail-value {
+                padding-left: 0;
+            }
+
+            .tutor-details,
+            .tutor-subjects,
+            .tutor-actions {
+                padding: 14px 16px;
+            }
+
+            .subject-tags {
+                gap: 6px;
+            }
+
+            .tag {
+                font-size: 11px;
+                padding: 5px 12px;
+            }
+        }
+
     </style>
 
     <script>
