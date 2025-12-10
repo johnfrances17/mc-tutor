@@ -77,7 +77,6 @@ async function initializePage(pageName, user) {
     'admin-dashboard.html': initAdminDashboard,
     'find-tutors.html': initFindTutors,
     'materials.html': initMaterials,
-    'messenger.html': initMessenger,
     'profile.html': initProfile
   };
 

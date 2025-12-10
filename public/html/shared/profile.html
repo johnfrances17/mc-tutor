@@ -538,10 +538,6 @@
         </div>
     </nav>
 
-    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
-        <i class="fas fa-comments"></i>
-    </a>
-
     <div id="messageContainer"></div>
 
     <div class="content-container">
@@ -934,8 +930,22 @@
                 // Set avatar - use FIRST letter of FIRST name
                 const firstName = currentUser.first_name || 'User';
                 const initial = firstName.charAt(0).toUpperCase();
-                document.getElementById('avatarInitial').textContent = initial;
-                console.log('✅ Profile avatar initial set to:', initial, 'from first name:', firstName);
+                
+                // Update profile picture preview
+                const profilePicturePreview = document.getElementById('profilePicturePreview');
+                if (profilePicturePreview) {
+                    if (currentUser.profile_picture) {
+                        profilePicturePreview.innerHTML = `<img src="${currentUser.profile_picture}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
+                        console.log('✅ Profile picture loaded:', currentUser.profile_picture);
+                    } else {
+                        profilePicturePreview.innerHTML = `
+                            <div class="profile-avatar-large">
+                                <span id="avatarInitial">${initial}</span>
+                            </div>
+                        `;
+                        console.log('✅ Profile avatar initial set to:', initial, 'from first name:', firstName);
+                    }
+                }
 
                 // Account info
                 document.getElementById('userId').textContent = currentUser.user_id || '-';
@@ -1162,8 +1172,10 @@
                         showMessage('Profile picture updated successfully!', 'success');
                         
                         // Update preview
-                        const avatarContainer = document.getElementById('avatarContainer');
-                        avatarContainer.innerHTML = `<img src="${data.profile_picture}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
+                        const profilePicturePreview = document.getElementById('profilePicturePreview');
+                        if (profilePicturePreview && data.profile_picture) {
+                            profilePicturePreview.innerHTML = `<img src="${data.profile_picture}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
+                        }
 
                         // Close modal
                         closeCropModal();

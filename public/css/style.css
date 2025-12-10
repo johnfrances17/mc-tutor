@@ -201,6 +201,7 @@ header {
 
 .btn-primary:hover {
     background: #5568d3;
+    color: #ffffff;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
 }
@@ -545,8 +546,15 @@ table td .btn {
 }
 
 .empty-state a {
-    color: #ffffff;
+    color: #5865F2;
     font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.empty-state a:hover {
+    color: #ffffff;
+    text-decoration: underline;
 }
 
 /* Stats Grid */
@@ -1849,30 +1857,7 @@ body {
     border-bottom: 2px solid #e5e7eb;
 }
 
-/* Floating message button */
-.floating-message-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: #5865F2;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    text-decoration: none;
-    color: white;
-    font-size: 24px;
-}
-.floating-message-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
-}
+
 
 /* Main Navbar with User Info */
 .navbar {
@@ -2152,14 +2137,6 @@ body {
 
     .page-header h1 {
         font-size: 1.5rem;
-    }
-
-    .floating-message-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        bottom: 20px;
-        right: 20px;
     }
 
     .container {

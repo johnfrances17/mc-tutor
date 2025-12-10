@@ -11,13 +11,11 @@ const NAV_MENUS = {
     { url: 'student-dashboard.html', label: 'Dashboard', icon: 'fas fa-home' },
     { url: 'find-tutors.html', label: 'Find Tutors', icon: 'fas fa-search' },
     { url: 'materials.html', label: 'Study Materials', icon: 'fas fa-book' },
-    { url: 'messenger.html', label: 'Messenger', icon: 'fas fa-comments', badge: 'unread-messages' },
     { url: 'profile.html', label: 'Profile', icon: 'fas fa-user' }
   ],
   tutor: [
     { url: 'tutor-dashboard.html', label: 'Dashboard', icon: 'fas fa-home' },
     { url: 'materials.html', label: 'Study Materials', icon: 'fas fa-book' },
-    { url: 'messenger.html', label: 'Messenger', icon: 'fas fa-comments', badge: 'unread-messages' },
     { url: 'profile.html', label: 'Profile', icon: 'fas fa-user' }
   ],
   admin: [

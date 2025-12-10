@@ -317,12 +317,8 @@ export const addTutorSubject = async (req: AuthRequest, res: Response, next: Nex
       return res.status(400).json({ success: false, message: 'Subject already added' });
     }
 
-    // Generate Google Meet link if online is selected
-    let googleMeetLink = null;
-    if (preferred_location === 'online' || preferred_location === 'both') {
-      const { generateGoogleMeetLink } = await import('../utils/googleMeet');
-      googleMeetLink = generateGoogleMeetLink(tutorId);
-    }
+    // Google Meet link starts as null - tutors will set it manually after creating their room
+    // No automatic generation to avoid confusion with meet.google.com/new
 
     // Prepare insert data
     const insertData: any = {
@@ -330,14 +326,11 @@ export const addTutorSubject = async (req: AuthRequest, res: Response, next: Nex
       subject_id,
       proficiency_level: proficiency_level || 'intermediate',
       preferred_location: preferred_location || 'online',
+      google_meet_link: null, // Explicitly set to null
     };
 
     if (physical_location) {
       insertData.physical_location = physical_location;
-    }
-
-    if (googleMeetLink) {
-      insertData.google_meet_link = googleMeetLink;
     }
 
     // Add subject
@@ -384,4 +377,55 @@ export const removeTutorSubject = async (req: AuthRequest, res: Response, next: 
   } catch (error) {
     return next(error);
     }
+};
+
+/**
+ * Update Google Meet link for tutor subject (tutor only)
+ */
+export const updateTutorSubjectMeetLink = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const tutorId = req.user!.user_id;
+    const { subjectId } = req.params;
+    const { google_meet_link } = req.body;
+
+    // Validate Google Meet link format
+    if (google_meet_link) {
+      const { isValidGoogleMeetLink } = await import('../utils/googleMeet');
+      if (!isValidGoogleMeetLink(google_meet_link)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid Google Meet link format. Expected: https://meet.google.com/xxx-yyyy-zzz' 
+        });
+      }
+    }
+
+    // Update the Google Meet link
+    const { data, error } = await supabase
+      .from('tutor_subjects')
+      .update({ 
+        google_meet_link,
+        updated_at: new Date().toISOString()
+      })
+      .eq('tutor_id', tutorId)
+      .eq('subject_id', subjectId)
+      .select('*, subject:subjects(*)')
+      .single();
+
+    if (error) {
+      console.error('Error updating Google Meet link:', error);
+      return res.status(400).json({ success: false, message: 'Failed to update Google Meet link' });
+    }
+
+    if (!data) {
+      return res.status(404).json({ success: false, message: 'Subject not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Google Meet link updated successfully',
+      tutor_subject: data,
+    });
+  } catch (error) {
+    return next(error);
+  }
 };

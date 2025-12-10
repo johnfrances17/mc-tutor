@@ -7,6 +7,7 @@ import {
   getTutorsBySubject,
   addTutorSubject,
   removeTutorSubject,
+  updateTutorSubjectMeetLink,
 } from '../controllers/tutorController';
 
 const router = Router();
@@ -25,6 +26,9 @@ router.get('/:id/subjects', getTutorSubjects);
 
 // Add subject to tutor (tutor only)
 router.post('/subjects', authMiddleware, roleMiddleware(['tutor']), addTutorSubject);
+
+// Update Google Meet link for subject (tutor only)
+router.patch('/subjects/:subjectId/meet-link', authMiddleware, roleMiddleware(['tutor']), updateTutorSubjectMeetLink);
 
 // Remove subject from tutor (tutor only)
 router.delete('/subjects/:subjectId', authMiddleware, roleMiddleware(['tutor']), removeTutorSubject);

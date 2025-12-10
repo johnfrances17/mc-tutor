@@ -222,6 +222,76 @@
         </div>
     </div>
 
+    <!-- Edit Google Meet Link Modal -->
+    <div id="editMeetLinkModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; padding: 30px; max-width: 600px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 style="margin: 0 0 20px 0; color: #2d3748; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-video" style="color: #5865F2;"></i> Update Google Meet Link
+            </h2>
+            
+            <div style="background: #f0f9ff; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 20px;">
+                <div style="font-weight: 600; color: #1e40af; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-info-circle"></i> How to Get Your Google Meet Link
+                </div>
+                <ol style="margin: 8px 0 0 0; padding-left: 20px; color: #1e3a8a; font-size: 14px; line-height: 1.6;">
+                    <li>Click the <strong>"Create Meeting Room"</strong> button below</li>
+                    <li>Google will open and create your permanent meeting room</li>
+                    <li>Copy the URL from your browser (e.g., <code style="background: #dbeafe; padding: 2px 6px; border-radius: 4px;">meet.google.com/abc-defg-hij</code>)</li>
+                    <li>Paste it in the field below and click "Save"</li>
+                </ol>
+            </div>
+
+            <form id="editMeetLinkForm">
+                <input type="hidden" id="edit_subject_id">
+                
+                <div style="margin-bottom: 20px;">
+                    <a href="https://meet.google.com/new" target="_blank" rel="noopener noreferrer" 
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Meeting Room
+                        <i class="fas fa-external-link-alt" style="font-size: 12px; opacity: 0.8;"></i>
+                    </a>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">
+                        Google Meet Link
+                    </label>
+                    <div style="position: relative;">
+                        <input type="text" id="edit_google_meet_link" placeholder="https://meet.google.com/xxx-yyyy-zzz" 
+                               style="width: 100%; padding: 12px 120px 12px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: 'Courier New', monospace; transition: border-color 0.3s ease;"
+                               onfocus="this.style.borderColor='#5865F2'"
+                               onblur="this.style.borderColor='#e5e7eb'">
+                        <button type="button" id="autoDetectBtn" 
+                                style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;"
+                                onmouseover="this.style.background='#059669'"
+                                onmouseout="this.style.background='#10b981'">
+                            <i class="fas fa-magic"></i> Auto-Detect
+                        </button>
+                    </div>
+                    <small style="color: #6b7280; font-size: 12px; margin-top: 6px; display: block;">
+                        Paste your Google Meet link here, or click "Auto-Detect" to read from clipboard
+                    </small>
+                    <div id="linkValidationMessage" style="margin-top: 8px; padding: 8px 12px; border-radius: 6px; font-size: 13px; display: none;"></div>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" onclick="closeMeetLinkModal()" 
+                            style="padding: 12px 24px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
+                            onmouseover="this.style.background='#d1d5db'"
+                            onmouseout="this.style.background='#e5e7eb'">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 24px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-save"></i> Save Link
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Core Scripts -->
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
@@ -304,11 +374,35 @@
                                 <div style="font-size: 13px; color: #6b7280;">${subject.physical_location || 'Not specified'}</div>
                             </div>
                             <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                                <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 13px;">🌐 Google Meet Link</div>
+                                <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 13px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span>🌐 Google Meet Link</span>
+                                    ${subject.google_meet_link ? `
+                                        <button onclick="editMeetLink(${subject.subject_id}, '${subject.google_meet_link}')" 
+                                                style="padding: 4px 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s ease;"
+                                                onmouseover="this.style.background='#2563eb'"
+                                                onmouseout="this.style.background='#3b82f6'">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                    ` : ''}
+                                </div>
                                 ${subject.google_meet_link ? `
-                                    <a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 13px; word-break: break-all; display: block; margin-bottom: 6px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${subject.google_meet_link}</a>
-                                    ${subject.google_meet_link.includes('/new') ? '<div style="font-size: 11px; color: #6b7280; margin-top: 4px;">💡 Click this link once to create your permanent meeting room, then copy the new URL to share with students</div>' : ''}
-                                ` : '<span style="font-size: 13px; color: #9ca3af;">Link not generated</span>'}
+                                    <a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" 
+                                       style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 13px; word-break: break-all; display: block; margin-top: 8px;" 
+                                       onmouseover="this.style.textDecoration='underline'" 
+                                       onmouseout="this.style.textDecoration='none'">${subject.google_meet_link}</a>
+                                ` : `
+                                    <div style="margin-top: 8px;">
+                                        <button onclick="editMeetLink(${subject.subject_id}, '')"
+                                                style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
+                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'"
+                                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
+                                            <i class="fas fa-video"></i> Create Meeting Room
+                                        </button>
+                                        <div style="font-size: 11px; color: #6b7280; margin-top: 8px;">
+                                            Click to set up your Google Meet link for this subject
+                                        </div>
+                                    </div>
+                                `}
                             </div>
                         </div>
                         <button class="btn btn-danger" onclick="removeSubject(${subject.subject_id})">
@@ -399,6 +493,117 @@
             `;
             setTimeout(() => container.innerHTML = '', 5000);
         }
+
+        // Edit Google Meet Link Modal Functions
+        window.editMeetLink = function(subjectId, currentLink) {
+            document.getElementById('edit_subject_id').value = subjectId;
+            document.getElementById('edit_google_meet_link').value = currentLink || '';
+            document.getElementById('linkValidationMessage').style.display = 'none';
+            document.getElementById('editMeetLinkModal').style.display = 'flex';
+        };
+
+        window.closeMeetLinkModal = function() {
+            document.getElementById('editMeetLinkModal').style.display = 'none';
+            document.getElementById('editMeetLinkForm').reset();
+            document.getElementById('linkValidationMessage').style.display = 'none';
+        };
+
+        // Auto-detect from clipboard
+        document.getElementById('autoDetectBtn').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                const meetLinkInput = document.getElementById('edit_google_meet_link');
+                
+                // Check if clipboard contains a Google Meet link
+                if (text.includes('meet.google.com/')) {
+                    meetLinkInput.value = text.trim();
+                    validateMeetLink(text.trim());
+                    showValidationMessage('Link detected from clipboard! ✓', 'success');
+                } else {
+                    showValidationMessage('No Google Meet link found in clipboard', 'warning');
+                }
+            } catch (error) {
+                console.error('Clipboard access error:', error);
+                showValidationMessage('Unable to read clipboard. Please paste manually.', 'error');
+            }
+        });
+
+        // Validate Google Meet link format
+        function validateMeetLink(link) {
+            const meetRegex = /^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/;
+            return meetRegex.test(link);
+        }
+
+        // Show validation message
+        function showValidationMessage(message, type) {
+            const msgElement = document.getElementById('linkValidationMessage');
+            msgElement.style.display = 'block';
+            
+            if (type === 'success') {
+                msgElement.style.background = '#d1fae5';
+                msgElement.style.color = '#065f46';
+                msgElement.style.border = '1px solid #10b981';
+            } else if (type === 'warning') {
+                msgElement.style.background = '#fef3c7';
+                msgElement.style.color = '#92400e';
+                msgElement.style.border = '1px solid #f59e0b';
+            } else {
+                msgElement.style.background = '#fee2e2';
+                msgElement.style.color = '#991b1b';
+                msgElement.style.border = '1px solid #ef4444';
+            }
+            
+            msgElement.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'times-circle'}"></i> ${message}`;
+        }
+
+        // Validate on input blur
+        document.getElementById('edit_google_meet_link').addEventListener('blur', (e) => {
+            const link = e.target.value.trim();
+            if (link) {
+                if (validateMeetLink(link)) {
+                    showValidationMessage('Valid Google Meet link format ✓', 'success');
+                } else {
+                    showValidationMessage('Invalid format. Expected: https://meet.google.com/xxx-yyyy-zzz', 'error');
+                }
+            } else {
+                document.getElementById('linkValidationMessage').style.display = 'none';
+            }
+        });
+
+        // Handle edit form submission
+        document.getElementById('editMeetLinkForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subjectId = document.getElementById('edit_subject_id').value;
+            const googleMeetLink = document.getElementById('edit_google_meet_link').value.trim();
+
+            if (!googleMeetLink) {
+                showValidationMessage('Please enter a Google Meet link', 'error');
+                return;
+            }
+
+            if (!validateMeetLink(googleMeetLink)) {
+                showValidationMessage('Invalid Google Meet link format. Expected: https://meet.google.com/xxx-yyyy-zzz', 'error');
+                return;
+            }
+
+            try {
+                const response = await api.patch(`/tutors/subjects/${subjectId}/meet-link`, {
+                    google_meet_link: googleMeetLink
+                });
+
+                if (response.success) {
+                    showMessage('Google Meet link updated successfully!', 'success');
+                    closeMeetLinkModal();
+                    await loadMySubjects();
+                } else {
+                    showValidationMessage(response.message || 'Error updating link', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating Google Meet link:', error);
+                showValidationMessage('Error updating link. Please try again.', 'error');
+            }
+        });
 
         // Logout handler - direct implementation
         const logoutBtn = document.getElementById('logoutBtn');

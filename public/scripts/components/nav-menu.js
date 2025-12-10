@@ -78,16 +78,14 @@ class NavigationMenu {
         { label: 'My Sessions', url: '/main/tutor/my_sessions.php' },
         { label: 'My Subjects', url: '/main/tutor/my_subjects.php' },
         { label: 'Upload Materials', url: '/main/tutor/upload_materials.php' },
-        { label: 'My Feedback', url: '/main/tutor/my_feedback.php' },
-        { label: 'Messages', url: '/html/shared/messenger.html' }
+        { label: 'My Feedback', url: '/main/tutor/my_feedback.php' }
       ],
       tutee: [
         { label: 'Dashboard', url: '/html/tutee/student-dashboard.html' },
         { label: 'Find Tutors', url: '/html/tutee/student-find-tutors.html' },
         { label: 'My Sessions', url: '/main/student/my_sessions.php' },
         { label: 'Study Materials', url: '/html/shared/materials.html' },
-        { label: 'My Feedback', url: '/main/student/my_feedback.php' },
-        { label: 'Messages', url: '/html/shared/messenger.html' }
+        { label: 'My Feedback', url: '/main/student/my_feedback.php' }
       ]
     };
     
