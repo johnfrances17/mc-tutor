@@ -12,7 +12,8 @@
         .table-wrapper {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin-bottom: 16px;
+            margin: 0 -24px 16px;
+            padding: 0 24px;
         }
 
         .table-wrapper::-webkit-scrollbar {
@@ -25,18 +26,29 @@
         }
 
         .table-wrapper::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #5865F2;
             border-radius: 4px;
         }
 
         .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #4752C4;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            min-width: 1100px;
+        }
+
+        table th,
+        table td {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+
+        table th:first-child,
+        table td:first-child {
+            text-align: left !important;
         }
 
         table thead {
@@ -370,29 +382,8 @@
         }
 
         /* Floating Message Button */
-        .floating-message-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            text-decoration: none;
-            color: white;
-            font-size: 24px;
-        }
-        .floating-message-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
-        }
+
+
 
         /* Mobile Responsive Styles */
         @media (max-width: 1024px) {
@@ -958,6 +949,8 @@
                             <th>Subject</th>
                             <th>Date & Time</th>
                             <th>Type</th>
+                            <th>Physical Location</th>
+                            <th>Google Meet</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -971,6 +964,8 @@
                             const sessionTime = session.start_time && session.end_time 
                                 ? `${session.start_time} - ${session.end_time}` 
                                 : 'N/A';
+                            const physicalLocation = session.physical_location || session.location || 'Not specified';
+                            const meetLink = session.google_meet_link || session.meet_link || '';
                             
                             return `
                             <tr>
@@ -983,6 +978,17 @@
                                     <small style="color: #666;">${sessionTime}</small>
                                 </td>
                                 <td><span class="badge badge-info">${session.session_type || 'N/A'}</span></td>
+                                <td>
+                                    <div style="font-size: 13px;">
+                                        <i class="fas fa-map-marker-alt" style="color: #5865F2;"></i> ${physicalLocation}
+                                    </div>
+                                </td>
+                                <td>
+                                    ${meetLink ? 
+                                        `<a href="${meetLink}" target="_blank" rel="noopener noreferrer" class="btn" style="padding: 4px 10px; font-size: 12px; background: #3b82f6; color: white; text-decoration: none;"><i class="fas fa-video"></i> Join</a>` : 
+                                        '<span style="color: #9ca3af; font-size: 13px;">No link</span>'
+                                    }
+                                </td>
                                 <td>
                                     <span class="badge badge-${getStatusColor(session.status)}">
                                         ${session.status ? session.status.charAt(0).toUpperCase() + session.status.slice(1) : 'N/A'}

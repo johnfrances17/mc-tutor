@@ -9,8 +9,6 @@ export const initializeDataDirectories = (): void => {
   const baseDir = process.env.UPLOAD_DIR || './data';
   
   const directories = [
-    path.join(baseDir, 'chats'),
-    path.join(baseDir, 'notifications'),
     path.join(baseDir, 'sessions'),
   ];
 
@@ -20,23 +18,6 @@ export const initializeDataDirectories = (): void => {
       console.log(`📁 Created directory: ${dir}`);
     }
   });
-
-  // Create metadata file for chats if it doesn't exist
-  const chatsMetadata = path.join(baseDir, 'chats', 'metadata.json');
-  if (!fs.existsSync(chatsMetadata)) {
-    fs.writeFileSync(
-      chatsMetadata,
-      JSON.stringify(
-        {
-          conversations: [],
-          last_updated: new Date().toISOString(),
-        },
-        null,
-        2
-      )
-    );
-    console.log('📝 Created chats metadata file');
-  }
 };
 
 /**

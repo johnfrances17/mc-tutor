@@ -4,11 +4,9 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { createServer } from 'http';
-import { Server as SocketIOServer } from 'socket.io';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
 import { initializeDataDirectories } from './utils/fileSystem';
-import { initializeSocketIO } from './sockets/chatSocket';
 
 // Load environment variables
 dotenv.config();
@@ -16,14 +14,6 @@ dotenv.config();
 // Create Express app
 const app: Application = express();
 const httpServer = createServer(app);
-
-// Initialize Socket.IO
-const io = new SocketIOServer(httpServer, {
-  cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-    credentials: true,
-  },
-});
 
 // Security Middleware
 app.use(helmet({
@@ -56,8 +46,6 @@ import subjectRoutes from './routes/subjectRoutes';
 import tutorRoutes from './routes/tutorRoutes';
 import materialRoutes from './routes/materialRoutes';
 import feedbackRoutes from './routes/feedbackRoutes';
-import notificationRoutes from './routes/notificationRoutes';
-import chatRoutes from './routes/chatRoutes';
 import adminRoutes from './routes/adminRoutes';
 import searchRoutes from './routes/searchRoutes';
 import courseRoutes from './routes/courseRoutes';
@@ -143,8 +131,6 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/tutors', tutorRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/api/feedback', feedbackRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
 // app.use('/api/test', testRoutes); // Temporarily disabled - causing serverless crashes
@@ -161,18 +147,7 @@ app.get('/api', (_req, res) => {
       subjects: '/api/subjects',
       materials: '/api/materials',
       feedback: '/api/feedback',
-      notifications: '/api/notifications',
-      chat: '/api/chat',
     },
-  });
-});
-
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
   });
 });
 
@@ -185,19 +160,15 @@ if (!process.env.VERCEL) {
   initializeDataDirectories();
 }
 
-// Initialize Socket.IO handlers
-initializeSocketIO(io);
-
 // Start server (only in non-serverless environment)
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 3000;
   httpServer.listen(PORT, () => {
     console.log(`🚀 MC Tutor Server running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔌 Socket.IO enabled`);
   });
 }
 
 // Export for Vercel serverless and testing
 export default app;
-export { app, io, httpServer };
+export { app, httpServer };

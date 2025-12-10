@@ -36,8 +36,8 @@
         .secondary-nav-link:hover { background: white; color: #5865F2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .secondary-nav-link.active { background: white; color: #5865F2; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
-        .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;  border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
-        .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
+
+
 
         /* Stats Grid */
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
@@ -71,7 +71,49 @@
         .card h2 { font-size: 20px; font-weight: 600; color: #1f2937; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px; }
         .card h2 i { color: #5865F2; }
 
-        /* Table styles now in style.css */
+        /* Table wrapper with horizontal scroll */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -24px;
+            padding: 0 24px;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #5865F2;
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #4752C4;
+        }
+
+        /* Table styles - centered alignment */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        table th,
+        table td {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+
+        table th:first-child,
+        table td:first-child {
+            text-align: left !important;
+        }
         
         .badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
         .badge-pending, .badge-warning { background: #fef3c7; color: #92400e; }
@@ -167,11 +209,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- Floating Message Button -->
-    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
-        <i class="fas fa-comments"></i>
-    </a>
 
     <div class="container">
         <div id="messageContainer"></div>
@@ -416,7 +453,8 @@
                             <th>Subject</th>
                             <th>Date & Time</th>
                             <th>Type</th>
-                            <th>Location</th>
+                            <th>Physical Location</th>
+                            <th>Google Meet</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -431,7 +469,8 @@
                             const sessionDate = session.session_date || 'N/A';
                             const sessionTime = session.start_time && session.end_time ? 
                                               `${session.start_time} - ${session.end_time}` : 'N/A';
-                            const location = session.location || (session.session_type === 'online' ? 'Online' : 'TBD');
+                            const physicalLocation = session.physical_location || session.location || 'Not specified';
+                            const meetLink = session.google_meet_link || session.meet_link || '';
                             
                             return `
                             <tr>
@@ -446,7 +485,17 @@
                                     <small style="color: #666;">${sessionTime}</small>
                                 </td>
                                 <td><span class="badge badge-info">${session.session_type || 'N/A'}</span></td>
-                                <td>${location}</td>
+                                <td>
+                                    <div style="font-size: 13px;">
+                                        <i class="fas fa-map-marker-alt" style="color: #5865F2;"></i> ${physicalLocation}
+                                    </div>
+                                </td>
+                                <td>
+                                    ${meetLink ? 
+                                        `<a href="${meetLink}" target="_blank" rel="noopener noreferrer" class="btn" style="padding: 4px 10px; font-size: 12px; background: #3b82f6; color: white; text-decoration: none;"><i class="fas fa-video"></i> Join</a>` : 
+                                        '<span style="color: #9ca3af; font-size: 13px;">No link</span>'
+                                    }
+                                </td>
                                 <td>
                                     <span class="badge badge-${getStatusColor(session.status)}">
                                         ${session.status ? session.status.charAt(0).toUpperCase() + session.status.slice(1) : 'N/A'}
@@ -498,16 +547,9 @@
                     <button class="btn btn-danger" onclick="cancelSession(${session.session_id})">
                         <i class="fas fa-ban"></i> Cancel
                     </button>
-                    ${tuteeSchoolId ? `<button class="btn btn-primary" onclick="window.location.href='/html/shared/messenger.html?user=${tuteeSchoolId}&name=${encodeURIComponent(tuteeName)}'">
-                        <i class="fas fa-comment"></i> Message
-                    </button>` : ''}
                 `;
             } else if (session.status === 'completed') {
-                return tuteeSchoolId ? `
-                    <button class="btn btn-primary" onclick="window.location.href='/html/shared/messenger.html?user=${tuteeSchoolId}&name=${encodeURIComponent(tuteeName)}'">
-                        <i class="fas fa-comment"></i> Message
-                    </button>
-                ` : '';
+                return '';
             }
             return '';
         }
@@ -659,11 +701,6 @@
                 console.error('Cancel error:', error);
                 showToast('Failed to cancel session', 'error');
             }
-        };
-
-        window.messageStudent = function(studentId, studentName) {
-            const name = studentName || 'Student';
-            window.location.href = '/html/shared/messenger.html?user=' + studentId + '&name=' + encodeURIComponent(name);
         };
 
         init();

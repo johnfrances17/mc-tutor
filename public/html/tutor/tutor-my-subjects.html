@@ -41,8 +41,8 @@
         .secondary-nav-link.active { background: white; color: #5865F2; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
         .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
-        .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;  border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
-        .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
+
+
 
         /* Stats Grid */
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
@@ -168,11 +168,6 @@
         </div>
     </nav>
 
-    <!-- Floating Message Button -->
-    <a href="/html/shared/messenger.html" class="floating-message-btn" title="Messages">
-        <i class="fas fa-comments"></i>
-    </a>
-
     <div class="container">
         <div id="messageContainer"></div>
 
@@ -198,17 +193,14 @@
                         </select>
                     </div>
                     <div class="form-group" style="margin: 0;">
-                        <label for="preferred_location">Preferred Location *</label>
-                        <select id="preferred_location" name="preferred_location" required>
-                            <option value="">Select location</option>
-                            <option value="online">Online (Google Meet)</option>
-                            <option value="physical">Physical Location</option>
-                            <option value="both">Both</option>
-                        </select>
+                        <label for="physical_location">Physical Location *</label>
+                        <input type="text" id="physical_location" name="physical_location" placeholder="e.g., Library, Room 101, Campus Grounds" required>
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">📍 Specify where you'll meet students in person</small>
                     </div>
-                    <div class="form-group" id="physicalLocationGroup" style="margin: 0; display: none;">
-                        <label for="physical_location">Physical Location</label>
-                        <input type="text" id="physical_location" name="physical_location" placeholder="e.g., Library, Room 101">
+                    <div class="form-group" style="margin: 0;">
+                        <label>Google Meet Link</label>
+                        <input type="text" value="Auto-generated upon adding subject" disabled style="background: #f9fafb; cursor: not-allowed;">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">🌐 A unique Google Meet link will be created automatically</small>
                     </div>
                 </div>
                 <div style="margin-top: 16px;">
@@ -294,13 +286,6 @@
                 }
 
                 const subjectsHTML = response.subjects.map(subject => {
-                    const locationIcon = subject.preferred_location === 'online' ? '🌐' : 
-                                        subject.preferred_location === 'physical' ? '📍' : 
-                                        '🌐📍';
-                    const locationText = subject.preferred_location === 'online' ? 'Online (Google Meet)' : 
-                                        subject.preferred_location === 'physical' ? 'Physical Location' : 
-                                        'Online & Physical';
-                    
                     // Set default proficiency if missing
                     const proficiency = subject.proficiency_level || 'beginner';
                     
@@ -309,16 +294,19 @@
                         <div class="subject-info">
                             <h4>${subject.subject_code} - ${subject.subject_name}</h4>
                             <p style="margin-bottom: 12px;">${subject.description || 'Subject for tutoring sessions'}</p>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;">
                                 <span class="proficiency-badge proficiency-${proficiency}">
                                     ${proficiency.toUpperCase()}
                                 </span>
-                                <span class="badge badge-primary">
-                                    ${locationIcon} ${locationText}
-                                </span>
                             </div>
-                            ${subject.physical_location ? `<p style="margin-top: 12px; font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px;"><i class="fas fa-map-marker-alt" style="color: #5865F2;"></i> ${subject.physical_location}</p>` : ''}
-                            ${subject.google_meet_link ? `<p style="margin-top: 8px; font-size: 13px; display: flex; align-items: center; gap: 6px;"><i class="fas fa-video" style="color: #5865F2;"></i> <a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #5865F2; text-decoration: none; font-weight: 500;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Open Google Meet</a></p>` : ''}
+                            <div style="background: #f9fafb; padding: 12px; border-radius: 8px; border-left: 3px solid #5865F2; margin-bottom: 8px;">
+                                <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 13px;">📍 Physical Location</div>
+                                <div style="font-size: 13px; color: #6b7280;">${subject.physical_location || 'Not specified'}</div>
+                            </div>
+                            <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                                <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 13px;">🌐 Google Meet Link</div>
+                                ${subject.google_meet_link ? `<a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 13px; word-break: break-all;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${subject.google_meet_link}</a>` : '<span style="font-size: 13px; color: #9ca3af;">Link not generated</span>'}
+                            </div>
                         </div>
                         <button class="btn btn-danger" onclick="removeSubject(${subject.subject_id})">
                             <i class="fas fa-trash"></i> Remove
@@ -339,39 +327,16 @@
             }
         }
 
-        // Handle location preference change
-        document.getElementById('preferred_location').addEventListener('change', (e) => {
-            const physicalLocationGroup = document.getElementById('physicalLocationGroup');
-            const physicalLocationInput = document.getElementById('physical_location');
-            
-            if (e.target.value === 'physical' || e.target.value === 'both') {
-                physicalLocationGroup.style.display = 'block';
-                if (e.target.value === 'physical') {
-                    physicalLocationInput.required = true;
-                }
-            } else {
-                physicalLocationGroup.style.display = 'none';
-                physicalLocationInput.required = false;
-                physicalLocationInput.value = '';
-            }
-        });
-
         // Handle add subject
         document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const subjectId = document.getElementById('subject_id').value;
             const proficiency = document.getElementById('proficiency').value;
-            const preferredLocation = document.getElementById('preferred_location').value;
             const physicalLocation = document.getElementById('physical_location').value;
 
-            if (!subjectId || !proficiency || !preferredLocation) {
+            if (!subjectId || !proficiency || !physicalLocation) {
                 showMessage('Please fill in all required fields', 'danger');
-                return;
-            }
-
-            if ((preferredLocation === 'physical' || preferredLocation === 'both') && !physicalLocation) {
-                showMessage('Please specify the physical location', 'danger');
                 return;
             }
 
@@ -379,12 +344,9 @@
                 const requestBody = {
                     subject_id: parseInt(subjectId),
                     proficiency_level: proficiency,
-                    preferred_location: preferredLocation
+                    preferred_location: 'both',
+                    physical_location: physicalLocation
                 };
-
-                if (physicalLocation) {
-                    requestBody.physical_location = physicalLocation;
-                }
 
                 const response = await api.post('/tutors/subjects', requestBody);
 
