@@ -938,8 +938,13 @@
                         // Handle both relative paths (old) and full URLs (new)
                         let pictureUrl = currentUser.profile_picture;
                         if (pictureUrl.startsWith('/uploads/')) {
-                            // Old relative path - prepend localhost
-                            pictureUrl = `http://localhost${pictureUrl}`;
+                            // Old relative path - use current protocol and host
+                            pictureUrl = `${window.location.protocol}//${window.location.host}${pictureUrl}`;
+                        } else if (pictureUrl.startsWith('http://')) {
+                            // Convert HTTP to HTTPS if page is HTTPS
+                            if (window.location.protocol === 'https:') {
+                                pictureUrl = pictureUrl.replace('http://', 'https://');
+                            }
                         }
                         profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
                         console.log('✅ Profile picture loaded:', pictureUrl);
@@ -1177,10 +1182,15 @@
                         console.log('✅ Upload successful:', data);
                         showMessage('Profile picture updated successfully!', 'success');
                         
-                        // Update preview
+                        // Update preview with proper protocol handling
                         const profilePicturePreview = document.getElementById('profilePicturePreview');
                         if (profilePicturePreview && data.profile_picture) {
-                            profilePicturePreview.innerHTML = `<img src="${data.profile_picture}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
+                            let pictureUrl = data.profile_picture;
+                            // Convert HTTP to HTTPS if page is HTTPS
+                            if (pictureUrl.startsWith('http://') && window.location.protocol === 'https:') {
+                                pictureUrl = pictureUrl.replace('http://', 'https://');
+                            }
+                            profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
                         }
 
                         // Close modal

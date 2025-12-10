@@ -104,11 +104,13 @@ export class StorageService {
       // On Vercel, use /tmp directory (only writable directory in serverless)
       const tmpDir = process.env.TMPDIR || '/tmp';
       uploadsDir = path.join(tmpDir, 'uploads', 'profiles');
+      // Always use HTTPS on Vercel
       baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '';
     } else {
       // Local development (XAMPP) - use relative path from project root
       uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
-      // Use localhost URL for local development
+      // Use configured base URL or default to http://localhost
+      // Can be set to https://localhost if needed
       baseUrl = process.env.LOCAL_BASE_URL || 'http://localhost';
     }
     
