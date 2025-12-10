@@ -7,9 +7,14 @@
 const isLocalhost = window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1';
 
+const isCustomDomain = window.location.hostname === 'mc-tutor.local' ||
+                       window.location.hostname.endsWith('.test.app');
+
 const API_BASE_URL = isLocalhost 
-  ? 'http://localhost:3000/api'  // Local development
-  : '/api';                        // Production (Vercel)
+  ? 'http://localhost:3000/api'  // Local development (localhost/127.0.0.1)
+  : isCustomDomain
+    ? 'http://localhost:3000/api' // Custom domain but still local server
+    : '/api';                       // Production (Vercel)
 
 // Expose to window for system status page
 window.API_BASE_URL = API_BASE_URL;

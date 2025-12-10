@@ -98,7 +98,7 @@ CREATE INDEX idx_users_course_code ON users(course_code);
 
 -- Insert default admin user
 INSERT INTO users (school_id, email, password, first_name, last_name, role, status) VALUES
-('ADMIN-2025', 'admin@mabinicolleges.edu.ph', 'admin123', 'System', 'Administrator', 'admin', 'active');
+('000001', 'admin@mabinicolleges.edu.ph', 'admin123', 'System', 'Administrator', 'admin', 'active');
 
 -- ===================================
 -- STEP 4: CREATE SUBJECTS TABLE

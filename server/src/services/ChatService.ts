@@ -245,11 +245,26 @@ export class ChatService {
           .eq('school_id', otherStudentId)
           .single();
 
+        // Skip if other user not found (prevents 'Unknown User' for deleted/old accounts)
+        if (!otherUser || !otherUser.school_id) {
+          continue;
+        }
+
         // Get last message
         const lastMessage =
           conversation.messages.length > 0
             ? conversation.messages[conversation.messages.length - 1]
             : null;
+
+        // Decrypt last message if exists
+        let decryptedLastMessage = lastMessage;
+        if (lastMessage && conversation.is_encrypted) {
+          const decrypted = decryptMessage(lastMessage.message);
+          decryptedLastMessage = {
+            ...lastMessage,
+            message: decrypted !== null ? decrypted : '[Encrypted]'
+          };
+        }
 
         // Get unread count
         const unreadCount = this.getUnreadCount(myStudentId, otherStudentId);
@@ -257,7 +272,7 @@ export class ChatService {
         conversations.push({
           conversation_id: conversation.conversation_id,
           other_user: otherUser,
-          last_message: lastMessage,
+          last_message: decryptedLastMessage,
           last_message_at: conversation.last_message_at,
           unread_count: unreadCount,
         });

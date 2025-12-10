@@ -15,20 +15,20 @@
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
         .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
         .nav-container { max-width: 1400px; margin: 0 auto; padding: 0px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-brand { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+        .nav-brand { font-size: 24px; font-weight: bold;  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
         .nav-right { display: flex; align-items: center; gap: 25px; }
         .nav-links { display: flex; gap: 15px; align-items: center; }
         .nav-link { color: #333; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
         .nav-link:hover { background: #f0f0f0; color: #5865F2; }
         .nav-menu-btn { background: transparent; color: #333; border: none; border-radius: 6px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; font-size: 18px; }
         .nav-menu-btn:hover { background: #f0f0f0; color: #5865F2; }
-        .user-info-inline { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 0px; color: white; max-width: 180px; min-width: 100px; }
+        .user-info-inline { display: flex; align-items: center; gap: 12px; padding: 8px 16px;  border-radius: 0px; color: white; max-width: 180px; min-width: 100px; }
         .user-avatar-small { width: 35px; height: 35px; border-radius: 50%; background: white; overflow: hidden; flex-shrink: 0; border: 2px solid white; }
         .user-avatar-small img { width: 100%; height: 100%; object-fit: cover; }
         .user-details-inline { display: flex; flex-direction: column; gap: 2px; overflow: hidden; flex: 1; }
         .user-name-inline { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-role-badge-inline { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
-        .secondary-navbar { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 68px; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70px; overflow: hidden; }
+        .secondary-navbar {  box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 68px; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70px; overflow: hidden; }
         .secondary-navbar.collapsed { max-height: 0; opacity: 0; transform: translateY(-100%); }
         .secondary-nav-container { max-width: 1400px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: center; align-items: center; }
         .secondary-nav-links { display: flex; gap: 8px; align-items: center; }
@@ -36,7 +36,7 @@
         .secondary-nav-link:hover { background: white; color: #5865F2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .secondary-nav-link.active { background: white; color: #5865F2; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
-        .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
+        .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;  border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
         .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
 
         /* Card Title */
@@ -48,9 +48,7 @@
 
         /* Stats Grid */
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-box { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
-        .stat-box h3 { margin: 0 0 8px 0; font-size: 32px; font-weight: 700; }
-        .stat-box p { margin: 0; opacity: 0.9; }
+        /* stat-box styles now in style.css */
 
         /* Card Styles */
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -189,8 +187,8 @@
 
         <!-- Upcoming Sessions -->
         <div class="card">
-            <div class="card-header">
-                <div class="card-title">Upcoming Sessions</div>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-title">Upcoming Confirmed Sessions</div>
                 <a href="/html/tutee/student-my-sessions.html" class="text-primary">View all</a>
             </div>
             <div class="card-body" id="upcomingSessionsList">
@@ -338,32 +336,27 @@
                     }
                     
                     container.innerHTML = confirmedSessions.slice(0, 5).map(session => {
-                        const date = new Date(session.session_date);
-                        const formattedDate = date.toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
-                        });
-                        
+                        // Fallback logic for subject, time, type, tutor
+                        const subject = session.subject?.subject_name || session.subject_name || 'N/A';
+                        const date = session.session_date ? new Date(session.session_date) : null;
+                        const formattedDate = date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                        const startTime = session.start_time || session.session_time || 'TBD';
+                        const endTime = session.end_time ? ' - ' + session.end_time : '';
+                        const sessionType = session.session_type || 'N/A';
+                        let tutorDisplay = session.tutor_name || session.tutor?.fullName || session.tutor?.full_name ||
+                            (session.tutor?.first_name && session.tutor?.last_name ? `${session.tutor.first_name} ${session.tutor.middle_name || ''} ${session.tutor.last_name}`.replace(/\s+/g, ' ').trim() : 'N/A');
                         return `
-                            <div class="session-item" style="padding: 16px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 16px; align-items: start;">
-                                <div style="flex-shrink: 0; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2, #7289DA); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-                                    <div style="font-size: 24px; font-weight: bold; line-height: 1;">${date.getDate()}</div>
-                                    <div style="font-size: 12px; opacity: 0.9;">${date.toLocaleDateString('en-US', { month: 'short' })}</div>
-                                </div>
+                            <div class="session-card" style="border-left: 4px solid #5865F2; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); background: #fff; display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
                                 <div style="flex: 1;">
-                                    <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #2d3748;">
-                                        ${session.subject_name || 'Subject'}
-                                    </h4>
-                                    <p style="margin: 4px 0; font-size: 14px; color: #718096;">
-                                        <i class="fas fa-user-graduate"></i> Tutor: <strong>${session.tutor_name || 'N/A'}</strong>
-                                    </p>
-                                    <p style="margin: 4px 0; font-size: 14px; color: #718096;">
-                                        <i class="fas fa-clock"></i> ${session.start_time || 'TBD'} ${session.end_time ? '- ' + session.end_time : ''}
-                                    </p>
-                                    ${session.location ? `<p style="margin: 4px 0; font-size: 14px; color: #718096;"><i class="fas fa-map-marker-alt"></i> ${session.location}</p>` : ''}
+                                    <h4 style="color: #2d3748; font-size: 18px; font-weight: 600; margin-bottom: 12px;">${subject}</h4>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                                        <span style="background: #e3f2fd; color: #1976d2; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;"><i class="fas fa-calendar" style="margin-right: 6px;"></i>${formattedDate}</span>
+                                        <span style="background: #f3e5f5; color: #7b1fa2; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;"><i class="fas fa-clock" style="margin-right: 6px;"></i>${startTime}${endTime}</span>
+                                        <span style="background: #e8f5e9; color: #388e3c; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;"><i class="fas fa-video" style="margin-right: 6px;"></i>${sessionType}</span>
+                                    </div>
+                                    <div style="color: #5865F2; font-weight: 500; font-size: 14px;"><i class="fas fa-user" style="margin-right: 6px;"></i>${tutorDisplay}</div>
                                 </div>
-                                <span class="badge badge-success" style="flex-shrink: 0;">Confirmed</span>
+                                <span class="badge badge-success" style="align-self: flex-start;">Confirmed</span>
                             </div>
                         `;
                     }).join('');
@@ -404,32 +397,26 @@
                     
                     // Show recent 5 materials
                     container.innerHTML = materials.slice(0, 5).map(material => {
+                        const title = material.title || material.material_title || 'Untitled';
+                        const subject = material.subject?.subject_name || material.subject_name || 'N/A';
+                        const tutor = material.tutor_name || material.tutor?.fullName || material.tutor?.full_name ||
+                            (material.tutor?.first_name && material.tutor?.last_name ? `${material.tutor.first_name} ${material.tutor.middle_name || ''} ${material.tutor.last_name}`.replace(/\s+/g, ' ').trim() : 'N/A');
                         const uploadDate = new Date(material.uploaded_at || material.created_at);
                         const icon = getFileIcon(material.file_type || material.filename);
-                        
                         return `
-                            <div class="material-item" style="padding: 16px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 16px; align-items: start;">
-                                <div style="flex-shrink: 0; width: 48px; height: 48px; background: #f7fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #5865F2;">
-                                    ${icon}
+                            <div class="material-card">
+                                <div class="material-icon-large">${icon}</div>
+                                <div class="material-card-body">
+                                    <h4 class="material-card-title">${title}</h4>
+                                    <div class="material-card-meta">
+                                        <span class="badge badge-primary">${subject}</span>
+                                        <span class="badge badge-secondary">${tutor}</span>
+                                    </div>
+                                    <div class="material-card-date">${uploadDate.toLocaleDateString()}</div>
                                 </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <h4 style="margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        ${material.title || 'Untitled'}
-                                    </h4>
-                                    ${material.description ? `<p style="margin: 0 0 8px 0; font-size: 13px; color: #718096; line-height: 1.4;">${material.description}</p>` : ''}
-                                    <p style="margin: 0; font-size: 12px; color: #a0aec0;">
-                                        <i class="fas fa-user"></i> ${material.tutor_name || 'Tutor'} • 
-                                        <i class="fas fa-calendar"></i> ${uploadDate.toLocaleDateString()}
-                                        ${material.download_count ? ` • <i class="fas fa-download"></i> ${material.download_count} downloads` : ''}
-                                    </p>
-                                </div>
-                                <a href="${material.file_url}" target="_blank" class="btn btn-sm btn-primary" style="flex-shrink: 0;">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
                             </div>
                         `;
                     }).join('');
-                    
                     console.log(`✅ Loaded ${materials.length} study materials`);
                 } else {
                     container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No materials available</p>';

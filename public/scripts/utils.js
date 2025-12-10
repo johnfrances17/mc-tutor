@@ -43,7 +43,7 @@ function showToast(message, type = 'info', duration = 3000) {
     success: '#28a745',
     error: '#dc3545',
     warning: '#ffc107',
-    info: '#667eea'
+    info: '#5865F2'
   };
 
   toast.style.cssText = `

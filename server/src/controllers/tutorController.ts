@@ -200,16 +200,19 @@ export const getTutorSubjects = async (req: Request, res: Response, next: NextFu
   try {
     const { id } = req.params;
 
-    const { data, error } = await supabase
-      .from('tutor_subjects')
-      .select('subject:subjects(*)')
-      .eq('tutor_id', id);
+        const { data, error } = await supabase
+          .from('tutor_subjects')
+          .select('subject:subjects(*), proficiency_level')
+          .eq('tutor_id', id);
 
     if (error) {
       return res.status(400).json({ success: false, message: 'Failed to fetch tutor subjects' });
     }
 
-    const subjects = data.map((item: any) => item.subject);
+        const subjects = data.map((item: any) => ({
+          ...item.subject,
+          proficiency_level: item.proficiency_level
+        }));
 
     res.json({ success: true, subjects });
   } catch (error) {

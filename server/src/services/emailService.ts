@@ -120,16 +120,16 @@ const templates = {
   }),
 
   passwordReset: (resetLink: string, name: string) => ({
-    subject: 'Reset Your Password - MC Tutor',
+    subject: '🔒 Reset Your Password - MC Tutor',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: #ef4444; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 28px;">🔒 Password Reset</h1>
+          <h1 style="color: white; margin: 0; font-size: 28px;">🔒 Password Reset Request</h1>
         </div>
         <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
           <p style="color: #4b5563; line-height: 1.6;">Hi ${name},</p>
           <p style="color: #4b5563; line-height: 1.6;">
-            We received a request to reset your password. Click the button below to create a new password:
+            We received a request to reset your password for your MC Tutor account. Click the button below to create a new password:
           </p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="${resetLink}" 
@@ -139,12 +139,26 @@ const templates = {
             </a>
           </div>
           <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin: 20px 0;">
-            <p style="color: #991b1b; margin: 0; font-size: 14px;">
-              ⚠️ This link expires in <strong>1 hour</strong>. If you didn't request this, please ignore this email.
+            <p style="color: #991b1b; margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">
+              ⚠️ Important Security Information:
+            </p>
+            <ul style="color: #991b1b; margin: 0; padding-left: 20px; font-size: 13px;">
+              <li>This link expires in <strong>1 hour</strong></li>
+              <li>The link can only be used once</li>
+              <li>If you didn't request this, your account may be at risk - please secure it immediately</li>
+            </ul>
+          </div>
+          <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <p style="color: #1e40af; margin: 0; font-size: 13px;">
+              💡 <strong>Security Tip:</strong> Choose a strong password with at least 8 characters, including uppercase, lowercase, numbers, and special characters.
             </p>
           </div>
-          <p style="color: #9ca3af; font-size: 14px; margin-top: 30px;">
-            For security reasons, this link can only be used once.
+          <p style="color: #9ca3af; font-size: 12px; margin-top: 30px; text-align: center;">
+            If the button doesn't work, copy and paste this link into your browser:<br/>
+            <span style="color: #6b7280; word-break: break-all;">${resetLink}</span>
+          </p>
+          <p style="color: #9ca3af; font-size: 12px; margin-top: 20px; text-align: center;">
+            If you didn't request a password reset, please ignore this email or contact support if you have concerns about your account security.
           </p>
         </div>
       </div>

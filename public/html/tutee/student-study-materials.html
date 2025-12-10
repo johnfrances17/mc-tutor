@@ -15,20 +15,20 @@
         #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
         .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
         .nav-container { max-width: 1400px; margin: 0 auto; padding: 0px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-brand { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+        .nav-brand { font-size: 24px; font-weight: bold;  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
         .nav-right { display: flex; align-items: center; gap: 25px; }
         .nav-links { display: flex; gap: 15px; align-items: center; }
         .nav-link { color: #333; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
         .nav-link:hover { background: #f0f0f0; color: #5865F2; }
         .nav-menu-btn { background: transparent; color: #333; border: none; border-radius: 6px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; font-size: 18px; }
         .nav-menu-btn:hover { background: #f0f0f0; color: #5865F2; }
-        .user-info-inline { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 0px; color: white; max-width: 180px; min-width: 100px; }
+        .user-info-inline { display: flex; align-items: center; gap: 12px; padding: 8px 16px;  border-radius: 0px; color: white; max-width: 180px; min-width: 100px; }
         .user-avatar-small { width: 35px; height: 35px; border-radius: 50%; background: white; overflow: hidden; flex-shrink: 0; border: 2px solid white; }
         .user-avatar-small img { width: 100%; height: 100%; object-fit: cover; }
         .user-details-inline { display: flex; flex-direction: column; gap: 2px; overflow: hidden; flex: 1; }
         .user-name-inline { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-role-badge-inline { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
-        .secondary-navbar { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 68px; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70px; overflow: hidden; }
+        .secondary-navbar {  box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 68px; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70px; overflow: hidden; }
         .secondary-navbar.collapsed { max-height: 0; opacity: 0; transform: translateY(-100%); }
         .secondary-nav-container { max-width: 1400px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: center; align-items: center; }
         .secondary-nav-links { display: flex; gap: 8px; align-items: center; }
@@ -36,14 +36,12 @@
         .secondary-nav-link:hover { background: white; color: #5865F2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .secondary-nav-link.active { background: white; color: #5865F2; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
-        .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
+        .floating-message-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;  border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); cursor: pointer; transition: all 0.3s ease; z-index: 1000; text-decoration: none; color: white; font-size: 24px; }
         .floating-message-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6); }
 
         /* Stats Grid */
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-box { background: linear-gradient(135deg, #5865F2 0%, #7289DA 50%, #A5B4F5 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
-        .stat-box h3 { margin: 0 0 8px 0; font-size: 32px; font-weight: 700; }
-        .stat-box p { margin: 0; opacity: 0.9; }
+        /* stat-box styles now in style.css */
 
         /* Card Styles */
         .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 24px; }
@@ -64,7 +62,7 @@
 
         /* Button Styles */
         .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
-        .btn-primary { background: linear-gradient(135deg, #5865F2, #7289DA); color: white; }
+        .btn-primary {  color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); }
         .btn-secondary { background: #e5e7eb; color: #2d3748; }
         .btn-secondary:hover { background: #d1d5db; }
@@ -465,7 +463,7 @@
                 if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
                     paginationHTML += `
                         <button onclick="changePage(${i})" 
-                            style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: ${i === currentPage ? 'linear-gradient(135deg, #5865F2, #7289DA)' : 'white'}; color: ${i === currentPage ? 'white' : '#2d3748'}; cursor: pointer; font-weight: ${i === currentPage ? '600' : '400'};">
+                            style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: ${i === currentPage ? '#5865F2' : 'white'}; color: ${i === currentPage ? 'white' : '#2d3748'}; cursor: pointer; font-weight: ${i === currentPage ? '600' : '400'};">
                             ${i}
                         </button>
                     `;

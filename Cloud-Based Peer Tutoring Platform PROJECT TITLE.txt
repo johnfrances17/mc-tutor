@@ -1,0 +1,155 @@
+Cloud-Based Peer Tutoring Platform for Mabini College Inc.
+________________________________________
+
+Adviser:
+o	Mr. Aeron Dave C. Enova
+
+Project Proponents:
+o	Mojico, Kimel Jan
+o	Adap, Al Jabbar
+o	Ablao, Jefferson
+o	Mabeza, John Frances
+o	Resoles, Kreiss Keali
+
+Bachelor of Science in Computer Science, 3rd Year Block B
+
+
+
+TITLE
+Cloud-Based Peer Tutoring Platform for Mabini College Inc.
+
+
+
+INTRODUCTION
+Peer tutoring has long been recognized as an effective way for students to improve their academic performance by learning from their fellow classmates. However, finding the right tutor within the campus can be a challenge due to time constraints, lack of coordination, and limited visibility of available tutors.
+
+In today’s digital era, cloud computing offers opportunities to enhance student learning by providing platforms that are accessible anytime and anywhere. Through cloud services, data such as tutor profiles, tutoring schedules, and learning resources can be centralized, managed efficiently, and accessed in real time.
+
+This concept paper proposes the development of a Cloud-Based Peer Tutoring Platform designed for Mabini College Inc. The system will connect students who need academic assistance with peers willing to provide tutoring. It will feature tutor and tutee profiles, subject-specific matching, session booking, cloud-based storage for study materials, and basic feedback mechanisms.
+
+
+
+BACKGROUND OF THE STUDY
+Mabini College Inc. provides diverse academic programs where students often face challenges in mastering certain subjects. Traditionally, peer tutoring arrangements occur informally—students rely on word of mouth or personal networks to find help. While helpful, this process lacks structure, accessibility, and inclusivity.
+
+Other institutions have implemented learning management systems, but many focus primarily on teacher-led instruction. Peer-to-peer support is often overlooked, even though it encourages collaborative learning and fosters a supportive academic environment.
+By leveraging cloud computing, the proposed system addresses these gaps by creating a centralized, accessible platform where tutors and tutees can easily connect, schedule sessions, and share learning materials online.
+
+
+
+PROBLEM STATEMENT
+The absence of a structured peer tutoring system in Mabini College Inc. presents several challenges:
+
+1.	Difficulty in Finding Tutors
+Students rely on personal networks, limiting access to potential tutors outside their circle.
+2.	Uncoordinated Scheduling
+Arranging tutoring sessions is inconvenient without a centralized platform.
+3.	Lack of Resource Sharing
+Study materials are scattered and not easily accessible to all.
+4.	Limited Academic Support
+Students struggling in specific subjects may not receive timely help, which can affect academic performance.
+
+Without a structured, cloud-based peer tutoring platform, the school community misses opportunities to strengthen collaboration, improve accessibility to learning resources, and promote academic success through peer support.
+
+
+
+OBJECTIVES
+General Objective
+To design and implement a cloud-based peer tutoring platform that connects students of Mabini College Inc. for academic support and collaborative learning.
+
+Specific Objectives
+	To develop a user registration and login system for tutors and tutees.
+	To allow tutors to list subjects they can teach and enable tutees to request assistance in specific subjects.
+	To create a cloud-hosted scheduling system for booking tutoring sessions.
+	To provide cloud storage for uploading and accessing study materials.
+	To implement a basic feedback mechanism for evaluating tutoring effectiveness.
+	To ensure the platform is accessible, user-friendly, and secure for students of Mabini College Inc.
+
+
+
+TECHNOLOGICAL JUSTIFICATION
+This project leverages cloud computing as its primary emerging technology. Cloud services allow real-time access, scalability, and centralized data management, which are essential for an online tutoring platform.
+
+ 
+Need for Emerging Technology
+	Traditional tutoring arrangements lack structure and accessibility. Using cloud-based systems ensures that student information, schedules, and learning resources are always available across devices.
+
+Role of Cloud Computing in the Proposed System
+	Authentication & Profiles: Managed by Firebase Auth or similar service.
+	Database: Cloud database (Firebase (Firestore) / Supabase (Postgres)) stores student profiles, tutor subjects, and schedules.
+	Cloud Storage: Handouts, notes, and study resources uploaded by tutors are stored securely and accessed by tutees.
+	Real-Time Updates: Booking confirmations and notifications are updated instantly across all devices.
+
+Advantages of Cloud-Based Approach
+	Accessibility: Students can access the platform anytime, anywhere.
+	Scalability: System can grow to include more subjects and users without heavy infrastructure.
+	Cost-Effective: Free-tier cloud services (Firebase/Supabase) reduce development costs.
+	Collaboration: Promotes active student involvement in the learning process.
+
+
+
+Proposed System Overview
+System Components
+	User Interface – Web-based front end accessible on any device.
+	Cloud Database – Stores user profiles, subjects, schedules, and feedback.
+	Cloud Storage – For uploading and accessing study materials.
+	Notification System – Provides session booking confirmations and reminders.
+
+System Workflow
+1.	Students register as either tutor or tutee.
+2.	Tutors list their available subjects and schedules.
+3.	Tutees search for tutors by subject and request a session.
+4.	The system confirms the booking and updates schedules in real time.
+5.	Tutors can upload study materials to cloud storage.
+6.	After sessions, tutees provide feedback for tutors.
+
+
+STATEMENT OF RELEVANCE
+Industry Alignment
+The proposed system aligns with the growing EdTech (Educational Technology) industry, where cloud computing plays a major role in delivering flexible, scalable learning platforms. By focusing on peer-to-peer learning, this project introduces an innovative approach that complements formal instruction.
+
+Societal Impact
+	For Students: Provides easier access to peer support and learning materials.
+	For Tutors: Creates opportunities to share knowledge, build confidence, and practice leadership.
+	For Teachers & School: Complements teaching by strengthening student collaboration and academic performance.
+	For Community: Encourages a culture of cooperation and knowledge-sharing within Mabini College Inc.
+
+________________________________________
+
+Preliminary Timeline: (11 Weeks)
+	Week 1–2: Research and design (literature review, finalize flows, requirements gathering)
+	Week 3–4: Database and authentication setup (Firebase/Supabase, user registration system)
+	Week 5–6: Development of tutor/tutee modules (profiles, subject listings, session requests)
+	Week 7–8: Cloud storage integration and testing (uploading study materials, retrieving files)
+	Week 9–10: System integration, pilot testing, and feedback collection
+	Week 11: Final documentation, system demo, and defence preparation
+
+________________________________________
+EXPECTED OUTCOMES
+	A functional cloud-based peer tutoring platform accessible via web.
+	Efficient matching of tutors and tutees based on subject expertise.
+	Cloud-hosted repository for study materials and resources.
+	Real-time updates and notifications for session bookings.
+	Improved academic collaboration and support within Mabini College Inc.
+
+
+
+CONCLUSION
+The Cloud-Based Peer Tutoring Platform for Mabini College Inc. aims to modernize and formalize peer-to-peer academic support within the campus. By leveraging cloud computing, the system ensures accessibility, scalability, and efficiency while promoting collaborative learning.
+
+This project will not only provide struggling students with timely assistance but will also empower capable students to share their knowledge. In the long term, the platform can serve as a model for integrating technology-driven peer support systems in other academic institutions.
+
+________________________________________
+
+Project Team Roles
+1.	Project Leader / Coordinator
+Oversees project progress, communicates with adviser, ensures deadlines.
+2.	Frontend Developer
+Designs the user interface (registration, profile, session booking).
+3.	Backend & Database Developer
+Implements cloud database, authentication, and session management.
+4.	Cloud Integration Specialist
+Sets up storage for study materials, ensures system connectivity.
+5.	QA & Documentation Officer
+Handles system testing, error checking, and documentation.
+
