@@ -102,9 +102,9 @@ export const uploadProfilePicture = async (req: AuthRequest, res: Response, next
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    // Check file size (max 2MB)
-    if (req.file.size > 2 * 1024 * 1024) {
-      return res.status(400).json({ success: false, message: 'File size must be less than 2MB' });
+    // Check file size (max 5MB - frontend crops to 400x400 and compresses)
+    if (req.file.size > 5 * 1024 * 1024) {
+      return res.status(400).json({ success: false, message: 'File size must be less than 5MB' });
     }
 
     // Get old profile picture before updating

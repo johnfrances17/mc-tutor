@@ -199,8 +199,8 @@
                     </div>
                     <div class="form-group" style="margin: 0;">
                         <label>Google Meet Link</label>
-                        <input type="text" value="Auto-generated upon adding subject" disabled style="background: #f9fafb; cursor: not-allowed;">
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">🌐 A unique Google Meet link will be created automatically</small>
+                        <input type="text" value="Click 'Create Meeting' after adding subject" disabled style="background: #f9fafb; cursor: not-allowed;">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">🌐 A Google Meet link will be generated - click it once to create your permanent meeting room</small>
                     </div>
                 </div>
                 <div style="margin-top: 16px;">
@@ -305,7 +305,10 @@
                             </div>
                             <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; border-left: 3px solid #3b82f6;">
                                 <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 13px;">🌐 Google Meet Link</div>
-                                ${subject.google_meet_link ? `<a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 13px; word-break: break-all;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${subject.google_meet_link}</a>` : '<span style="font-size: 13px; color: #9ca3af;">Link not generated</span>'}
+                                ${subject.google_meet_link ? `
+                                    <a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 13px; word-break: break-all; display: block; margin-bottom: 6px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${subject.google_meet_link}</a>
+                                    ${subject.google_meet_link.includes('/new') ? '<div style="font-size: 11px; color: #6b7280; margin-top: 4px;">💡 Click this link once to create your permanent meeting room, then copy the new URL to share with students</div>' : ''}
+                                ` : '<span style="font-size: 13px; color: #9ca3af;">Link not generated</span>'}
                             </div>
                         </div>
                         <button class="btn btn-danger" onclick="removeSubject(${subject.subject_id})">
@@ -353,7 +356,6 @@
                 if (response.success) {
                     showMessage('Subject added successfully!', 'success');
                     document.getElementById('addSubjectForm').reset();
-                    document.getElementById('physicalLocationGroup').style.display = 'none';
                     await loadData(); // Reload both lists
                 } else {
                     showMessage(response.message || 'Error adding subject', 'danger');
