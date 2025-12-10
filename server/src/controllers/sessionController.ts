@@ -3,10 +3,8 @@ import { supabase } from '../config/database';
 import { AuthRequest } from '../types';
 import { validatePagination } from '../utils/validation';
 import { SessionPreferencesService } from '../services/SessionPreferencesService';
-import { ChatService } from '../services/ChatService';
 
 const sessionPrefsService = new SessionPreferencesService();
-const chatService = new ChatService();
 
 /**
  * Get all sessions for current user
@@ -166,25 +164,6 @@ export const confirmSession = async (req: AuthRequest, res: Response, next: Next
 
     if (error) {
       return res.status(400).json({ success: false, message: 'Failed to confirm session' });
-    }
-
-    // Auto-create conversation by sending a system message
-    try {
-      const tutorSchoolId = data.tutor.school_id;
-      const tuteeSchoolId = data.tutee.school_id;
-      const subjectName = data.subject?.subject_name || 'Subject';
-      const sessionDate = new Date(data.session_date).toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      });
-      
-      const welcomeMessage = `Your tutoring session for ${subjectName} on ${sessionDate} has been confirmed! Feel free to message each other to coordinate.`;
-      
-      await chatService.sendMessage(tutorSchoolId, tuteeSchoolId, welcomeMessage, true);
-    } catch (chatError) {
-      console.error('Failed to create conversation:', chatError);
-      // Don't fail the session confirmation if chat fails
     }
 
     res.json({ success: true, message: 'Session confirmed', session: data });
