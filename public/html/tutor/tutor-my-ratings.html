@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Ratings - MC Tutor</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Montserrat', sans-serif; }
+        body { font-family: 'Montserrat', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
+        #logoutBtn { color: #dc3545 !important; }
+        #logoutBtn:hover { color: #c82333 !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+        .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { font-size: 24px; font-weight: bold; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+        .nav-right { display: flex; align-items: center; gap: 25px; }
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .nav-link { color: #333; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
+        .nav-link:hover { background: #f0f0f0; color: #5865F2; }
+        .nav-menu-btn { background: transparent; color: #333; border: none; border-radius: 6px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; font-size: 18px; }
+        .nav-menu-btn:hover { background: #f0f0f0; color: #5865F2; }
+        .user-info-inline { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 0px; color: white; max-width: 180px; min-width: 100px; }
+        .user-avatar-small { width: 35px; height: 35px; border-radius: 50%; background: white; overflow: hidden; flex-shrink: 0; border: 2px solid white; }
+        .user-avatar-small img { width: 100%; height: 100%; object-fit: cover; }
+        .user-details-inline { display: flex; flex-direction: column; gap: 2px; overflow: hidden; flex: 1; }
+        .user-name-inline { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role-badge-inline { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
+        .secondary-navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 68px; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 70px; overflow: hidden; }
+        .secondary-navbar.collapsed { max-height: 0; opacity: 0; transform: translateY(-100%); }
+        .secondary-nav-container { max-width: 1400px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: center; align-items: center; }
+        .secondary-nav-links { display: flex; gap: 8px; align-items: center; }
+        .secondary-nav-link { color: white; text-decoration: none; padding: 10px 24px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; background: rgba(255,255,255,0.15); }
+        .secondary-nav-link:hover { background: white; color: #5865F2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .secondary-nav-link.active { background: white; color: #5865F2; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .container { max-width: 1400px; margin: 40px auto 0; padding: 0 20px 40px; }
+
+        /* Stats Grid */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        
+        /* Card */
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 24px; }
+        .card-title { font-size: 20px; font-weight: 600; color: #1f2937; margin: 0 0 20px 0; }
+
+        /* Rating Overview */
+        .rating-overview {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 32px;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .rating-summary {
+            text-align: center;
+        }
+
+        .big-rating {
+            font-size: 64px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .rating-count {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .star-display {
+            font-size: 32px;
+            color: #ffc107;
+            margin: 8px 0;
+        }
+
+        .rating-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rating-label {
+            font-size: 14px;
+            font-weight: 500;
+            width: 50px;
+        }
+
+        .rating-bar-container {
+            flex: 1;
+            height: 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .rating-bar {
+            height: 100%;
+            background: #ffc107;
+            transition: width 0.3s ease;
+        }
+
+        .rating-count-num {
+            font-size: 14px;
+            font-weight: 500;
+            width: 40px;
+            text-align: right;
+        }
+
+        /* Rating Card */
+        .rating-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .rating-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .rating-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .student-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .rating-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 4px 0;
+        }
+
+        .session-info {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .star-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+        }
+
+        .stars {
+            color: #ffc107;
+            letter-spacing: 2px;
+        }
+
+        .rating-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .rating-date {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .review-text {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #374151;
+            margin: 0 0 8px 0;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .rating-overview {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .rating-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .student-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/html/tutor/tutor-dashboard.html" class="nav-brand" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);">MC Tutor</a>
+            <div class="nav-right">
+                <div class="nav-links">
+                    <a href="/html/shared/profile.html" class="nav-link" id="profileLink">
+                        <i class="fas fa-user"></i> <span>Profile</span>
+                    </a>
+                    <a href="#" class="nav-link" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                    </a>
+                </div>
+                <div class="user-info-inline" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);">
+                    <div class="user-avatar-small">
+                        <span id="userAvatar" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 18px; color: #5865F2; font-weight: 600;">?</span>
+                    </div>
+                    <div class="user-details-inline">
+                        <div class="user-name-inline" id="userName">Loading...</div>
+                        <div class="user-role-badge-inline" id="userRole">Tutor</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="secondary-navbar" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);" id="secondaryNav">
+        <div class="secondary-nav-container">
+            <div class="secondary-nav-links">
+                <a href="/html/tutor/tutor-dashboard.html" class="secondary-nav-link">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="/html/tutor/tutor-my-subjects.html" class="secondary-nav-link">
+                    <i class="fas fa-book"></i> My Subjects
+                </a>
+                <a href="/html/tutor/tutor-sessions.html" class="secondary-nav-link">
+                    <i class="fas fa-calendar"></i> Sessions
+                </a>
+                <a href="/html/tutor/tutor-my-ratings.html" class="secondary-nav-link active">
+                    <i class="fas fa-star"></i> My Ratings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-box" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white;">
+                <i class="fas fa-star"></i>
+                <h3 id="avgRating">0.0</h3>
+                <p>Average Rating</p>
+            </div>
+            <div class="stat-box" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); color: white;">
+                <i class="fas fa-users"></i>
+                <h3 id="totalRatings">0</h3>
+                <p>Total Ratings</p>
+            </div>
+            <div class="stat-box" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                <i class="fas fa-user-graduate"></i>
+                <h3 id="studentsRated">0</h3>
+                <p>Students Who Rated</p>
+            </div>
+            <div class="stat-box" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+                <i class="fas fa-trophy"></i>
+                <h3 id="fiveStars">0</h3>
+                <p>5-Star Ratings</p>
+            </div>
+        </div>
+
+        <div class="rating-overview" id="ratingOverview" style="display: none;">
+            <div class="rating-summary">
+                <div class="big-rating" id="bigRating">0.0</div>
+                <div class="star-display" id="starDisplay">☆☆☆☆☆</div>
+                <div class="rating-count" id="ratingCountText">Based on 0 ratings</div>
+            </div>
+            <div class="rating-breakdown" id="ratingBreakdown">
+                <!-- Rating bars will be inserted here -->
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <i class="fas fa-comments"></i> Student Reviews
+            </h2>
+            
+            <div id="ratingsContainer"></div>
+            
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-star"></i>
+                <h3>No Ratings Yet</h3>
+                <p>You haven't received any ratings from students yet. Keep providing great tutoring sessions!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        let currentUser = null;
+
+        // Initialize page
+        async function init() {
+            try {
+                currentUser = await checkAuth();
+                if (!currentUser || currentUser.role !== 'tutor') {
+                    window.location.href = '/html/auth/login.html';
+                    return;
+                }
+
+                updateNavbar();
+                await loadRatings();
+
+            } catch (error) {
+                console.error('Initialization error:', error);
+                handleLogout();
+            }
+        }
+
+        // Update navbar with user info
+        function updateNavbar() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+
+            if (currentUser) {
+                const fullName = currentUser.last_name && currentUser.first_name
+                    ? `${currentUser.last_name}, ${currentUser.first_name}`
+                    : currentUser.email;
+                userName.textContent = fullName;
+                
+                const initial = fullName.charAt(0).toUpperCase();
+                userAvatar.textContent = initial;
+            }
+        }
+
+        // Load ratings
+        async function loadRatings() {
+            try {
+                showLoadingState();
+                const response = await api.get('/ratings/tutor-ratings');
+
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to load ratings');
+                }
+
+                const data = response.data;
+                const stats = data.stats || { average_rating: 0, total_ratings: 0 };
+                const ratings = data.ratings || [];
+                const distribution = data.distribution || [];
+
+                updateStats(stats, ratings, distribution);
+                displayRatings(ratings);
+
+            } catch (error) {
+                console.error('Error loading ratings:', error);
+                showError('Failed to load ratings');
+            }
+        }
+
+        // Show loading state
+        function showLoadingState() {
+            document.getElementById('ratingsContainer').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #5865F2;"></i>
+                    <p style="margin-top: 16px;">Loading your ratings...</p>
+                </div>
+            `;
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        // Update statistics
+        function updateStats(stats, ratings, distribution) {
+            const avgRating = parseFloat(stats.average_rating || 0).toFixed(1);
+            const totalRatings = stats.total_ratings || 0;
+            const uniqueStudents = new Set(ratings.map(r => r.tutee_id)).size;
+            const fiveStars = distribution.find(d => d.rating === 5)?.count || 0;
+
+            document.getElementById('avgRating').textContent = avgRating;
+            document.getElementById('totalRatings').textContent = totalRatings;
+            document.getElementById('studentsRated').textContent = uniqueStudents;
+            document.getElementById('fiveStars').textContent = fiveStars;
+
+            // Show rating overview if there are ratings
+            if (totalRatings > 0) {
+                document.getElementById('ratingOverview').style.display = 'grid';
+                updateRatingOverview(avgRating, totalRatings, distribution);
+            }
+        }
+
+        // Update rating overview with breakdown
+        function updateRatingOverview(avgRating, totalRatings, distribution) {
+            document.getElementById('bigRating').textContent = avgRating;
+            document.getElementById('ratingCountText').textContent = `Based on ${totalRatings} rating${totalRatings !== 1 ? 's' : ''}`;
+
+            // Update star display
+            const rating = parseFloat(avgRating);
+            const fullStars = Math.floor(rating);
+            const hasHalf = rating % 1 >= 0.5;
+            let stars = '★'.repeat(fullStars);
+            if (hasHalf && fullStars < 5) stars += '⯨';
+            stars += '☆'.repeat(5 - fullStars - (hasHalf ? 1 : 0));
+            document.getElementById('starDisplay').textContent = stars;
+
+            // Create rating breakdown
+            const breakdownHTML = [5, 4, 3, 2, 1].map(star => {
+                const count = distribution.find(d => d.rating === star)?.count || 0;
+                const percentage = totalRatings > 0 ? (count / totalRatings * 100) : 0;
+
+                return `
+                    <div class="rating-row">
+                        <span class="rating-label">${star} star${star !== 1 ? 's' : ''}</span>
+                        <div class="rating-bar-container">
+                            <div class="rating-bar" style="width: ${percentage}%"></div>
+                        </div>
+                        <span class="rating-count-num">${count}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('ratingBreakdown').innerHTML = breakdownHTML;
+        }
+
+        // Display ratings
+        function displayRatings(ratings) {
+            const container = document.getElementById('ratingsContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!ratings || ratings.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = ratings.map(rating => {
+                const stars = '★'.repeat(rating.rating) + '☆'.repeat(5 - rating.rating);
+                const studentInitial = rating.tutee_name ? rating.tutee_name.charAt(0).toUpperCase() : '?';
+                const sessionDate = new Date(rating.session_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const ratingDate = new Date(rating.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                return `
+                    <div class="rating-card">
+                        <div class="rating-header">
+                            <div class="student-avatar">
+                                ${rating.tutee_picture 
+                                    ? `<img src="${rating.tutee_picture}" alt="${rating.tutee_name}" onerror="this.style.display='none'; this.parentElement.textContent='${studentInitial}'">`
+                                    : studentInitial
+                                }
+                            </div>
+                            <div class="rating-info">
+                                <h3 class="student-name">${rating.tutee_name || 'Unknown Student'}</h3>
+                                <p class="session-info">
+                                    <i class="fas fa-book"></i> ${rating.subject_name || 'Subject'}
+                                    <span style="margin: 0 8px;">•</span>
+                                    <i class="fas fa-calendar"></i> ${sessionDate}
+                                </p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="star-rating">
+                                    <span class="stars">${stars}</span>
+                                    <span class="rating-value">${rating.rating}.0</span>
+                                </div>
+                                <div class="rating-date">Rated on ${ratingDate}</div>
+                            </div>
+                        </div>
+                        ${rating.review_text ? `
+                            <div class="review-text">
+                                <i class="fas fa-quote-left" style="color: #d1d5db; margin-right: 4px;"></i>
+                                ${rating.review_text}
+                                <i class="fas fa-quote-right" style="color: #d1d5db; margin-left: 4px;"></i>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show error
+        function showError(message) {
+            const container = document.getElementById('ratingsContainer');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
+                    <p style="font-size: 16px; margin: 0;">${message}</p>
+                </div>
+            `;
+        }
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+
+        // Secondary nav scroll behavior
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            const secondaryNav = document.getElementById('secondaryNav');
+            
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                secondaryNav.classList.add('collapsed');
+            } else {
+                secondaryNav.classList.remove('collapsed');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

@@ -98,14 +98,18 @@ export class StorageService {
   private async uploadProfilePictureLocal(file: Express.Multer.File, userId: string): Promise<string> {
     // Determine base directory based on environment
     let uploadsDir: string;
+    let baseUrl: string;
     
     if (process.env.VERCEL) {
       // On Vercel, use /tmp directory (only writable directory in serverless)
       const tmpDir = process.env.TMPDIR || '/tmp';
       uploadsDir = path.join(tmpDir, 'uploads', 'profiles');
+      baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '';
     } else {
       // Local development (XAMPP) - use relative path from project root
       uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
+      // Use localhost URL for local development
+      baseUrl = process.env.LOCAL_BASE_URL || 'http://localhost';
     }
     
     await fs.mkdir(uploadsDir, { recursive: true });
@@ -116,8 +120,11 @@ export class StorageService {
 
     await fs.writeFile(filePath, file.buffer);
     
+    // Return full URL for local files
+    const fileUrl = `${baseUrl}/uploads/profiles/${fileName}`;
     console.log('✅ Profile picture saved locally:', fileName);
-    return `/uploads/profiles/${fileName}`;
+    console.log('📍 Accessible at:', fileUrl);
+    return fileUrl;
   }
 
   /**

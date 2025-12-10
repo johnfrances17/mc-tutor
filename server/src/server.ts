@@ -49,6 +49,7 @@ import feedbackRoutes from './routes/feedbackRoutes';
 import adminRoutes from './routes/adminRoutes';
 import searchRoutes from './routes/searchRoutes';
 import courseRoutes from './routes/courseRoutes';
+import ratingRoutes from './routes/ratingRoutes';
 // import testRoutes from './routes/testRoutes'; // Temporarily disabled
 import { apiLimiter } from './middleware/rateLimiter';
 
@@ -131,6 +132,7 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/tutors', tutorRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/ratings', ratingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
 // app.use('/api/test', testRoutes); // Temporarily disabled - causing serverless crashes

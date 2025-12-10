@@ -66,7 +66,7 @@ export const searchTutors = async (req: Request, res: Response, next: NextFuncti
     // Otherwise, search all tutors
     let query = supabase
       .from('users')
-      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, course_code, year_level, profile_picture', {
+      .select('user_id, school_id, first_name, middle_name, last_name, email, phone, course_code, year_level, profile_picture, average_rating, total_ratings', {
         count: 'exact',
       })
       .eq('role', 'tutor');

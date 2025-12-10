@@ -935,8 +935,14 @@
                 const profilePicturePreview = document.getElementById('profilePicturePreview');
                 if (profilePicturePreview) {
                     if (currentUser.profile_picture) {
-                        profilePicturePreview.innerHTML = `<img src="${currentUser.profile_picture}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
-                        console.log('✅ Profile picture loaded:', currentUser.profile_picture);
+                        // Handle both relative paths (old) and full URLs (new)
+                        let pictureUrl = currentUser.profile_picture;
+                        if (pictureUrl.startsWith('/uploads/')) {
+                            // Old relative path - prepend localhost
+                            pictureUrl = `http://localhost${pictureUrl}`;
+                        }
+                        profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
+                        console.log('✅ Profile picture loaded:', pictureUrl);
                     } else {
                         profilePicturePreview.innerHTML = `
                             <div class="profile-avatar-large">
