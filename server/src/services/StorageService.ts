@@ -68,6 +68,7 @@ export class StorageService {
 
       if (error) {
         console.error('❌ Supabase upload error:', error);
+        console.log('💡 Tip: Create "avatars" bucket in Supabase Dashboard (Settings > Storage)');
         console.log('🔄 Falling back to local storage...');
         return this.uploadProfilePictureLocal(file, userId);
       }
@@ -79,8 +80,13 @@ export class StorageService {
 
       console.log('✅ Profile picture uploaded to Supabase:', urlData.publicUrl);
       return urlData.publicUrl;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Upload profile picture error:', error);
+      if (error?.message?.includes('Bucket not found') || error?.message?.includes('bucket')) {
+        console.log('⚠️  Supabase bucket "avatars" not found!');
+        console.log('💡 To fix: Go to Supabase Dashboard > Storage > Create bucket "avatars" (Public)');
+        console.log('📍 Storage endpoint: https://axrzqrzlnceaiuiyixif.storage.supabase.co');
+      }
       console.log('🔄 Falling back to local storage...');
       return this.uploadProfilePictureLocal(file, userId);
     }
@@ -90,7 +96,18 @@ export class StorageService {
    * Fallback: Upload profile picture to local filesystem
    */
   private async uploadProfilePictureLocal(file: Express.Multer.File, userId: string): Promise<string> {
-    const uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
+    // Determine base directory based on environment
+    let uploadsDir: string;
+    
+    if (process.env.VERCEL) {
+      // On Vercel, use /tmp directory (only writable directory in serverless)
+      const tmpDir = process.env.TMPDIR || '/tmp';
+      uploadsDir = path.join(tmpDir, 'uploads', 'profiles');
+    } else {
+      // Local development (XAMPP) - use relative path from project root
+      uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
+    }
+    
     await fs.mkdir(uploadsDir, { recursive: true });
 
     const fileExt = path.extname(file.originalname);
@@ -178,6 +195,7 @@ export class StorageService {
 
       if (error) {
         console.error('❌ Supabase upload error:', error);
+        console.log('💡 Tip: Create "materials" bucket in Supabase Dashboard (Settings > Storage)');
         console.log('🔄 Falling back to local storage...');
         return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
       }
@@ -193,8 +211,13 @@ export class StorageService {
         url: urlData.publicUrl,
         filename: fileName
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Upload study material error:', error);
+      if (error?.message?.includes('Bucket not found') || error?.message?.includes('bucket')) {
+        console.log('⚠️  Supabase bucket "materials" not found!');
+        console.log('💡 To fix: Go to Supabase Dashboard > Storage > Create bucket "materials" (Public)');
+        console.log('📍 Storage endpoint: https://axrzqrzlnceaiuiyixif.storage.supabase.co');
+      }
       console.log('🔄 Falling back to local storage...');
       return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
     }
@@ -208,7 +231,18 @@ export class StorageService {
     tutorId: string,
     subjectId: number
   ): Promise<{ url: string; filename: string }> {
-    const baseDir = path.join(process.cwd(), '..', 'uploads', 'study_materials', tutorId, subjectId.toString());
+    // Determine base directory based on environment
+    let baseDir: string;
+    
+    if (process.env.VERCEL) {
+      // On Vercel, use /tmp directory (only writable directory in serverless)
+      const tmpDir = process.env.TMPDIR || '/tmp';
+      baseDir = path.join(tmpDir, 'uploads', 'study_materials', tutorId, subjectId.toString());
+    } else {
+      // Local development (XAMPP) - use relative path from project root
+      baseDir = path.join(process.cwd(), '..', 'uploads', 'study_materials', tutorId, subjectId.toString());
+    }
+    
     await fs.mkdir(baseDir, { recursive: true });
 
     const uniqueId = randomUUID().substring(0, 8);

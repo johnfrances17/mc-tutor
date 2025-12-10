@@ -289,36 +289,27 @@
         // Load subjects
         async function loadSubjects() {
             try {
+                console.log('📚 Loading subjects...');
                 const response = await api.get('/subjects');
+                console.log('📦 Subjects response:', response);
                 
-                if (response.success && response.subjects) {
-                    allSubjects = response.subjects;
+                if (response.success && response.data) {
+                    allSubjects = response.data;
 
                     const subjectSelect = document.getElementById('subjectFilter');
                     subjectSelect.innerHTML = '<option value="">All Subjects</option>' +
-                        allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
-
-                    // For upload modal (tutors only)
-                    if (currentUser.role === 'tutor') {
-                        const uploadSubjectSelect = document.getElementById('uploadSubject');
-                        if (uploadSubjectSelect) {
-                            const tutorSubjectsRes = await api.get('/tutors/my-subjects');
-                            if (tutorSubjectsRes.success && tutorSubjectsRes.data) {
-                                uploadSubjectSelect.innerHTML = '<option value="">Select a subject</option>' +
-                                    tutorSubjectsRes.data.map(s => `<option value="${s.subject_id}">${s.subject_name}</option>`).join('');
-                            }
-                        }
-                    }
+                        allSubjects.map(s => `<option value="${s.subject_id}">${s.subject_code} - ${s.subject_name}</option>`).join('');
                 }
 
             } catch (error) {
-                console.error('Load subjects error:', error);
+                console.error('❌ Load subjects error:', error);
             }
         }
 
         // Load materials
         async function loadMaterials() {
             try {
+                console.log('📚 Loading materials...');
                 const params = new URLSearchParams();
                 
                 const search = document.getElementById('searchInput').value;
@@ -327,19 +318,28 @@
 
                 if (search) params.append('search', search);
                 if (subjectId) params.append('subject_id', subjectId);
-                if (tutorId) params.append('tutor_id', tutorId);
+                if (tutorId) params.append('tutor_student_id', tutorId);
 
                 const response = await api.get(`/materials?${params.toString()}`);
+                console.log('📦 Materials response:', response);
                 
-                if (response.success && response.data) {
-                    allMaterials = response.data;
+                if (response.success && response.materials) {
+                    allMaterials = response.materials;
                     filteredMaterials = allMaterials;
 
                     // Populate tutor filter (unique tutors from materials)
                     const tutorMap = new Map();
                     allMaterials.forEach(m => {
-                        if (m.tutor_id && !tutorMap.has(m.tutor_id)) {
-                            tutorMap.set(m.tutor_id, m.tutor_name || m.tutor_full_name || 'Unknown Tutor');
+                        const tutorInfo = m.tutor_info || m.tutor;
+                        if (tutorInfo && tutorInfo.school_id) {
+                            const tutorId = tutorInfo.school_id;
+                            const tutorFirstName = tutorInfo.first_name || '';
+                            const tutorMiddleName = tutorInfo.middle_name || '';
+                            const tutorLastName = tutorInfo.last_name || '';
+                            const tutorName = [tutorLastName, tutorFirstName, tutorMiddleName].filter(n => n).join(', ');
+                            if (!tutorMap.has(tutorId)) {
+                                tutorMap.set(tutorId, tutorName || 'Unknown Tutor');
+                            }
                         }
                     });
                     
@@ -357,7 +357,7 @@
                 }
 
             } catch (error) {
-                console.error('Load materials error:', error);
+                console.error('❌ Load materials error:', error);
                 document.getElementById('materialsList').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -382,9 +382,6 @@
                     <div class="empty-state">
                         <i class="fas fa-book-open"></i>
                         <p>No materials available</p>
-                        ${currentUser.role === 'tutor' ? 
-                            '<button class="btn btn-primary" onclick="openUploadModal()"><i class="fas fa-upload"></i> Upload First Material</button>' : ''
-                        }
                     </div>
                 `;
                 return;
@@ -392,31 +389,40 @@
 
             container.innerHTML = `
                 <div class="materials-grid">
-                    ${pageMaterials.map(material => `
+                    ${pageMaterials.map(material => {
+                        const tutorInfo = material.tutor_info || material.tutor || {};
+                        const tutorFirstName = tutorInfo.first_name || '';
+                        const tutorMiddleName = tutorInfo.middle_name || '';
+                        const tutorLastName = tutorInfo.last_name || '';
+                        const tutorName = tutorLastName && tutorFirstName 
+                            ? `${tutorLastName}, ${tutorFirstName}${tutorMiddleName ? ' ' + tutorMiddleName : ''}`
+                            : 'Unknown Tutor';
+                        const fileName = material.file_name || material.filename || 'file';
+                        const materialId = material.material_id || material.id;
+                        
+                        return `
                         <div class="material-card">
-                            <div class="material-icon-large">${getFileIcon(material.filename)}</div>
+                            <div class="material-icon-large">${getFileIcon(fileName)}</div>
                             <div class="material-card-body">
                                 <h4 class="material-card-title">${material.title}</h4>
                                 <div class="material-card-meta">
-                                    <span class="badge badge-primary">${material.subject_name}</span>
-                                    <span class="text-muted">By ${material.tutor_name}</span>
+                                    <span class="badge badge-primary">${material.subject_name || 'Unknown Subject'}</span>
+                                    <span class="text-muted">By ${tutorName}</span>
                                 </div>
                                 ${material.description ? 
                                     `<p class="material-card-desc">${material.description}</p>` : ''
                                 }
                                 <div class="material-card-footer">
-                                    <span class="text-muted">${formatDate(material.uploaded_at)}</span>
+                                    <span class="text-muted">${formatDateHelper(material.uploaded_at)}</span>
                                     <button class="btn btn-sm btn-primary" 
-                                            onclick="downloadMaterial('${material.id}', '${material.filename}')">
+                                            onclick="downloadMaterial(${materialId}, '${fileName}')">
                                         <i class="fas fa-download"></i> Download
                                     </button>
-                                    ${currentUser.role === 'tutor' && material.tutor_student_id === currentUser.school_id ? 
-                                        `<button class="btn btn-sm btn-danger" onclick="deleteMaterial('${material.id}')"><i class="fas fa-trash"></i> Delete</button>` : ''
-                                    }
                                 </div>
                             </div>
                         </div>
-                    `).join('')}
+                    `;
+                    }).join('')}
                 </div>
             `;
 
@@ -425,18 +431,47 @@
 
         // Get file icon based on extension
         function getFileIcon(filename) {
+            if (!filename) return '📄';
             const ext = filename.split('.').pop().toLowerCase();
             const icons = {
-                pdf: '??',
-                doc: '??',
-                docx: '??',
-                ppt: '??',
-                pptx: '??',
-                txt: '??',
-                zip: '??',
-                rar: '??'
+                pdf: '📕',
+                doc: '📘',
+                docx: '📘',
+                ppt: '📙',
+                pptx: '📙',
+                txt: '📄',
+                zip: '📦',
+                rar: '📦'
             };
-            return icons[ext] || '??';
+            return icons[ext] || '📄';
+        }
+
+        // Format date helper
+        function formatDateHelper(dateString) {
+            if (!dateString) return 'Unknown date';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return 'Unknown date';
+            }
+        }
+
+        // Debounce helper
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
 
         // Render pagination
@@ -493,10 +528,39 @@
         // Download material
         window.downloadMaterial = async function(materialId, filename) {
             try {
-                await api.download(`/materials/${materialId}/download`, filename);
-                showToast('Download started', 'success');
+                console.log('📥 Downloading material:', materialId, filename);
+                
+                // Get the material to find tutor_student_id and subject_id
+                const material = allMaterials.find(m => (m.material_id || m.id) === materialId);
+                if (!material) {
+                    showToast('Material not found', 'error');
+                    return;
+                }
+
+                const tutorInfo = material.tutor_info || material.tutor || {};
+                const tutorStudentId = tutorInfo.school_id;
+                const subjectId = material.subject_id;
+
+                if (!tutorStudentId || !subjectId) {
+                    console.error('Missing tutor_student_id or subject_id');
+                    showToast('Cannot download: missing information', 'error');
+                    return;
+                }
+
+                // Build download URL with required parameters
+                const downloadUrl = `/materials/${materialId}/download?tutor_student_id=${tutorStudentId}&subject_id=${subjectId}`;
+                
+                const response = await api.get(downloadUrl);
+                
+                if (response.success && response.download_url) {
+                    // Open the download URL in a new tab
+                    window.open(response.download_url, '_blank');
+                    showToast('Download started', 'success');
+                } else {
+                    showToast('Download failed', 'error');
+                }
             } catch (error) {
-                console.error('Download error:', error);
+                console.error('❌ Download error:', error);
                 showToast('Download failed', 'error');
             }
         };

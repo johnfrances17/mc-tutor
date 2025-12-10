@@ -117,6 +117,17 @@
     <div class="container">
 
             <div class="content-body">
+                <!-- Info Banner -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; margin-bottom: 24px; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-info-circle" style="font-size: 24px;"></i>
+                        <div>
+                            <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">📍 Session Location</h3>
+                            <p style="margin: 0; font-size: 14px; opacity: 0.95;">Tutors now set their preferred teaching locations (Online/Physical). View tutor details below after selecting to see their preferences and Google Meet links.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Session Booking Form -->
                 <div class="card">
                     <div class="card-header">
@@ -196,20 +207,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="sessionType">Session Type <span class="required">*</span></label>
-                                <select id="sessionType" name="sessionType" required>
-                                    <option value="online">Online</option>
-                                    <option value="physical">Face to Face</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="location">Location/Link</label>
-                                <input type="text" id="location" name="location" placeholder="Enter meeting link or location">
-                                <small>For online sessions, provide the meeting link. For face-to-face, provide the location.</small>
-                            </div>
-
-                            <div class="form-group">
                                 <label for="notes">Additional Notes</label>
                                 <textarea id="notes" name="notes" rows="4" placeholder="Any specific topics or questions you want to cover?"></textarea>
                             </div>
@@ -222,14 +219,17 @@
                     </div>
                 </div>
 
-                <!-- Tutor Availability -->
+                <!-- Tutor Information & Location Preferences -->
                 <div class="card" id="tutorAvailability" style="display: none;">
                     <div class="card-header">
-                        <h2>Tutor Availability</h2>
+                        <h2><i class="fas fa-user-check"></i> Tutor Information</h2>
                     </div>
                     <div class="card-body">
                         <div id="availabilityInfo">
-                            <p>Select a tutor to view their availability.</p>
+                            <div style="text-align: center; padding: 40px 20px; color: #6b7280;">
+                                <i class="fas fa-user-circle" style="font-size: 48px; opacity: 0.5; margin-bottom: 16px; display: block;"></i>
+                                <p style="font-size: 15px;">Select a tutor to view their contact info and location preferences.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -408,16 +408,61 @@
             }
         });
 
-        function showTutorAvailability(tutor) {
+        async function showTutorAvailability(tutor) {
             const availabilityDiv = document.getElementById('tutorAvailability');
             const infoDiv = document.getElementById('availabilityInfo');
             
+            // Load tutor's subjects to get location preferences
+            let tutorSubjectsHTML = '';
+            try {
+                const subjectsResponse = await api.get(`/tutors/${tutor.user_id || tutor.id}/subjects`);
+                if (subjectsResponse.success && subjectsResponse.subjects && subjectsResponse.subjects.length > 0) {
+                    tutorSubjectsHTML = `
+                        <div style="margin-top: 16px; padding: 16px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #5865F2;">
+                            <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #2d3748;">📚 Teaching Preferences</h3>
+                            ${subjectsResponse.subjects.map(subject => {
+                                const locationIcon = subject.preferred_location === 'online' ? '🌐' : 
+                                                    subject.preferred_location === 'physical' ? '📍' : 
+                                                    '🌐📍';
+                                const locationText = subject.preferred_location === 'online' ? 'Online (Google Meet)' : 
+                                                    subject.preferred_location === 'physical' ? 'Physical Location' : 
+                                                    'Online & Physical';
+                                return `
+                                    <div style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid #e5e7eb;">
+                                        <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d3748; font-size: 14px;">${subject.subject_code} - ${subject.subject_name}</p>
+                                        <p style="margin: 0 0 6px 0; font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px;">
+                                            ${locationIcon} <strong>Location:</strong> ${locationText}
+                                        </p>
+                                        ${subject.physical_location ? `<p style="margin: 0 0 6px 0; font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px;"><i class="fas fa-map-marker-alt" style="color: #5865F2;"></i> ${subject.physical_location}</p>` : ''}
+                                        ${subject.google_meet_link ? `<p style="margin: 0; font-size: 13px;"><i class="fas fa-video" style="color: #5865F2;"></i> <a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #5865F2; text-decoration: none; font-weight: 500;">Meeting Link Available</a></p>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading tutor subjects:', error);
+            }
+            
             infoDiv.innerHTML = `
-                <div class="section-title">${tutor.last_name && tutor.first_name ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}` : 'Unknown'}</div>
-                <p><strong>Email:</strong> ${tutor.email}</p>
-                ${tutor.phone ? `<p><strong>Phone:</strong> ${tutor.phone}</p>` : ''}
-                ${tutor.rating ? `<p><strong>Rating:</strong> ⭐ ${tutor.rating}/5</p>` : ''}
-                <p><em>Contact the tutor to confirm their availability for your preferred time slot.</em></p>
+                <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                    <div class="section-title" style="font-size: 18px; color: #2d3748; margin-bottom: 16px;">
+                        ${tutor.last_name && tutor.first_name ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}` : 'Unknown'}
+                    </div>
+                    <p style="margin: 8px 0; color: #6b7280; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-envelope" style="color: #5865F2; width: 16px;"></i>
+                        <strong>Email:</strong> ${tutor.email}
+                    </p>
+                    ${tutor.phone ? `<p style="margin: 8px 0; color: #6b7280; display: flex; align-items: center; gap: 8px;"><i class="fas fa-phone" style="color: #5865F2; width: 16px;"></i> <strong>Phone:</strong> ${tutor.phone}</p>` : ''}
+                    ${tutor.rating ? `<p style="margin: 8px 0; color: #6b7280; display: flex; align-items: center; gap: 8px;"><i class="fas fa-star" style="color: #fbbf24; width: 16px;"></i> <strong>Rating:</strong> ${tutor.rating}/5.0</p>` : ''}
+                </div>
+                ${tutorSubjectsHTML}
+                <div style="margin-top: 16px; padding: 12px; background: #eff6ff; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                    <p style="margin: 0; font-size: 13px; color: #1e40af;">
+                        <i class="fas fa-info-circle"></i> <strong>Note:</strong> Session location and meeting details will be based on the tutor's preferences shown above. Contact the tutor to confirm availability for your preferred time slot.
+                    </p>
+                </div>
             `;
             
             availabilityDiv.style.display = 'block';
@@ -445,11 +490,9 @@
             const formData = {
                 tutor_id: document.getElementById('tutor').value,
                 subject_id: document.getElementById('subject').value,
-                session_type: document.getElementById('sessionType').value,
                 session_date: document.getElementById('sessionDate').value,
                 start_time: startTime,
                 end_time: endTime,
-                location: document.getElementById('location').value,
                 notes: document.getElementById('notes').value
             };
 

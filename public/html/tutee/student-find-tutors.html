@@ -183,6 +183,9 @@
             <div class="card-header">
                 <div class="section-title">Available Tutors</div>
                 <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="btn btn-secondary" id="refreshBtn" style="padding: 8px 16px; font-size: 13px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
                     <span id="resultsCount" class="text-muted"></span>
                     <label style="font-weight: 600; color: #2d3748;">Show:</label>
                     <select id="perPageSelect" style="width: 80px; padding: 6px 10px; border: 2px solid #e5e7eb; border-radius: 6px;">
@@ -266,7 +269,7 @@
         async function loadTutors() {
             try {
                 const response = await api.get('/tutors/search');
-                console.log('Tutors response:', response);
+                console.log('📚 Tutors response:', response);
                 
                 if (response.success) {
                     if (response.tutors && response.tutors.length > 0) {
@@ -274,6 +277,13 @@
                         allTutors = response.tutors.filter(
                             tutor => tutor.course_code === currentUser.course_code
                         );
+                        
+                        // Filter out tutors with no subjects
+                        allTutors = allTutors.filter(tutor => 
+                            tutor.subjects && tutor.subjects.length > 0
+                        );
+                        
+                        console.log(`✅ Loaded ${allTutors.length} tutors with active subjects`);
                         filteredTutors = allTutors;
                         displayTutors();
                     } else {
@@ -283,12 +293,12 @@
                         displayTutors();
                     }
                 } else {
-                    console.error('No tutors in response:', response);
+                    console.error('❌ No tutors in response:', response);
                     document.getElementById('tutorsContainer').innerHTML = 
                         `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>${response.message || 'Unable to load tutors'}</p></div>`;
                 }
             } catch (error) {
-                console.error('Error loading tutors:', error);
+                console.error('❌ Error loading tutors:', error);
                 console.error('Error details:', error.message);
                 document.getElementById('tutorsContainer').innerHTML = 
                     `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error: ${error.message}</p><p style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Please check if the server is running</p></div>`;
@@ -521,6 +531,10 @@
         // Event listeners
         document.getElementById('searchBtn').addEventListener('click', filterTutors);
         document.getElementById('clearBtn').addEventListener('click', clearFilters);
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            console.log('🔄 Refreshing tutor list...');
+            loadTutors();
+        });
         
         // Real-time search with debounce
         let searchTimeout;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { supabase } from '../config/database.js';
-import { Course } from '../types/index.js';
+import { supabase } from '../config/database';
+import { Course } from '../types';
 
 /**
  * Get all courses

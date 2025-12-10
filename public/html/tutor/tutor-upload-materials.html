@@ -266,7 +266,10 @@
         // Load materials
         async function loadMaterials() {
             try {
+                console.log('📚 Loading materials...');
                 const response = await api.get('/materials');
+                console.log('📦 Materials response:', response);
+                
                 const container = document.getElementById('materialsContainer');
 
                 if (!response.success || !response.materials || response.materials.length === 0) {
@@ -284,16 +287,17 @@
                     const uploadDate = new Date(material.uploaded_at).toLocaleDateString('en-US', {
                         year: 'numeric', month: 'short', day: 'numeric'
                     });
-                    const fileSize = formatFileSize(material.file_size);
+                    const fileSize = formatFileSize(material.file_size || 0);
+                    const fileName = material.file_name || material.filename || 'Unknown';
 
                     return `
                         <div class="material-card">
                             <div class="material-info">
                                 <h4><i class="fas fa-file-alt" style="color: #5865F2; margin-right: 8px;"></i>${material.title}</h4>
-                                <p>${material.description}</p>
+                                <p>${material.description || 'No description'}</p>
                                 <div class="material-meta">
                                     <span><i class="fas fa-book"></i> ${material.subject_code} - ${material.subject_name}</span>
-                                    <span><i class="fas fa-file"></i> ${material.file_name}</span>
+                                    <span><i class="fas fa-file"></i> ${fileName}</span>
                                     <span><i class="fas fa-weight"></i> ${fileSize}</span>
                                     <span><i class="fas fa-calendar"></i> ${uploadDate}</span>
                                 </div>
@@ -308,8 +312,9 @@
                 }).join('');
 
                 container.innerHTML = `<div class="material-grid">${materialsHTML}</div>`;
+                console.log('✅ Materials loaded successfully');
             } catch (error) {
-                console.error('Error loading materials:', error);
+                console.error('❌ Error loading materials:', error);
                 document.getElementById('materialsContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>

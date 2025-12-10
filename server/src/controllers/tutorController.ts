@@ -202,7 +202,7 @@ export const getTutorSubjects = async (req: Request, res: Response, next: NextFu
 
         const { data, error } = await supabase
           .from('tutor_subjects')
-          .select('subject:subjects(*), proficiency_level')
+          .select('subject:subjects(*), proficiency_level, preferred_location, physical_location, google_meet_link')
           .eq('tutor_id', id);
 
     if (error) {
@@ -211,7 +211,10 @@ export const getTutorSubjects = async (req: Request, res: Response, next: NextFu
 
         const subjects = data.map((item: any) => ({
           ...item.subject,
-          proficiency_level: item.proficiency_level
+          proficiency_level: item.proficiency_level,
+          preferred_location: item.preferred_location,
+          physical_location: item.physical_location,
+          google_meet_link: item.google_meet_link
         }));
 
     res.json({ success: true, subjects });
@@ -277,10 +280,18 @@ export const getTutorsBySubject = async (req: Request, res: Response, next: Next
 export const addTutorSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const tutorId = req.user!.user_id;
-    const { subject_id } = req.body;
+    const { subject_id, proficiency_level, preferred_location, physical_location } = req.body;
 
     if (!subject_id) {
       return res.status(400).json({ success: false, message: 'Subject ID is required' });
+    }
+
+    if (!proficiency_level) {
+      return res.status(400).json({ success: false, message: 'Proficiency level is required' });
+    }
+
+    if (!preferred_location) {
+      return res.status(400).json({ success: false, message: 'Preferred location is required' });
     }
 
     // Check if subject exists
@@ -306,14 +317,38 @@ export const addTutorSubject = async (req: AuthRequest, res: Response, next: Nex
       return res.status(400).json({ success: false, message: 'Subject already added' });
     }
 
+    // Generate Google Meet link if online is selected
+    let googleMeetLink = null;
+    if (preferred_location === 'online' || preferred_location === 'both') {
+      const { generateGoogleMeetLink } = await import('../utils/googleMeet');
+      googleMeetLink = generateGoogleMeetLink(tutorId);
+    }
+
+    // Prepare insert data
+    const insertData: any = {
+      tutor_id: tutorId,
+      subject_id,
+      proficiency_level: proficiency_level || 'intermediate',
+      preferred_location: preferred_location || 'online',
+    };
+
+    if (physical_location) {
+      insertData.physical_location = physical_location;
+    }
+
+    if (googleMeetLink) {
+      insertData.google_meet_link = googleMeetLink;
+    }
+
     // Add subject
     const { data, error } = await supabase
       .from('tutor_subjects')
-      .insert({ tutor_id: tutorId, subject_id })
+      .insert(insertData)
       .select('*, subject:subjects(*)')
       .single();
 
     if (error) {
+      console.error('Error adding tutor subject:', error);
       return res.status(400).json({ success: false, message: 'Failed to add subject' });
     }
 

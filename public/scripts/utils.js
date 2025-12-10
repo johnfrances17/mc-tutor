@@ -127,6 +127,22 @@ function showLoading(container, message = 'Loading...') {
  */
 function showEmptyState(container, message) {
   if (!container) return;
+    /**
+     * Returns the badge class for a given status (for dashboard)
+     * @param {string} status - Status string (Pending, Confirmed, Completed, Cancelled)
+     * @returns {string} - CSS class for badge
+     */
+    function getStatusBadgeClass(status) {
+      const statusMap = {
+        'Pending': 'badge-warning',
+        'Confirmed': 'badge-success',
+        'Completed': 'badge-info',
+        'Cancelled': 'badge-danger'
+      };
+      return statusMap[status] || 'badge-secondary';
+    }
+
+    window.getStatusBadgeClass = getStatusBadgeClass;
   
   container.innerHTML = `
     <div class="empty-state">

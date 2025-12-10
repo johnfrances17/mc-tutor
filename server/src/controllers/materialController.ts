@@ -12,30 +12,73 @@ const storageService = StorageService.getInstance();
 export const getMaterials = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { subject_id, tutor_student_id, search } = req.query;
+    const currentUserId = req.user!.user_id;
+    const currentUserRole = req.user!.role;
 
-    let materials;
+    const { supabase } = await import('../config/database');
+
+    let query = supabase
+      .from('materials')
+      .select(`
+        *,
+        subject:subjects(subject_code, subject_name, course_code),
+        tutor:users!materials_tutor_id_fkey(school_id, first_name, middle_name, last_name)
+      `)
+      .order('uploaded_at', { ascending: false });
+
+    // If tutor, show only their materials
+    if (currentUserRole === 'tutor') {
+      query = query.eq('tutor_id', currentUserId);
+    }
+
+    // Apply filters
+    if (subject_id) {
+      query = query.eq('subject_id', Number(subject_id));
+    }
+
+    if (tutor_student_id && typeof tutor_student_id === 'string') {
+      // Get tutor by school_id
+      const { data: tutorUser } = await supabase
+        .from('users')
+        .select('user_id')
+        .eq('school_id', tutor_student_id)
+        .single();
+      
+      if (tutorUser) {
+        query = query.eq('tutor_id', tutorUser.user_id);
+      }
+    }
 
     if (search && typeof search === 'string') {
-      // Search materials
-      materials = await materialsService.searchMaterials(
-        search,
-        subject_id ? Number(subject_id) : undefined
-      );
-    } else if (subject_id) {
-      // Get by subject
-      materials = await materialsService.getMaterialsBySubject(Number(subject_id));
-    } else if (tutor_student_id && typeof tutor_student_id === 'string') {
-      // Get by tutor
-      materials = await materialsService.getAllMaterialsByTutor(tutor_student_id);
-    } else {
-      // Get all materials (no filter)
-      materials = await materialsService.searchMaterials('');
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
-    res.json({ success: true, materials });
+    const { data: materials, error } = await query;
+
+    if (error) {
+      console.error('Error fetching materials:', error);
+      return res.status(500).json({ success: false, message: 'Failed to fetch materials' });
+    }
+
+    // Format the response
+    const formattedMaterials = materials?.map(m => ({
+      material_id: m.material_id,
+      title: m.title,
+      description: m.description,
+      file_name: m.filename,
+      file_url: m.file_url,
+      file_size: m.file_size,
+      file_type: m.file_type,
+      subject_code: m.subject?.subject_code,
+      subject_name: m.subject?.subject_name,
+      uploaded_at: m.uploaded_at,
+      tutor_info: m.tutor
+    })) || [];
+
+    res.json({ success: true, materials: formattedMaterials });
   } catch (error) {
     return next(error);
-    }
+  }
 };
 
 /**
@@ -45,6 +88,8 @@ export const uploadMaterial = async (req: AuthRequest, res: Response, next: Next
   try {
     const tutorStudentId = req.user!.school_id;
     const { subject_id, title, description } = req.body;
+
+    console.log('📤 Upload request:', { tutorStudentId, subject_id, title, hasFile: !!req.file });
 
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
@@ -59,40 +104,89 @@ export const uploadMaterial = async (req: AuthRequest, res: Response, next: Next
       return res.status(400).json({ success: false, message: 'File size must be less than 10MB' });
     }
 
-    // Upload to Supabase Storage (with local fallback)
+    console.log('☁️ Uploading to Supabase Storage (materials bucket)...');
+
+    // Upload directly to Supabase Storage (materials bucket)
     const uploadResult = await storageService.uploadStudyMaterial(
       req.file,
       tutorStudentId,
       Number(subject_id)
     );
 
-    // Save metadata using file-based system
-    const result = await materialsService.uploadMaterial(
-      tutorStudentId,
-      Number(subject_id),
-      req.file as any,
-      title,
-      description || ''
-    );
+    console.log('✅ Upload result:', uploadResult);
 
-    if (!result.success) {
-      return res.status(400).json(result);
+    // Get subject info from database
+    const { supabase } = await import('../config/database');
+    console.log('🔍 Looking up subject:', subject_id);
+    
+    const { data: subjectInfo, error: subjectError } = await supabase
+      .from('subjects')
+      .select('subject_id, subject_code, subject_name, course_code')
+      .eq('subject_id', subject_id)
+      .single();
+
+    if (subjectError) {
+      console.error('❌ Subject lookup error:', subjectError);
+      return res.status(404).json({ 
+        success: false, 
+        message: `Subject not found (ID: ${subject_id})`,
+        error: subjectError.message 
+      });
     }
 
-    // Update the file_name to use Supabase URL
-    if (result.material) {
-      result.material.file_name = uploadResult.filename;
+    if (!subjectInfo) {
+      console.error('❌ Subject not found in database:', subject_id);
+      return res.status(404).json({ 
+        success: false, 
+        message: `Subject with ID ${subject_id} does not exist` 
+      });
     }
+
+    console.log('✅ Subject found:', subjectInfo.subject_code, '-', subjectInfo.subject_name);
+
+    // Store material metadata in database
+    const { data: material, error: insertError } = await supabase
+      .from('materials')
+      .insert({
+        tutor_id: req.user!.user_id,
+        subject_id: Number(subject_id),
+        title,
+        description: description || '',
+        file_url: uploadResult.url,
+        filename: uploadResult.filename,
+        file_size: req.file.size,
+        file_type: req.file.mimetype,
+        category: 'reference',
+        uploaded_at: new Date().toISOString()
+      })
+      .select('*')
+      .single();
+
+    if (insertError) {
+      console.error('❌ Database insert error:', insertError);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Failed to save material metadata', 
+        error: insertError.message 
+      });
+    }
+
+    console.log('✅ Material metadata saved to database');
 
     res.status(201).json({
       success: true,
       message: 'Material uploaded successfully',
-      material: result.material,
+      material: {
+        ...material,
+        subject_code: subjectInfo.subject_code,
+        subject_name: subjectInfo.subject_name
+      },
       storage_url: uploadResult.url
     });
   } catch (error) {
+    console.error('❌ Upload error:', error);
     return next(error);
-    }
+  }
 };
 
 /**
@@ -100,49 +194,50 @@ export const uploadMaterial = async (req: AuthRequest, res: Response, next: Next
  */
 export const deleteMaterial = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const tutorUserId = req.user!.user_id;
     const tutorStudentId = req.user!.school_id;
     const { id } = req.params;
-    const { subject_id } = req.query;
 
-    if (!subject_id) {
-      return res.status(400).json({ success: false, message: 'Subject ID is required' });
-    }
+    const { supabase } = await import('../config/database');
 
     // Get material info first
-    const material = await materialsService.getMaterialById(
-      tutorStudentId,
-      Number(subject_id),
-      Number(id)
-    );
+    const { data: material, error: fetchError } = await supabase
+      .from('materials')
+      .select('*, subject:subjects(subject_id)')
+      .eq('material_id', Number(id))
+      .eq('tutor_id', tutorUserId)
+      .single();
 
-    if (!material) {
-      return res.status(404).json({ success: false, message: 'Material not found' });
+    if (fetchError || !material) {
+      return res.status(404).json({ success: false, message: 'Material not found or unauthorized' });
     }
 
-    // Delete from Supabase Storage (or local)
-    if (material.file_name) {
+    // Delete from Supabase Storage
+    if (material.filename) {
+      const subjectId = material.subject?.subject_id || 0;
       await storageService.deleteStudyMaterial(
         tutorStudentId,
-        Number(subject_id),
-        material.file_name
+        subjectId,
+        material.filename
       );
     }
 
-    // Delete metadata from file-based system
-    const result = await materialsService.deleteMaterial(
-      tutorStudentId,
-      Number(subject_id),
-      Number(id)
-    );
+    // Delete from database
+    const { error: deleteError } = await supabase
+      .from('materials')
+      .delete()
+      .eq('material_id', Number(id))
+      .eq('tutor_id', tutorUserId);
 
-    if (!result.success) {
-      return res.status(404).json(result);
+    if (deleteError) {
+      console.error('Delete error:', deleteError);
+      return res.status(500).json({ success: false, message: 'Failed to delete material' });
     }
 
     res.json({ success: true, message: 'Material deleted successfully' });
   } catch (error) {
     return next(error);
-    }
+  }
 };
 
 /**

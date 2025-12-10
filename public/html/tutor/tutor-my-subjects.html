@@ -54,6 +54,49 @@
         .card h2 i { color: #5865F2; }
         .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
+        /* Form Styles */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #2d3748; font-size: 14px; }
+        .form-group select,
+        .form-group input[type="text"] { width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: all 0.3s ease; background: white; font-family: 'Montserrat', sans-serif; }
+        .form-group select:focus,
+        .form-group input:focus { outline: none; border-color: #5865F2; box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1); }
+
+        /* Button Styles */
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-family: 'Montserrat', sans-serif; }
+        .btn-primary { background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4); }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4); }
+
+        /* Subject Grid */
+        .subject-grid { display: grid; gap: 16px; }
+        .subject-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; transition: all 0.3s ease; }
+        .subject-card:hover { border-color: #5865F2; box-shadow: 0 2px 8px rgba(88, 101, 242, 0.1); transform: translateY(-2px); }
+        .subject-info { flex: 1; }
+        .subject-info h4 { margin: 0 0 8px 0; color: #2d3748; font-size: 16px; font-weight: 600; }
+        .subject-info p { margin: 0 0 12px 0; color: #6b7280; font-size: 14px; line-height: 1.5; }
+
+        /* Badge Styles */
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-primary { background: rgba(88, 101, 242, 0.1); color: #5865F2; }
+        .proficiency-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .proficiency-beginner { background: #fef3c7; color: #92400e; }
+        .proficiency-intermediate { background: #dbeafe; color: #1e40af; }
+        .proficiency-advanced { background: #dcfce7; color: #166534; }
+        .proficiency-expert { background: #fce7f3; color: #9f1239; }
+
+        /* Alert Messages */
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 14px; animation: slideDown 0.3s ease; }
+        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .alert-danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; color: #6b7280; }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; display: block; }
+        .empty-state p { margin: 8px 0; font-size: 15px; }
+
         @media (max-width: 1024px) { .user-info-inline { max-width: 160px; } }
         @media (max-width: 768px) {
             .nav-container { padding: 10px; }
@@ -137,7 +180,7 @@
         <div class="card">
             <h2><i class="fas fa-plus-circle"></i> Add New Subject</h2>
             <form id="addSubjectForm">
-                <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 16px; align-items: end;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                     <div class="form-group" style="margin: 0;">
                         <label for="subject_id">Subject *</label>
                         <select id="subject_id" name="subject_id" required>
@@ -154,6 +197,21 @@
                             <option value="expert">Expert</option>
                         </select>
                     </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label for="preferred_location">Preferred Location *</label>
+                        <select id="preferred_location" name="preferred_location" required>
+                            <option value="">Select location</option>
+                            <option value="online">Online (Google Meet)</option>
+                            <option value="physical">Physical Location</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="physicalLocationGroup" style="margin: 0; display: none;">
+                        <label for="physical_location">Physical Location</label>
+                        <input type="text" id="physical_location" name="physical_location" placeholder="e.g., Library, Room 101">
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Add Subject
                     </button>
@@ -228,27 +286,46 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-book-open"></i>
-                            <p>You haven't added any subjects yet.</p>
-                            <p>Add subjects above to start tutoring students.</p>
+                            <p style="font-weight: 600; font-size: 16px; color: #2d3748;">No subjects added yet</p>
+                            <p style="max-width: 400px; margin: 0 auto;">Add subjects above to let students know what you can teach. Don't forget to set your location preferences!</p>
                         </div>
                     `;
                     return;
                 }
 
-                const subjectsHTML = response.subjects.map(subject => `
+                const subjectsHTML = response.subjects.map(subject => {
+                    const locationIcon = subject.preferred_location === 'online' ? '🌐' : 
+                                        subject.preferred_location === 'physical' ? '📍' : 
+                                        '🌐📍';
+                    const locationText = subject.preferred_location === 'online' ? 'Online (Google Meet)' : 
+                                        subject.preferred_location === 'physical' ? 'Physical Location' : 
+                                        'Online & Physical';
+                    
+                    // Set default proficiency if missing
+                    const proficiency = subject.proficiency_level || 'beginner';
+                    
+                    return `
                     <div class="subject-card">
                         <div class="subject-info">
                             <h4>${subject.subject_code} - ${subject.subject_name}</h4>
-                            <p>${subject.description || 'No description'}</p>
-                            <span class="proficiency-badge proficiency-${subject.proficiency_level || 'beginner'}">
-                                ${subject.proficiency_level?.toUpperCase() || 'N/A'}
-                            </span>
+                            <p style="margin-bottom: 12px;">${subject.description || 'Subject for tutoring sessions'}</p>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                <span class="proficiency-badge proficiency-${proficiency}">
+                                    ${proficiency.toUpperCase()}
+                                </span>
+                                <span class="badge badge-primary">
+                                    ${locationIcon} ${locationText}
+                                </span>
+                            </div>
+                            ${subject.physical_location ? `<p style="margin-top: 12px; font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px;"><i class="fas fa-map-marker-alt" style="color: #5865F2;"></i> ${subject.physical_location}</p>` : ''}
+                            ${subject.google_meet_link ? `<p style="margin-top: 8px; font-size: 13px; display: flex; align-items: center; gap: 6px;"><i class="fas fa-video" style="color: #5865F2;"></i> <a href="${subject.google_meet_link}" target="_blank" rel="noopener noreferrer" style="color: #5865F2; text-decoration: none; font-weight: 500;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Open Google Meet</a></p>` : ''}
                         </div>
                         <button class="btn btn-danger" onclick="removeSubject(${subject.subject_id})">
                             <i class="fas fa-trash"></i> Remove
                         </button>
                     </div>
-                `).join('');
+                `;
+                }).join('');
 
                 container.innerHTML = `<div class="subject-grid">${subjectsHTML}</div>`;
             } catch (error) {
@@ -262,26 +339,59 @@
             }
         }
 
+        // Handle location preference change
+        document.getElementById('preferred_location').addEventListener('change', (e) => {
+            const physicalLocationGroup = document.getElementById('physicalLocationGroup');
+            const physicalLocationInput = document.getElementById('physical_location');
+            
+            if (e.target.value === 'physical' || e.target.value === 'both') {
+                physicalLocationGroup.style.display = 'block';
+                if (e.target.value === 'physical') {
+                    physicalLocationInput.required = true;
+                }
+            } else {
+                physicalLocationGroup.style.display = 'none';
+                physicalLocationInput.required = false;
+                physicalLocationInput.value = '';
+            }
+        });
+
         // Handle add subject
         document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const subjectId = document.getElementById('subject_id').value;
             const proficiency = document.getElementById('proficiency').value;
+            const preferredLocation = document.getElementById('preferred_location').value;
+            const physicalLocation = document.getElementById('physical_location').value;
 
-            if (!subjectId || !proficiency) {
-                showMessage('Please fill in all fields', 'danger');
+            if (!subjectId || !proficiency || !preferredLocation) {
+                showMessage('Please fill in all required fields', 'danger');
+                return;
+            }
+
+            if ((preferredLocation === 'physical' || preferredLocation === 'both') && !physicalLocation) {
+                showMessage('Please specify the physical location', 'danger');
                 return;
             }
 
             try {
-                const response = await api.post('/tutors/subjects', {
-                    subject_id: parseInt(subjectId)
-                });
+                const requestBody = {
+                    subject_id: parseInt(subjectId),
+                    proficiency_level: proficiency,
+                    preferred_location: preferredLocation
+                };
+
+                if (physicalLocation) {
+                    requestBody.physical_location = physicalLocation;
+                }
+
+                const response = await api.post('/tutors/subjects', requestBody);
 
                 if (response.success) {
                     showMessage('Subject added successfully!', 'success');
                     document.getElementById('addSubjectForm').reset();
+                    document.getElementById('physicalLocationGroup').style.display = 'none';
                     await loadData(); // Reload both lists
                 } else {
                     showMessage(response.message || 'Error adding subject', 'danger');
@@ -299,16 +409,19 @@
             }
 
             try {
+                console.log('🗑️ Removing subject with ID:', id);
                 const response = await api.delete(`/tutors/subjects/${id}`);
+                console.log('Delete response:', response);
 
                 if (response.success) {
                     showMessage('Subject removed successfully!', 'success');
                     await loadData(); // Reload both lists
                 } else {
-                    showMessage(response.message || 'Error removing subject', 'danger');
+                    console.error('❌ Failed to remove subject:', response);
+                    showMessage(response.message || 'Failed to remove subject', 'danger');
                 }
             } catch (error) {
-                console.error('Error removing subject:', error);
+                console.error('❌ Error removing subject:', error);
                 showMessage('Error removing subject. Please try again.', 'danger');
             }
         };
