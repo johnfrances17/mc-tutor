@@ -454,8 +454,9 @@
                             const sessionDate = session.session_date || 'N/A';
                             const sessionTime = session.start_time && session.end_time ? 
                                               `${session.start_time} - ${session.end_time}` : 'N/A';
-                            const physicalLocation = session.physical_location || session.location || 'Not specified';
-                            const meetLink = session.google_meet_link || session.meet_link || '';
+                            // Use tutor_subjects data if available, otherwise fall back to session data
+                            const physicalLocation = session.tutor_subjects?.physical_location || session.physical_location || session.location || 'Not specified';
+                            const meetLink = session.tutor_subjects?.google_meet_link || session.google_meet_link || session.meet_link || '';
                             
                             return `
                             <tr>

@@ -50,9 +50,26 @@ export const getSessions = async (req: AuthRequest, res: Response, next: NextFun
       return res.status(400).json({ success: false, message: 'Failed to fetch sessions' });
     }
 
+    // Post-process to fetch tutor_subjects data for each session
+    const sessionsWithLocations = await Promise.all(
+      (data || []).map(async (session: any) => {
+        const { data: tutorSubject } = await supabase
+          .from('tutor_subjects')
+          .select('physical_location, google_meet_link')
+          .eq('tutor_id', session.tutor_id)
+          .eq('subject_id', session.subject_id)
+          .single();
+
+        return {
+          ...session,
+          tutor_subjects: tutorSubject || null
+        };
+      })
+    );
+
     res.json({
       success: true,
-      sessions: data,
+      sessions: sessionsWithLocations,
       pagination: {
         total: count || 0,
         page: Number(page),
@@ -74,7 +91,6 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
     const {
       tutor_id,
       subject_id,
-      session_type,
       session_date,
       start_time,
       end_time,
@@ -83,17 +99,21 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
     } = req.body;
 
     // Validate required fields
-    if (!tutor_id || !subject_id || !session_type || !session_date || !start_time || !end_time) {
+    if (!tutor_id || !subject_id || !session_date || !start_time || !end_time) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
-    // Fetch tutor's subject info to get location details
+    // Fetch tutor's subject info to get location details and preferred location
     const { data: tutorSubject } = await supabase
       .from('tutor_subjects')
-      .select('physical_location, google_meet_link')
+      .select('physical_location, google_meet_link, preferred_location')
       .eq('tutor_id', tutor_id)
       .eq('subject_id', subject_id)
       .single();
+
+    // Determine session_type from tutor's preferred_location
+    const session_type = tutorSubject?.preferred_location === 'both' ? 'online' : 
+                        tutorSubject?.preferred_location === 'physical' ? 'physical' : 'online';
 
     // Create session with location details from tutor_subjects
     const { data, error } = await supabase
