@@ -579,10 +579,14 @@
         // Load subjects for dropdown
         async function loadSubjectsDropdown() {
             try {
+                console.log('📚 Loading subjects for dropdown...');
                 const response = await api.get('/subjects');
+                console.log('📚 Subjects response:', response);
+                
                 const select = document.getElementById('existing_subject_id');
                 
                 if (response.success && response.data) {
+                    console.log('✅ Found', response.data.length, 'subjects');
                     select.innerHTML = '<option value="">Select a subject from catalog...</option>';
                     response.data.forEach(subject => {
                         const option = document.createElement('option');
@@ -590,9 +594,14 @@
                         option.textContent = `${subject.subject_code} - ${subject.subject_name}`;
                         select.appendChild(option);
                     });
+                    console.log('✅ Dropdown populated with', response.data.length, 'subjects');
+                } else {
+                    console.error('❌ Failed to load subjects:', response);
+                    showMessage('Failed to load subjects. Please refresh the page.', 'warning');
                 }
             } catch (error) {
-                console.error('Error loading subjects dropdown:', error);
+                console.error('❌ Error loading subjects dropdown:', error);
+                showMessage('Error loading subjects. Please check your connection.', 'danger');
             }
         }
 
