@@ -63,6 +63,7 @@ export const getMaterials = async (req: AuthRequest, res: Response, next: NextFu
     // Format the response
     const formattedMaterials = materials?.map(m => ({
       material_id: m.material_id,
+      subject_id: m.subject_id,
       title: m.title,
       description: m.description,
       file_name: m.filename,

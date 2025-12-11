@@ -96,21 +96,23 @@ export class StorageService {
    * Fallback: Upload profile picture to local filesystem
    */
   private async uploadProfilePictureLocal(file: Express.Multer.File, userId: string): Promise<string> {
+    // DEPRECATED: Local storage should NOT be used in production
+    // This is only for localhost development
+    console.warn('⚠️  Using deprecated local storage for profile pictures');
+    console.warn('💡 Set USE_LOCAL_STORAGE=false to use Supabase Storage');
+    
     // Determine base directory based on environment
     let uploadsDir: string;
     let baseUrl: string;
     
     if (process.env.VERCEL) {
-      // On Vercel, use /tmp directory (only writable directory in serverless)
-      const tmpDir = process.env.TMPDIR || '/tmp';
-      uploadsDir = path.join(tmpDir, 'uploads', 'profiles');
-      // Always use HTTPS on Vercel
-      baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '';
+      // On Vercel, DON'T use local storage - it's ephemeral and will be deleted
+      console.error('❌ Cannot use local storage on Vercel!');
+      throw new Error('Local storage not supported on Vercel. Use Supabase Storage.');
     } else {
       // Local development (XAMPP) - use relative path from project root
       uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
       // Use configured base URL or default to http://localhost
-      // Can be set to https://localhost if needed
       baseUrl = process.env.LOCAL_BASE_URL || 'http://localhost';
     }
     
