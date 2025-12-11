@@ -109,3 +109,85 @@ export const getCourses = async (_req: Request, res: Response, next: NextFunctio
     return next(error);
     }
 };
+
+/**
+ * Create custom subject (tutor-created)
+ */
+export const createCustomSubject = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { subject_code, subject_name, course_code, description } = req.body;
+    const user = (req as any).user;
+
+    // Validate required fields
+    if (!subject_code || !subject_name || !course_code) {
+      return res.status(400).json({
+        success: false,
+        message: 'Subject code, name, and course are required'
+      });
+    }
+
+    // Validate course code
+    const validCourses = ['BSA', 'BSBA', 'BSED', 'BSN', 'BSCS', 'BSCrim'];
+    if (!validCourses.includes(course_code)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid course code'
+      });
+    }
+
+    // Check if subject code already exists
+    const { data: existing } = await supabase
+      .from('subjects')
+      .select('subject_id, subject_code')
+      .eq('subject_code', subject_code.toUpperCase())
+      .single();
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: `Subject code ${subject_code.toUpperCase()} already exists. Please use a different code.`
+      });
+    }
+
+    // Create the subject
+    const { data, error } = await supabase
+      .from('subjects')
+      .insert({
+        subject_code: subject_code.toUpperCase(),
+        subject_name: subject_name,
+        course_code: course_code,
+        description: description || null,
+        is_custom: true,
+        created_by_tutor_id: user.user_id,
+        approval_status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating custom subject:', error);
+      return res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to create custom subject'
+      });
+    }
+
+    console.log('✅ Custom subject created by tutor:', {
+      subject_id: data.subject_id,
+      subject_code: data.subject_code,
+      created_by: user.user_id,
+      tutor_name: `${user.first_name} ${user.last_name}`
+    });
+
+    res.json({
+      success: true,
+      message: 'Custom subject created successfully',
+      data: data
+    });
+  } catch (error) {
+    console.error('Error in createCustomSubject:', error);
+    return next(error);
+  }
+};

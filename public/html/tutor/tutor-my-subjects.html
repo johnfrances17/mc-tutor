@@ -171,45 +171,15 @@
     <div class="container">
         <div id="messageContainer"></div>
 
-        <!-- Add Subject Form -->
+        <!-- Add Subject Card - Now Opens Modal -->
         <div class="card">
             <h2><i class="fas fa-plus-circle"></i> Add New Subject</h2>
-            <form id="addSubjectForm">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                    <div class="form-group" style="margin: 0;">
-                        <label for="subject_id">Subject *</label>
-                        <select id="subject_id" name="subject_id" required>
-                            <option value="">Select a subject</option>
-                        </select>
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Choose any subject you want to teach</small>
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label for="proficiency">Proficiency Level *</label>
-                        <select id="proficiency" name="proficiency" required>
-                            <option value="">Select level</option>
-                            <option value="beginner">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                            <option value="expert">Expert</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label for="physical_location">Physical Location *</label>
-                        <input type="text" id="physical_location" name="physical_location" placeholder="e.g., Library, Room 101, Campus Grounds" required>
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">📍 Specify where you'll meet students in person</small>
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label>Google Meet Link</label>
-                        <input type="text" value="Click 'Create Meeting' after adding subject" disabled style="background: #f9fafb; cursor: not-allowed;">
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">🌐 A Google Meet link will be generated - click it once to create your permanent meeting room</small>
-                    </div>
-                </div>
-                <div style="margin-top: 16px;">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Subject
-                    </button>
-                </div>
-            </form>
+            <p style="color: #6b7280; margin-bottom: 20px;">
+                Choose existing subjects from our catalog or create your own custom subjects to teach students.
+            </p>
+            <button type="button" onclick="openAddSubjectModal()" class="btn btn-primary" style="padding: 14px 28px; font-size: 16px;">
+                <i class="fas fa-plus-circle"></i> Add Subject
+            </button>
         </div>
 
         <!-- My Subjects List -->
@@ -218,6 +188,152 @@
             <div id="subjectsContainer">
                 <div style="text-align: center; padding: 20px;">
                     <i class="fas fa-spinner fa-spin"></i> Loading subjects...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <!-- Modal Header -->
+            <div style="padding: 24px; border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 1;">
+                <h2 style="margin: 0; color: #2d3748; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-plus-circle" style="color: #5865F2;"></i> Add Subject to Teach
+                </h2>
+                <button onclick="closeAddSubjectModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 0; line-height: 1;">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div style="display: flex; border-bottom: 2px solid #e5e7eb; background: #f9fafb;">
+                <button id="existingSubjectsTab" onclick="switchTab('existing')" style="flex: 1; padding: 16px 24px; border: none; background: white; cursor: pointer; font-weight: 600; color: #5865F2; border-bottom: 3px solid #5865F2; transition: all 0.3s;">
+                    <i class="fas fa-list"></i> Existing Subjects
+                </button>
+                <button id="customSubjectTab" onclick="switchTab('custom')" style="flex: 1; padding: 16px 24px; border: none; background: transparent; cursor: pointer; font-weight: 600; color: #6b7280; border-bottom: 3px solid transparent; transition: all 0.3s;">
+                    <i class="fas fa-plus-square"></i> Create Custom Subject
+                </button>
+            </div>
+
+            <!-- Tab Content Container -->
+            <div style="padding: 24px;">
+                <!-- Existing Subjects Tab -->
+                <div id="existingSubjectsContent" style="display: block;">
+                    <div style="background: #e3f2fd; padding: 14px; border-radius: 8px; border-left: 4px solid #2196F3; margin-bottom: 24px;">
+                        <p style="margin: 0; font-size: 14px; color: #1565C0;">
+                            <i class="fas fa-info-circle"></i> Select from our pre-defined subject catalog. These subjects are standardized across the platform.
+                        </p>
+                    </div>
+
+                    <form id="addExistingSubjectForm">
+                        <div style="display: grid; gap: 20px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label for="existing_subject_id" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Subject *</label>
+                                <select id="existing_subject_id" name="subject_id" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                    <option value="">Select a subject from catalog...</option>
+                                </select>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group" style="margin: 0;">
+                                    <label for="existing_proficiency" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Proficiency Level *</label>
+                                    <select id="existing_proficiency" name="proficiency" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                        <option value="">Select level...</option>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                        <option value="expert">Expert</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" style="margin: 0;">
+                                    <label for="existing_physical_location" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Physical Location *</label>
+                                    <input type="text" id="existing_physical_location" name="physical_location" placeholder="e.g., Library, Room 101" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+                                <button type="button" onclick="closeAddSubjectModal()" class="btn" style="background: #e5e7eb; color: #2d3748;">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Subject
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Custom Subject Tab -->
+                <div id="customSubjectContent" style="display: none;">
+                    <div style="background: #fff3e0; padding: 14px; border-radius: 8px; border-left: 4px solid #ff9800; margin-bottom: 24px;">
+                        <p style="margin: 0; font-size: 14px; color: #e65100;">
+                            <i class="fas fa-lightbulb"></i> Create your own custom subject not available in the catalog. Custom subjects require admin approval before appearing to students.
+                        </p>
+                    </div>
+
+                    <form id="addCustomSubjectForm">
+                        <div style="display: grid; gap: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group" style="margin: 0;">
+                                    <label for="custom_subject_code" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Subject Code *</label>
+                                    <input type="text" id="custom_subject_code" name="subject_code" placeholder="e.g., CS101, MATH201" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; text-transform: uppercase;">
+                                    <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Short code to identify the subject</small>
+                                </div>
+
+                                <div class="form-group" style="margin: 0;">
+                                    <label for="custom_course_code" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Course *</label>
+                                    <select id="custom_course_code" name="course_code" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                        <option value="">Select course...</option>
+                                        <option value="BSA">BSA - Accountancy</option>
+                                        <option value="BSBA">BSBA - Business Administration</option>
+                                        <option value="BSED">BSED - Secondary Education</option>
+                                        <option value="BSN">BSN - Nursing</option>
+                                        <option value="BSCS">BSCS - Computer Science</option>
+                                        <option value="BSCrim">BSCrim - Criminology</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin: 0;">
+                                <label for="custom_subject_name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Subject Name *</label>
+                                <input type="text" id="custom_subject_name" name="subject_name" placeholder="e.g., Introduction to Programming" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </div>
+
+                            <div class="form-group" style="margin: 0;">
+                                <label for="custom_description" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Description (Optional)</label>
+                                <textarea id="custom_description" name="description" rows="3" placeholder="Brief description of what this subject covers..." style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group" style="margin: 0;">
+                                    <label for="custom_proficiency" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Your Proficiency Level *</label>
+                                    <select id="custom_proficiency" name="proficiency" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                        <option value="">Select level...</option>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                        <option value="expert">Expert</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" style="margin: 0;">
+                                    <label for="custom_physical_location" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">Physical Location *</label>
+                                    <input type="text" id="custom_physical_location" name="physical_location" placeholder="e.g., Library, Room 101" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+                                <button type="button" onclick="closeAddSubjectModal()" class="btn" style="background: #e5e7eb; color: #2d3748;">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Create & Add Subject
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -315,20 +431,6 @@
                 // Update navbar with profile picture
                 if (window.updateNavUserInfo) window.updateNavUserInfo();
                 
-                // Load all available subjects (no course filter - freedom to choose any subject)
-                const availableResponse = await api.get('/subjects');
-                const availableSelect = document.getElementById('subject_id');
-                
-                if (availableResponse.success && availableResponse.subjects) {
-                    // Show ALL subjects - not filtered by course
-                    const allSubjects = availableResponse.subjects;
-                    
-                    availableSelect.innerHTML = '<option value="">Select a subject</option>' +
-                        allSubjects.map(subject => 
-                            `<option value="${subject.subject_id}">${subject.subject_code} - ${subject.subject_name}</option>`
-                        ).join('');
-                }
-
                 // Load tutor's subjects
                 await loadMySubjects();
             } catch (error) {
@@ -428,12 +530,79 @@
         }
 
         // Handle add subject
-        document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
+        // REMOVED - Now handled by modal
+
+        // Modal Functions
+        window.openAddSubjectModal = function() {
+            document.getElementById('addSubjectModal').style.display = 'flex';
+            // Load subjects dropdown when modal opens
+            loadSubjectsDropdown();
+        };
+
+        window.closeAddSubjectModal = function() {
+            document.getElementById('addSubjectModal').style.display = 'none';
+            document.getElementById('addExistingSubjectForm').reset();
+            document.getElementById('addCustomSubjectForm').reset();
+        };
+
+        window.switchTab = function(tab) {
+            const existingTab = document.getElementById('existingSubjectsTab');
+            const customTab = document.getElementById('customSubjectTab');
+            const existingContent = document.getElementById('existingSubjectsContent');
+            const customContent = document.getElementById('customSubjectContent');
+
+            if (tab === 'existing') {
+                // Activate existing subjects tab
+                existingTab.style.background = 'white';
+                existingTab.style.color = '#5865F2';
+                existingTab.style.borderBottom = '3px solid #5865F2';
+                customTab.style.background = 'transparent';
+                customTab.style.color = '#6b7280';
+                customTab.style.borderBottom = '3px solid transparent';
+                
+                existingContent.style.display = 'block';
+                customContent.style.display = 'none';
+            } else {
+                // Activate custom subject tab
+                customTab.style.background = 'white';
+                customTab.style.color = '#5865F2';
+                customTab.style.borderBottom = '3px solid #5865F2';
+                existingTab.style.background = 'transparent';
+                existingTab.style.color = '#6b7280';
+                existingTab.style.borderBottom = '3px solid transparent';
+                
+                customContent.style.display = 'block';
+                existingContent.style.display = 'none';
+            }
+        };
+
+        // Load subjects for dropdown
+        async function loadSubjectsDropdown() {
+            try {
+                const response = await api.get('/subjects');
+                const select = document.getElementById('existing_subject_id');
+                
+                if (response.success && response.data) {
+                    select.innerHTML = '<option value="">Select a subject from catalog...</option>';
+                    response.data.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.subject_id;
+                        option.textContent = `${subject.subject_code} - ${subject.subject_name}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading subjects dropdown:', error);
+            }
+        }
+
+        // Handle add existing subject form
+        document.getElementById('addExistingSubjectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const subjectId = document.getElementById('subject_id').value;
-            const proficiency = document.getElementById('proficiency').value;
-            const physicalLocation = document.getElementById('physical_location').value.trim();
+            const subjectId = document.getElementById('existing_subject_id').value;
+            const proficiency = document.getElementById('existing_proficiency').value;
+            const physicalLocation = document.getElementById('existing_physical_location').value.trim();
 
             if (!subjectId || !proficiency || !physicalLocation) {
                 showMessage('Please fill in all required fields', 'danger');
@@ -452,7 +621,7 @@
 
                 if (response.success) {
                     showMessage('✅ Subject added successfully!', 'success');
-                    document.getElementById('addSubjectForm').reset();
+                    closeAddSubjectModal();
                     await loadData();
                 } else {
                     showMessage(response.message || 'Error adding subject', 'danger');
@@ -461,6 +630,68 @@
                 console.error('❌ Error adding subject:', error);
                 const errorMsg = error.response?.data?.message || error.message || 'Error adding subject';
                 showMessage(errorMsg, 'danger');
+            }
+        });
+
+        // Handle add custom subject form
+        document.getElementById('addCustomSubjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subjectCode = document.getElementById('custom_subject_code').value.trim().toUpperCase();
+            const subjectName = document.getElementById('custom_subject_name').value.trim();
+            const courseCode = document.getElementById('custom_course_code').value;
+            const description = document.getElementById('custom_description').value.trim();
+            const proficiency = document.getElementById('custom_proficiency').value;
+            const physicalLocation = document.getElementById('custom_physical_location').value.trim();
+
+            if (!subjectCode || !subjectName || !courseCode || !proficiency || !physicalLocation) {
+                showMessage('Please fill in all required fields', 'danger');
+                return;
+            }
+
+            try {
+                // First, create the custom subject
+                const subjectData = {
+                    subject_code: subjectCode,
+                    subject_name: subjectName,
+                    course_code: courseCode,
+                    description: description || null,
+                    created_by_tutor: true  // Flag to indicate this is tutor-created
+                };
+
+                console.log('Creating custom subject:', subjectData);
+                const subjectResponse = await api.post('/subjects/custom', subjectData);
+
+                if (subjectResponse.success && subjectResponse.data) {
+                    // Then add it to tutor's subjects
+                    const tutorSubjectData = {
+                        subject_id: subjectResponse.data.subject_id,
+                        proficiency_level: proficiency,
+                        preferred_location: 'both',
+                        physical_location: physicalLocation
+                    };
+
+                    const tutorResponse = await api.post('/tutors/subjects', tutorSubjectData);
+
+                    if (tutorResponse.success) {
+                        showMessage('✅ Custom subject created and added! Pending admin approval.', 'success');
+                        closeAddSubjectModal();
+                        await loadData();
+                    } else {
+                        showMessage(tutorResponse.message || 'Error adding subject to your list', 'danger');
+                    }
+                } else {
+                    showMessage(subjectResponse.message || 'Error creating custom subject', 'danger');
+                }
+            } catch (error) {
+                console.error('❌ Error creating custom subject:', error);
+                const errorMsg = error.response?.data?.message || error.message || 'Error creating custom subject';
+                
+                if (errorMsg.includes('duplicate') || errorMsg.includes('already exists')) {
+                    showMessage('❌ A subject with this code already exists. Try a different code or use the existing subject.', 'danger');
+                } else {
+                    showMessage(errorMsg, 'danger');
+                }
             }
         });
 
