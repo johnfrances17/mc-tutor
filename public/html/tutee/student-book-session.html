@@ -199,6 +199,15 @@
                                         <option value="120">2 hours</option>
                                     </select>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="sessionType">Session Type <span class="required">*</span></label>
+                                    <select id="sessionType" name="sessionType" required>
+                                        <option value="">Select session type</option>
+                                        <option value="online">Online Session</option>
+                                        <option value="face-to-face">Face-to-Face Session</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -488,6 +497,7 @@
             const formData = {
                 tutor_id: document.getElementById('tutor').value,
                 subject_id: document.getElementById('subject').value,
+                session_type: document.getElementById('sessionType').value,
                 session_date: document.getElementById('sessionDate').value,
                 start_time: startTime,
                 end_time: endTime,
@@ -500,6 +510,7 @@
             const missingFields = [];
             if (!formData.tutor_id) missingFields.push('Tutor');
             if (!formData.subject_id) missingFields.push('Subject');
+            if (!formData.session_type) missingFields.push('Session Type');
             if (!formData.session_date) missingFields.push('Session Date');
             if (!formData.start_time) missingFields.push('Start Time');
             if (!formData.end_time) missingFields.push('End Time');
