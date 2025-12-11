@@ -935,19 +935,26 @@
                 const profilePicturePreview = document.getElementById('profilePicturePreview');
                 if (profilePicturePreview) {
                     if (currentUser.profile_picture) {
-                        // Handle both relative paths (old) and full URLs (new)
+                        // Handle Supabase Storage URLs and relative paths
                         let pictureUrl = currentUser.profile_picture;
-                        if (pictureUrl.startsWith('/uploads/')) {
-                            // Old relative path - use current protocol and host
+                        
+                        // If it's a Supabase Storage URL, use it directly
+                        if (pictureUrl.includes('supabase.co/storage')) {
+                            // Already a full Supabase URL, use as-is
+                            console.log('🔗 Using Supabase Storage URL:', pictureUrl);
+                        } else if (pictureUrl.startsWith('/uploads/')) {
+                            // Old local path - this should be migrated but handle gracefully
+                            console.warn('⚠️ Using deprecated local path:', pictureUrl);
                             pictureUrl = `${window.location.protocol}//${window.location.host}${pictureUrl}`;
                         } else if (pictureUrl.startsWith('http://')) {
-                            // Convert HTTP to HTTPS if page is HTTPS
+                            // Convert HTTP to HTTPS if needed
                             if (window.location.protocol === 'https:') {
                                 pictureUrl = pictureUrl.replace('http://', 'https://');
                             }
                         }
-                        profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
-                        console.log('✅ Profile picture loaded:', pictureUrl);
+                        
+                        profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img" onerror="console.error('Failed to load image:', this.src); this.onerror=null; this.parentElement.innerHTML='<div class=\'profile-avatar-large\'><span>${initial}</span></div>';">`;
+                        console.log('✅ Profile picture URL set:', pictureUrl);
                     } else {
                         profilePicturePreview.innerHTML = `
                             <div class="profile-avatar-large">
@@ -1186,11 +1193,16 @@
                         const profilePicturePreview = document.getElementById('profilePicturePreview');
                         if (profilePicturePreview && data.profile_picture) {
                             let pictureUrl = data.profile_picture;
-                            // Convert HTTP to HTTPS if page is HTTPS
-                            if (pictureUrl.startsWith('http://') && window.location.protocol === 'https:') {
+                            
+                            // Handle Supabase Storage URLs
+                            if (pictureUrl.includes('supabase.co/storage')) {
+                                console.log('🔗 Supabase Storage URL received:', pictureUrl);
+                            } else if (pictureUrl.startsWith('http://') && window.location.protocol === 'https:') {
+                                // Convert HTTP to HTTPS if needed
                                 pictureUrl = pictureUrl.replace('http://', 'https://');
                             }
-                            profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img">`;
+                            
+                            profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img" onerror="console.error('Failed to load uploaded image:', this.src);">`;
                         }
 
                         // Close modal

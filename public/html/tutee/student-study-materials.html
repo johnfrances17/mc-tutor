@@ -534,18 +534,21 @@
                     return;
                 }
 
-                const tutorInfo = material.tutor_info || material.tutor || {};
-                const tutorStudentId = tutorInfo.school_id;
+                const tutorInfo = material.tutor_info || material.tutor || material.uploader || {};
+                const tutorStudentId = tutorInfo.school_id || material.tutor_student_id || material.uploaded_by;
                 const subjectId = material.subject_id;
 
-                if (!tutorStudentId || !subjectId) {
-                    console.error('Missing tutor_student_id or subject_id');
-                    showToast('Cannot download: missing information', 'error');
+                if (!subjectId) {
+                    console.error('Missing subject_id', material);
+                    showToast('Cannot download: missing subject information', 'error');
                     return;
                 }
 
                 // Build download URL with required parameters
-                const downloadUrl = `/materials/${materialId}/download?tutor_student_id=${tutorStudentId}&subject_id=${subjectId}`;
+                const params = new URLSearchParams();
+                if (tutorStudentId) params.append('tutor_student_id', tutorStudentId);
+                params.append('subject_id', subjectId);
+                const downloadUrl = `/materials/${materialId}/download?${params.toString()}`;
                 
                 const response = await api.get(downloadUrl);
                 
