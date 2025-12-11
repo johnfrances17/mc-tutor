@@ -132,11 +132,11 @@ export const getTuteeRatings = async (req: Request, res: Response, next: NextFun
           last_name,
           profile_picture
         ),
-        session:sessions(
+        session:sessions!tutor_ratings_session_fkey(
           session_date,
           start_time,
           end_time,
-          subject:subjects(
+          subject:subjects!sessions_subject_id_fkey(
             subject_name,
             subject_code
           )
@@ -207,11 +207,11 @@ export const getTutorRatings = async (req: Request, res: Response, next: NextFun
           last_name,
           profile_picture
         ),
-        session:sessions(
+        session:sessions!tutor_ratings_session_fkey(
           session_date,
           start_time,
           end_time,
-          subject:subjects(
+          subject:subjects!sessions_subject_id_fkey(
             subject_name,
             subject_code
           )
