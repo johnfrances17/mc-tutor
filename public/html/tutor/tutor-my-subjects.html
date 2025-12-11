@@ -177,27 +177,11 @@
             <form id="addSubjectForm">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                     <div class="form-group" style="margin: 0;">
-                        <label for="subject_code">Subject Code *</label>
-                        <input type="text" id="subject_code" name="subject_code" required placeholder="e.g., CS101, MATH201" style="text-transform: uppercase;">
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Enter the subject code you want to teach</small>
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label for="subject_name">Subject Name *</label>
-                        <input type="text" id="subject_name" name="subject_name" required placeholder="e.g., Introduction to Programming">
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Full name of the subject</small>
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label for="course_code">Course/Program *</label>
-                        <select id="course_code" name="course_code" required>
-                            <option value="">Select course</option>
-                            <option value="BSA">BS in Accountancy</option>
-                            <option value="BSBA">BS in Business Administration</option>
-                            <option value="BSED">Bachelor in Secondary Education</option>
-                            <option value="BSN">BS in Nursing</option>
-                            <option value="BSCS">BS in Computer Science</option>
-                            <option value="BSCrim">BS in Criminology</option>
+                        <label for="subject_id">Subject *</label>
+                        <select id="subject_id" name="subject_id" required>
+                            <option value="">Select a subject</option>
                         </select>
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Which program is this subject for?</small>
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Choose any subject you want to teach</small>
                     </div>
                     <div class="form-group" style="margin: 0;">
                         <label for="proficiency">Proficiency Level *</label>
@@ -322,7 +306,7 @@
         // Check authentication and role
         await requireRole('tutor');
 
-        // Load tutor's current subjects
+        // Load all available subjects and tutor's current subjects
         async function loadData() {
             try {
                 // Get current user
@@ -330,6 +314,20 @@
                 
                 // Update navbar with profile picture
                 if (window.updateNavUserInfo) window.updateNavUserInfo();
+                
+                // Load all available subjects (no course filter - freedom to choose any subject)
+                const availableResponse = await api.get('/subjects');
+                const availableSelect = document.getElementById('subject_id');
+                
+                if (availableResponse.success && availableResponse.subjects) {
+                    // Show ALL subjects - not filtered by course
+                    const allSubjects = availableResponse.subjects;
+                    
+                    availableSelect.innerHTML = '<option value="">Select a subject</option>' +
+                        allSubjects.map(subject => 
+                            `<option value="${subject.subject_id}">${subject.subject_code} - ${subject.subject_name}</option>`
+                        ).join('');
+                }
 
                 // Load tutor's subjects
                 await loadMySubjects();
@@ -433,54 +431,18 @@
         document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const subjectCode = document.getElementById('subject_code').value.trim().toUpperCase();
-            const subjectName = document.getElementById('subject_name').value.trim();
-            const courseCode = document.getElementById('course_code').value;
+            const subjectId = document.getElementById('subject_id').value;
             const proficiency = document.getElementById('proficiency').value;
             const physicalLocation = document.getElementById('physical_location').value.trim();
 
-            if (!subjectCode || !subjectName || !courseCode || !proficiency || !physicalLocation) {
+            if (!subjectId || !proficiency || !physicalLocation) {
                 showMessage('Please fill in all required fields', 'danger');
                 return;
             }
 
             try {
-                // First, check if subject exists, if not create it
-                console.log('📚 Checking if subject exists:', subjectCode);
-                let subjectId;
-                
-                // Try to get existing subject
-                const existingSubjectResponse = await api.get('/subjects');
-                const existingSubject = existingSubjectResponse.subjects?.find(
-                    s => s.subject_code.toUpperCase() === subjectCode && s.course_code === courseCode
-                );
-                
-                if (existingSubject) {
-                    console.log('✅ Subject already exists:', existingSubject);
-                    subjectId = existingSubject.subject_id;
-                } else {
-                    // Create new subject
-                    console.log('➕ Creating new subject...');
-                    const createSubjectResponse = await api.post('/admin/subjects', {
-                        subject_code: subjectCode,
-                        subject_name: subjectName,
-                        course_code: courseCode,
-                        description: `${subjectName} - ${courseCode} subject`
-                    });
-                    
-                    if (createSubjectResponse.success) {
-                        console.log('✅ Subject created:', createSubjectResponse.subject);
-                        subjectId = createSubjectResponse.subject.subject_id;
-                    } else {
-                        showMessage(createSubjectResponse.message || 'Error creating subject', 'danger');
-                        return;
-                    }
-                }
-                
-                // Now add to tutor_subjects
-                console.log('👨‍🏫 Adding subject to tutor profile...');
                 const requestBody = {
-                    subject_id: subjectId,
+                    subject_id: parseInt(subjectId),
                     proficiency_level: proficiency,
                     preferred_location: 'both',
                     physical_location: physicalLocation
@@ -489,11 +451,11 @@
                 const response = await api.post('/tutors/subjects', requestBody);
 
                 if (response.success) {
-                    showMessage(`✅ Subject "${subjectCode} - ${subjectName}" added successfully!`, 'success');
+                    showMessage('✅ Subject added successfully!', 'success');
                     document.getElementById('addSubjectForm').reset();
                     await loadData();
                 } else {
-                    showMessage(response.message || 'Error adding subject to your profile', 'danger');
+                    showMessage(response.message || 'Error adding subject', 'danger');
                 }
             } catch (error) {
                 console.error('❌ Error adding subject:', error);

@@ -241,10 +241,8 @@
             try {
                 const response = await api.get('/subjects');
                 if (response.success && response.subjects) {
-                    // Filter subjects by student's course
-                    subjects = response.subjects.filter(
-                        subject => subject.course_code === currentUser.course_code
-                    );
+                    // Show ALL subjects - students have freedom to choose any subject
+                    subjects = response.subjects;
                     populateSubjectFilter();
                 }
             } catch (error) {

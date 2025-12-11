@@ -820,8 +820,8 @@
             }
         }
 
-        // Load users
-        async function loadUsers() {
+        // Load users - make globally accessible
+        window.loadUsers = async function loadUsers() {
             try {
                 console.log('🔍 Loading users from /admin/users endpoint...');
                 const response = await api.get('/admin/users');
@@ -858,7 +858,7 @@
                     </div>
                 `;
             }
-        }
+        };
 
         // Helper: Get activity status based on last_active
         function getActivityStatus(lastActive) {
@@ -1036,7 +1036,8 @@
             }
         };
 
-        function showMessage(message, type) {
+        // Make showMessage globally accessible
+        window.showMessage = function(message, type) {
             const container = document.getElementById('messageContainer');
             container.innerHTML = `
                 <div class="alert alert-${type}">
@@ -1045,7 +1046,7 @@
             `;
             window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => container.innerHTML = '', 5000);
-        }
+        };
 
         // Logout handler
         document.getElementById('logoutBtn').addEventListener('click', async (e) => {
@@ -1232,39 +1233,73 @@
             // Basic validation
             if (!formData.school_id || !formData.email || !formData.password || 
                 !formData.first_name || !formData.last_name || !formData.role) {
-                showMessage('Please fill in all required fields', 'danger');
+                window.showMessage('⚠️ Please fill in all required fields', 'danger');
                 return;
             }
 
             if (formData.password.length < 6) {
-                showMessage('Password must be at least 6 characters long', 'danger');
+                window.showMessage('⚠️ Password must be at least 6 characters long', 'danger');
                 return;
             }
 
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(formData.email)) {
-                showMessage('Please enter a valid email address', 'danger');
+                window.showMessage('⚠️ Please enter a valid email address', 'danger');
                 return;
             }
 
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating User...';
+
             try {
+                console.log('📤 Creating user with data:', { ...formData, password: '***' });
                 const response = await api.post('/admin/users', formData);
+                console.log('📥 Response:', response);
 
                 if (response.success) {
-                    showMessage(`User created successfully! School ID: ${formData.school_id}`, 'success');
+                    window.showMessage(`✅ User created successfully! School ID: ${formData.school_id}`, 'success');
                     closeAddUserModal();
-                    await loadUsers();
+                    // Reload users list if loadUsers is available
+                    if (typeof loadUsers === 'function') {
+                        await loadUsers();
+                    } else if (window.loadUsers) {
+                        await window.loadUsers();
+                    } else {
+                        // Fallback: reload page
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
                 } else {
-                    showMessage(response.message || 'Error creating user', 'danger');
+                    window.showMessage(`❌ ${response.message || 'Error creating user'}`, 'danger');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
                 }
             } catch (error) {
-                console.error('Error creating user:', error);
-                if (error.message && error.message.includes('duplicate')) {
-                    showMessage('School ID or email already exists', 'danger');
-                } else {
-                    showMessage('Error creating user. Please try again.', 'danger');
+                console.error('❌ Error creating user:', error);
+                
+                // Parse error response
+                let errorMessage = 'Error creating user. Please try again.';
+                
+                if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                } else if (error.message) {
+                    if (error.message.includes('School ID already exists') || error.message.includes('409')) {
+                        errorMessage = 'School ID already exists. Please use a different School ID.';
+                    } else if (error.message.includes('Email already exists')) {
+                        errorMessage = 'Email already exists. Please use a different email address.';
+                    } else if (error.message.includes('duplicate')) {
+                        errorMessage = 'School ID or email already exists. Please check your inputs.';
+                    } else {
+                        errorMessage = error.message;
+                    }
                 }
+                
+                window.showMessage(`❌ ${errorMessage}`, 'danger');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
             }
         });
     </script>
