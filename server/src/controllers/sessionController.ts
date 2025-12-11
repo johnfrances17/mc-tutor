@@ -103,10 +103,10 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
-    // Fetch tutor's subject info to get location details and preferred location
+    // Fetch tutor's subject info to determine session_type from preferred_location
     const { data: tutorSubject } = await supabase
       .from('tutor_subjects')
-      .select('physical_location, google_meet_link, preferred_location')
+      .select('preferred_location')
       .eq('tutor_id', tutor_id)
       .eq('subject_id', subject_id)
       .single();
@@ -115,7 +115,7 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
     const session_type = tutorSubject?.preferred_location === 'both' ? 'online' : 
                         tutorSubject?.preferred_location === 'physical' ? 'physical' : 'online';
 
-    // Create session with location details from tutor_subjects
+    // Create session - location data will be fetched from tutor_subjects when needed
     const { data, error } = await supabase
       .from('sessions')
       .insert({
@@ -129,8 +129,6 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
         location,
         notes,
         status: 'pending',
-        physical_location: tutorSubject?.physical_location || null,
-        google_meet_link: tutorSubject?.google_meet_link || null,
       })
       .select(`
         *,

@@ -802,13 +802,7 @@
                 if (currentUser.role !== 'admin') {
                     window.location.href = '/html/index.html';
                     return;
-                }
-
-                // Set global for nav-user-info.js
-                window.currentUser = currentUser;
-
-                // Update navbar with profile picture
-                if (window.updateNavUserInfo) window.updateNavUserInfo();
+                }                // Set global for nav-user-info.js                window.currentUser = currentUser;                // Update navbar with profile picture                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 await Promise.all([
                     loadSessions(),
@@ -967,8 +961,9 @@
                             const sessionTime = session.start_time && session.end_time 
                                 ? `${session.start_time} - ${session.end_time}` 
                                 : 'N/A';
-                            const physicalLocation = session.physical_location || session.location || 'Not specified';
-                            const meetLink = session.google_meet_link || session.meet_link || '';
+                            // Read from tutor_subjects data, not sessions table
+                            const physicalLocation = session.tutor_subjects?.physical_location || session.physical_location || session.location || 'Not specified';
+                            const meetLink = session.tutor_subjects?.google_meet_link || session.google_meet_link || session.meet_link || '';
                             
                             return `
                             <tr>
