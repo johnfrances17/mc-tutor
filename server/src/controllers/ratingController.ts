@@ -126,7 +126,7 @@ export const getTuteeRatings = async (req: Request, res: Response, next: NextFun
         rating,
         review_text,
         created_at,
-        tutor:users!tutor_ratings_tutor_id_fkey(
+        tutor:users!tutor_ratings_tutor_fkey(
           user_id,
           first_name,
           last_name,
@@ -136,8 +136,9 @@ export const getTuteeRatings = async (req: Request, res: Response, next: NextFun
           session_date,
           start_time,
           end_time,
-          tutor_subject:tutor_subjects(
-            subject:subjects(subject_name)
+          subject:subjects(
+            subject_name,
+            subject_code
           )
         )
       `)
@@ -165,7 +166,7 @@ export const getTuteeRatings = async (req: Request, res: Response, next: NextFun
       session_date: r.session?.session_date,
       start_time: r.session?.start_time,
       end_time: r.session?.end_time,
-      subject_name: r.session?.tutor_subject?.subject?.subject_name || 'Subject'
+      subject_name: r.session?.subject?.subject_name || 'Subject'
     }));
 
     return res.status(200).json({
@@ -200,7 +201,7 @@ export const getTutorRatings = async (req: Request, res: Response, next: NextFun
         rating,
         review_text,
         created_at,
-        tutee:users!tutor_ratings_tutee_id_fkey(
+        tutee:users!tutor_ratings_tutee_fkey(
           user_id,
           first_name,
           last_name,
@@ -210,8 +211,9 @@ export const getTutorRatings = async (req: Request, res: Response, next: NextFun
           session_date,
           start_time,
           end_time,
-          tutor_subject:tutor_subjects(
-            subject:subjects(subject_name)
+          subject:subjects(
+            subject_name,
+            subject_code
           )
         )
       `)
@@ -250,7 +252,7 @@ export const getTutorRatings = async (req: Request, res: Response, next: NextFun
       session_date: r.session?.session_date,
       start_time: r.session?.start_time,
       end_time: r.session?.end_time,
-      subject_name: r.session?.tutor_subject?.subject?.subject_name || 'Subject'
+      subject_name: r.session?.subject?.subject_name || 'Subject'
     }));
 
     return res.status(200).json({
