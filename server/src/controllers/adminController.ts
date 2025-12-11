@@ -400,7 +400,7 @@ export const createSubject = async (req: Request, res: Response, next: NextFunct
 export const updateSubject = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const { id } = req.params;
-    const { subject_code, subject_name, course_code, description, approval_status } = req.body;
+    const { subject_code, subject_name, course_code, description } = req.body;
 
     const updateData: any = {};
 
@@ -408,13 +408,6 @@ export const updateSubject = async (req: Request, res: Response, next: NextFunct
     if (subject_name) updateData.subject_name = sanitizeInput(subject_name);
     if (course_code) updateData.course_code = sanitizeInput(course_code);
     if (description !== undefined) updateData.description = sanitizeInput(description);
-    if (approval_status) {
-      // Validate approval_status
-      const validStatuses = ['pending', 'approved', 'rejected'];
-      if (validStatuses.includes(approval_status)) {
-        updateData.approval_status = approval_status;
-      }
-    }
 
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({ success: false, message: 'No fields to update' });
@@ -436,8 +429,7 @@ export const updateSubject = async (req: Request, res: Response, next: NextFunct
 
     console.log('✅ Subject updated:', {
       subject_id: id,
-      updated_fields: Object.keys(updateData),
-      approval_status: updateData.approval_status
+      updated_fields: Object.keys(updateData)
     });
 
     res.json({

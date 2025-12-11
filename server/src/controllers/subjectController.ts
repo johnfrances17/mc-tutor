@@ -149,7 +149,7 @@ export const createCustomSubject = async (req: Request, res: Response, next: Nex
       });
     }
 
-    // Create the subject
+    // Create the subject (auto-approved - no pending status needed)
     const { data, error } = await supabase
       .from('subjects')
       .insert({
@@ -159,7 +159,6 @@ export const createCustomSubject = async (req: Request, res: Response, next: Nex
         description: description || null,
         is_custom: true,
         created_by_tutor_id: user.user_id,
-        approval_status: 'pending',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })

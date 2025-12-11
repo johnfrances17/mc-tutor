@@ -682,28 +682,6 @@
             </form>
         </div>
 
-        <!-- Pending Custom Subjects (Tutor-Created) -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0;"><i class="fas fa-clock"></i> Pending Custom Subjects</h2>
-                <span id="pendingCount" class="badge badge-warning" style="font-size: 16px; padding: 8px 16px;">0 pending</span>
-            </div>
-            
-            <div style="background: #fff3e0; padding: 14px; border-radius: 8px; border-left: 4px solid #ff9800; margin-bottom: 20px;">
-                <p style="margin: 0; font-size: 14px; color: #e65100;">
-                    <i class="fas fa-info-circle"></i> These are custom subjects created by tutors. Review and approve them to make them available to students.
-                </p>
-            </div>
-            
-            <div class="table-wrapper">
-                <div id="pendingSubjectsContainer">
-                    <div style="text-align: center; padding: 20px;">
-                        <i class="fas fa-spinner fa-spin"></i> Loading pending subjects...
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Subjects List -->
         <div class="card">
             <h2><i class="fas fa-book"></i> All Subjects</h2>
@@ -802,24 +780,15 @@
 
                 // Check if response has subjects
                 if (response.success && response.subjects && response.subjects.length > 0) {
-                    // Separate standard subjects and pending custom subjects
-                    const standardSubjects = response.subjects.filter(s => !s.is_custom || s.approval_status === 'approved');
-                    const pendingSubjects = response.subjects.filter(s => s.is_custom && s.approval_status === 'pending');
+                    // Show all subjects together (standard + custom)
+                    allSubjects = response.subjects;
+                    filteredSubjects = response.subjects;
                     
-                    allSubjects = standardSubjects;
-                    filteredSubjects = standardSubjects;
-                    console.log('✅ Loaded', standardSubjects.length, 'standard subjects and', pendingSubjects.length, 'pending custom subjects');
+                    const customCount = response.subjects.filter(s => s.is_custom).length;
+                    console.log('✅ Loaded', response.subjects.length, 'total subjects (', customCount, 'custom)');
                     
-                    // Update pending count badge
-                    const pendingCount = document.getElementById('pendingCount');
-                    if (pendingCount) {
-                        pendingCount.textContent = `${pendingSubjects.length} pending`;
-                    }
-                    
-                    // Display both lists
                     currentPage = 1;
                     displaySubjects();
-                    displayPendingSubjects(pendingSubjects);
                 } else {
                     console.warn('⚠️ No subjects in response or empty array');
                     container.innerHTML = `
@@ -840,62 +809,6 @@
                     </div>
                 `;
             }
-        }
-
-        // Display pending custom subjects
-        function displayPendingSubjects(subjects) {
-            const container = document.getElementById('pendingSubjectsContainer');
-
-            if (subjects.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-check-circle"></i>
-                        <p style="font-weight: 600; font-size: 16px; color: #2d3748;">No pending custom subjects</p>
-                        <p>All custom subjects have been reviewed</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const tableHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Subject Name</th>
-                            <th>Course</th>
-                            <th>Description</th>
-                            <th>Created By</th>
-                            <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${subjects.map(subject => `
-                            <tr style="background-color: #fffbeb;">
-                                <td><strong>${subject.subject_code}</strong></td>
-                                <td><strong>${subject.subject_name}</strong></td>
-                                <td><span class="badge badge-info">${subject.course_code}</span></td>
-                                <td style="max-width: 300px; text-align: left;">${subject.description || '<em style="color: #999;">No description</em>'}</td>
-                                <td>${subject.created_by_tutor_id ? `Tutor ID: ${subject.created_by_tutor_id}` : '-'}</td>
-                                <td>${subject.created_at ? new Date(subject.created_at).toLocaleDateString() : '-'}</td>
-                                <td>
-                                    <div style="display: flex; gap: 8px; justify-content: center;">
-                                        <button onclick="approveCustomSubject(${subject.subject_id})" class="btn btn-primary" style="padding: 8px 16px;">
-                                            <i class="fas fa-check"></i> Approve
-                                        </button>
-                                        <button onclick="rejectCustomSubject(${subject.subject_id})" class="btn btn-danger" style="padding: 8px 16px;">
-                                            <i class="fas fa-times"></i> Reject
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-
-            container.innerHTML = tableHTML;
         }
 
         // Display subjects in table with pagination
@@ -937,9 +850,12 @@
                             <tr>
                                 <td>${subject.subject_id}</td>
                                 <td><strong>${subject.subject_code}</strong></td>
-                                <td>${subject.subject_name}</td>
+                                <td>
+                                    ${subject.subject_name}
+                                    ${subject.is_custom ? '<span class="badge" style="background: #e8f5e9; color: #2e7d32; margin-left: 8px;"><i class="fas fa-user-edit"></i> Custom</span>' : ''}
+                                </td>
                                 <td><span class="badge badge-info">${subject.course_code || subject.course || 'N/A'}</span></td>
-                                <td>${subject.description || '-'}</td>
+                                <td style="max-width: 250px;">${subject.description || '-'}</td>
                                 <td>${subject.tutor_count || 0}</td>
                                 <td>
                                     <button class="btn btn-primary" onclick="editSubject(${subject.subject_id})" style="margin-right: 5px; padding: 6px 12px; font-size: 13px;">
@@ -1066,57 +982,6 @@
                 showMessage('Error adding subject. Please try again.', 'danger');
             }
         });
-
-        // Approve custom subject
-        window.approveCustomSubject = async function(subjectId) {
-            const subject = allSubjects.find(s => s.subject_id === subjectId) || 
-                            (await api.get('/subjects')).subjects.find(s => s.subject_id === subjectId);
-            
-            if (!confirm(`✅ APPROVE CUSTOM SUBJECT\n\nApprove this custom subject?\n\nCode: ${subject?.subject_code}\nName: ${subject?.subject_name}\nCourse: ${subject?.course_code}\n\nThis will make it available to all students.`)) {
-                return;
-            }
-
-            try {
-                const response = await api.put(`/admin/subjects/${subjectId}`, {
-                    approval_status: 'approved'
-                });
-
-                if (response.success) {
-                    showMessage(`✅ Custom subject "${subject?.subject_code}" approved!`, 'success');
-                    await loadSubjects();
-                } else {
-                    showMessage(response.message || 'Error approving subject', 'danger');
-                }
-            } catch (error) {
-                console.error('Error approving subject:', error);
-                showMessage('Error approving subject. Please try again.', 'danger');
-            }
-        };
-
-        // Reject custom subject
-        window.rejectCustomSubject = async function(subjectId) {
-            const subject = allSubjects.find(s => s.subject_id === subjectId) || 
-                            (await api.get('/subjects')).subjects.find(s => s.subject_id === subjectId);
-            
-            if (!confirm(`❌ REJECT CUSTOM SUBJECT\n\nReject and delete this custom subject?\n\nCode: ${subject?.subject_code}\nName: ${subject?.subject_name}\nCourse: ${subject?.course_code}\n\nThis will permanently delete the subject and remove it from the tutor's list.`)) {
-                return;
-            }
-
-            try {
-                // Delete the subject entirely
-                const response = await api.delete(`/admin/subjects/${subjectId}`);
-
-                if (response.success) {
-                    showMessage(`✅ Custom subject "${subject?.subject_code}" rejected and deleted.`, 'success');
-                    await loadSubjects();
-                } else {
-                    showMessage(response.message || 'Error rejecting subject', 'danger');
-                }
-            } catch (error) {
-                console.error('Error rejecting subject:', error);
-                showMessage('Error rejecting subject. Please try again.', 'danger');
-            }
-        };
 
         // Delete subject
         window.deleteSubject = async function(subjectId) {

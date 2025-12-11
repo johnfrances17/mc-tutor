@@ -267,9 +267,9 @@
 
                 <!-- Custom Subject Tab -->
                 <div id="customSubjectContent" style="display: none;">
-                    <div style="background: #fff3e0; padding: 14px; border-radius: 8px; border-left: 4px solid #ff9800; margin-bottom: 24px;">
-                        <p style="margin: 0; font-size: 14px; color: #e65100;">
-                            <i class="fas fa-lightbulb"></i> Create your own custom subject not available in the catalog. Custom subjects require admin approval before appearing to students.
+                    <div style="background: #e8f5e9; padding: 14px; border-radius: 8px; border-left: 4px solid #4caf50; margin-bottom: 24px;">
+                        <p style="margin: 0; font-size: 14px; color: #2e7d32;">
+                            <i class="fas fa-check-circle"></i> Create your own custom subject not available in the catalog. Your subject will be immediately available to students and other tutors.
                         </p>
                     </div>
 
@@ -674,7 +674,7 @@
                     const tutorResponse = await api.post('/tutors/subjects', tutorSubjectData);
 
                     if (tutorResponse.success) {
-                        showMessage('✅ Custom subject created and added! Pending admin approval.', 'success');
+                        showMessage('✅ Custom subject created successfully! You can now teach this subject.', 'success');
                         closeAddSubjectModal();
                         await loadData();
                     } else {
