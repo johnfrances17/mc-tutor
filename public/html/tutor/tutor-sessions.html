@@ -638,12 +638,12 @@
 
         // Action functions
         window.confirmSession = async function(sessionId) {
-            if (!confirm('Confirm this tutoring session? A conversation will be created so you can message the student.')) return;
+            if (!confirm('Confirm this tutoring session?')) return;
             
             try {
                 const response = await api.put(`/sessions/${sessionId}/confirm`);
                 if (response.success) {
-                    showToast('✅ Session confirmed! You can now message the student.', 'success');
+                    showToast('✅ Session confirmed!', 'success');
                     await loadSessions();
                 } else {
                     showToast(response.error?.message || 'Failed to confirm session', 'error');
