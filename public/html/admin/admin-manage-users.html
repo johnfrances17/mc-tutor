@@ -992,22 +992,47 @@
 
         // Delete user
         window.deleteUser = async function(userId) {
-            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            // Find user details for confirmation
+            const user = allUsers.find(u => u.user_id === userId);
+            const userName = user ? (user.fullName || user.full_name || `${user.first_name} ${user.last_name}`) : 'this user';
+            const userSchoolId = user ? user.school_id : '';
+            
+            if (!confirm(`⚠️ DELETE USER CONFIRMATION\n\nAre you sure you want to permanently delete:\n\nName: ${userName}\nSchool ID: ${userSchoolId}\nRole: ${user ? user.role.toUpperCase() : 'Unknown'}\n\nThis action cannot be undone and will remove all user data including sessions, ratings, and materials.`)) {
                 return;
             }
 
+            // Show loading state
+            const deleteButtons = document.querySelectorAll(`button[onclick="deleteUser(${userId})"]`);
+            deleteButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            });
+
             try {
+                console.log(`🗑️ Attempting to delete user ${userId}...`);
                 const response = await api.delete(`/admin/users/${userId}`);
+                console.log('Delete response:', response);
 
                 if (response.success) {
-                    showMessage('User deleted successfully!', 'success');
+                    showMessage(`✅ User "${userName}" (${userSchoolId}) has been successfully deleted!`, 'success');
                     await loadUsers();
                 } else {
-                    showMessage(response.message || 'Error deleting user', 'danger');
+                    showMessage(`❌ ${response.message || 'Error deleting user. Please try again.'}`, 'danger');
+                    // Re-enable buttons
+                    deleteButtons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                    });
                 }
             } catch (error) {
-                console.error('Error deleting user:', error);
-                showMessage('Error deleting user. Please try again.', 'danger');
+                console.error('❌ Error deleting user:', error);
+                const errorMessage = error.response?.data?.message || error.message || 'Network error or server unreachable';
+                showMessage(`❌ Failed to delete user: ${errorMessage}`, 'danger');
+                // Re-enable buttons
+                deleteButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                });
             }
         };
 
@@ -1133,8 +1158,15 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="newCourse">Course Code</label>
-                            <input type="text" id="newCourse" name="course_code" 
-                                   placeholder="e.g., BSCS">
+                            <select id="newCourse" name="course_code">
+                                <option value="">Select your course/program</option>
+                                <option value="BSA">BS in Accountancy</option>
+                                <option value="BSBA">BS in Business Administration</option>
+                                <option value="BSED">Bachelor in Secondary Education</option>
+                                <option value="BSN">Bachelor of Science in Nursing</option>
+                                <option value="BSCS">Bachelor of Science in Computer Science</option>
+                                <option value="BSCrim">Bachelor of Science in Criminology</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="newYearLevel">Year Level</label>
@@ -1144,7 +1176,6 @@
                                 <option value="2">2nd Year</option>
                                 <option value="3">3rd Year</option>
                                 <option value="4">4th Year</option>
-                                <option value="5">5th Year</option>
                             </select>
                         </div>
                     </div>
@@ -1179,14 +1210,6 @@
         window.closeAddUserModal = function() {
             document.getElementById('addUserModal').style.display = 'none';
             document.getElementById('addUserForm').reset();
-        };
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('addUserModal');
-            if (event.target === modal) {
-                closeAddUserModal();
-            }
         };
 
         // Submit Add User Form
