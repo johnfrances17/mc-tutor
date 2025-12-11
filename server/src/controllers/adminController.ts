@@ -261,16 +261,76 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     const { permanent = false } = req.query;
 
     if (permanent === 'true') {
-      // Permanent delete (dangerous!)
-      const { error } = await supabase
+      // Permanent delete - must delete related records first to avoid foreign key constraint errors
+      console.log(`🗑️ Permanently deleting user ${id} and all related data...`);
+      
+      // Delete in correct order to respect foreign key constraints
+      
+      // 1. Delete sessions (as tutee)
+      const { error: sessionsAsTuteeError } = await supabase
+        .from('sessions')
+        .delete()
+        .eq('tutee_id', id);
+      
+      if (sessionsAsTuteeError) {
+        console.error('Error deleting sessions as tutee:', sessionsAsTuteeError);
+      }
+      
+      // 2. Delete sessions (as tutor)
+      const { error: sessionsAsTutorError } = await supabase
+        .from('sessions')
+        .delete()
+        .eq('tutor_id', id);
+      
+      if (sessionsAsTutorError) {
+        console.error('Error deleting sessions as tutor:', sessionsAsTutorError);
+      }
+      
+      // 3. Delete materials
+      const { error: materialsError } = await supabase
+        .from('materials')
+        .delete()
+        .eq('tutor_id', id);
+      
+      if (materialsError) {
+        console.error('Error deleting materials:', materialsError);
+      }
+      
+      // 4. Delete tutor_subjects
+      const { error: tutorSubjectsError } = await supabase
+        .from('tutor_subjects')
+        .delete()
+        .eq('tutor_id', id);
+      
+      if (tutorSubjectsError) {
+        console.error('Error deleting tutor subjects:', tutorSubjectsError);
+      }
+      
+      // 5. Delete custom subjects created by this tutor
+      const { error: customSubjectsError } = await supabase
+        .from('subjects')
+        .delete()
+        .eq('created_by_tutor_id', id);
+      
+      if (customSubjectsError) {
+        console.error('Error deleting custom subjects:', customSubjectsError);
+      }
+      
+      // 6. Finally, delete the user
+      const { error: userError } = await supabase
         .from('users')
         .delete()
         .eq('user_id', id);
 
-      if (error) {
-        return res.status(400).json({ success: false, message: 'Failed to delete user' });
+      if (userError) {
+        console.error('Error deleting user:', userError);
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Failed to delete user: ' + userError.message 
+        });
       }
 
+      console.log(`✅ User ${id} and all related data permanently deleted`);
       return res.json({ success: true, message: 'User permanently deleted' });
     } else {
       // Soft delete (set status to inactive)
