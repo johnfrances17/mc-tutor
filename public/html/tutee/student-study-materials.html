@@ -397,6 +397,16 @@
                         const fileName = material.file_name || material.filename || 'file';
                         const materialId = material.material_id || material.id;
                         
+                        // Debug log to check what data we have
+                        console.log('[Material Card]', {
+                            materialId,
+                            title: material.title,
+                            subject_id: material.subject_id,
+                            subject_name: material.subject_name,
+                            tutor_student_id: tutorInfo.school_id,
+                            fileName
+                        });
+                        
                         return `
                         <div class="material-card">
                             <div class="material-icon-large">${getFileIcon(fileName)}</div>
