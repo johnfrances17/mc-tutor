@@ -18,14 +18,20 @@ EXCEPTION
 END $$;
 
 -- Step 2: Add new constraint with 'pending'
-ALTER TABLE users ADD CONSTRAINT users_status_check 
-  CHECK (status IN ('active', 'inactive', 'suspended', 'pending'));
-
-RAISE NOTICE '✓ Added new status constraint with pending support';
+DO $$
+BEGIN
+    ALTER TABLE users ADD CONSTRAINT users_status_check 
+      CHECK (status IN ('active', 'inactive', 'suspended', 'pending'));
+    RAISE NOTICE '✓ Added new status constraint with pending support';
+END $$;
 
 -- Step 3: (Optional) Change default to 'pending' for new registrations
--- Uncomment the next line if you want new users to default to 'pending'
--- ALTER TABLE users ALTER COLUMN status SET DEFAULT 'pending';
+-- Uncomment the next 3 lines if you want new users to default to 'pending'
+-- DO $$
+-- BEGIN
+--     ALTER TABLE users ALTER COLUMN status SET DEFAULT 'pending';
+--     RAISE NOTICE '✓ Changed default status to pending';
+-- END $$;
 
 -- Step 4: Verify the constraint
 DO $$
