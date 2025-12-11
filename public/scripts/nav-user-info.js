@@ -4,12 +4,18 @@
  * Can be called from any page after auth check
  */
 window.updateNavUserInfo = function() {
-    const currentUser = window.auth?.currentUser || JSON.parse(localStorage.getItem('user') || '{}');
+    // Try multiple sources for current user
+    const currentUser = window.currentUser || 
+                       window.auth?.currentUser || 
+                       window.auth?.getCurrentUser() || 
+                       JSON.parse(localStorage.getItem('user') || '{}');
     
     if (!currentUser || !currentUser.user_id) {
         console.warn('[Nav] No current user found');
         return;
     }
+
+    console.log('[Nav] Updating with user:', currentUser.first_name, 'Has picture:', !!currentUser.profile_picture);
 
     // Update user name with FIRST NAME ONLY
     const userNameElements = document.querySelectorAll('[data-user-name]');

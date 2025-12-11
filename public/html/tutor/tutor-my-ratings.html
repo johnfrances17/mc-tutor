@@ -382,11 +382,14 @@
         // Initialize page
         async function init() {
             try {
-                currentUser = await window.auth.getCurrentUser();
+                currentUser = window.auth.getCurrentUser();
                 if (!currentUser || currentUser.role !== 'tutor') {
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
+
+                // Set global for nav-user-info.js
+                window.currentUser = currentUser;
 
                 // Update navbar with profile picture
                 if (window.updateNavUserInfo) window.updateNavUserInfo();
@@ -396,7 +399,7 @@
 
             } catch (error) {
                 console.error('Initialization error:', error);
-                handleLogout();
+                alert('Failed to load page. Please refresh.');
             }
         }
 
@@ -420,7 +423,7 @@
         async function loadRatings() {
             try {
                 showLoadingState();
-                const response = await api.get('/ratings/tutor-ratings');
+                const response = await window.api.get('/ratings/tutor-ratings');
 
                 if (!response.success) {
                     throw new Error(response.message || 'Failed to load ratings');
@@ -580,7 +583,7 @@
         // Logout handler
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            handleLogout();
+            window.auth.logout();
         });
 
         // Secondary Navigation Toggle
