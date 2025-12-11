@@ -925,6 +925,18 @@
                 }
                 originalProfile = { ...currentUser };
 
+                // ✅ UPDATE: Save updated user data to localStorage and cookies
+                // This ensures profile picture updates are reflected across all pages
+                localStorage.setItem('user', JSON.stringify(currentUser));
+                
+                // Update cookie with new user data
+                const date = new Date();
+                date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000)); // 1 day
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = "user=" + encodeURIComponent(JSON.stringify(currentUser)) + ";" + expires + ";path=/;SameSite=Strict";
+                
+                console.log('✅ User data saved to localStorage/cookies with profile picture:', currentUser.profile_picture);
+
                 // Update nav user info with first name only
                 updateNavUserInfo();
 

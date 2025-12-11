@@ -87,7 +87,15 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
-    // Create session
+    // Fetch tutor's subject info to get location details
+    const { data: tutorSubject } = await supabase
+      .from('tutor_subjects')
+      .select('physical_location, google_meet_link')
+      .eq('tutor_id', tutor_id)
+      .eq('subject_id', subject_id)
+      .single();
+
+    // Create session with location details from tutor_subjects
     const { data, error } = await supabase
       .from('sessions')
       .insert({
@@ -101,6 +109,8 @@ export const createSession = async (req: AuthRequest, res: Response, next: NextF
         location,
         notes,
         status: 'pending',
+        physical_location: tutorSubject?.physical_location || null,
+        google_meet_link: tutorSubject?.google_meet_link || null,
       })
       .select(`
         *,

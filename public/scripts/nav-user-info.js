@@ -4,18 +4,29 @@
  * Can be called from any page after auth check
  */
 window.updateNavUserInfo = function() {
-    // Try multiple sources for current user
-    const currentUser = window.currentUser || 
-                       window.auth?.currentUser || 
-                       window.auth?.getCurrentUser() || 
-                       JSON.parse(localStorage.getItem('user') || '{}');
+    // ALWAYS read fresh from localStorage/cookies - never use cached window.currentUser
+    let currentUser;
+    try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            currentUser = JSON.parse(userStr);
+        } else {
+            // Fallback to cookie
+            const cookieUser = document.cookie.split('; ').find(row => row.startsWith('user='));
+            if (cookieUser) {
+                currentUser = JSON.parse(decodeURIComponent(cookieUser.split('=')[1]));
+            }
+        }
+    } catch (error) {
+        console.error('[Nav] Error reading user data:', error);
+    }
     
     if (!currentUser || !currentUser.user_id) {
         console.warn('[Nav] No current user found');
         return;
     }
 
-    console.log('[Nav] Updating with user:', currentUser.first_name, 'Has picture:', !!currentUser.profile_picture);
+    console.log('[Nav] Updating with user:', currentUser.first_name, 'Has picture:', !!currentUser.profile_picture, 'URL:', currentUser.profile_picture);
 
     // Update user name with FIRST NAME ONLY
     const userNameElements = document.querySelectorAll('[data-user-name]');
