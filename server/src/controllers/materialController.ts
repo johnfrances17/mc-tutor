@@ -28,6 +28,24 @@ export const getMaterials = async (req: AuthRequest, res: Response, next: NextFu
     if (currentUserRole === 'tutor') {
       query = query.eq('tutor_id', currentUserId);
     }
+    
+    // If tutee, only show materials from tutors they have CONFIRMED sessions with
+    if (currentUserRole === 'tutee') {
+      // Get tutor IDs from confirmed sessions
+      const { data: sessions } = await supabase
+        .from('sessions')
+        .select('tutor_id')
+        .eq('tutee_id', currentUserId)
+        .eq('status', 'confirmed');
+      
+      if (!sessions || sessions.length === 0) {
+        // No confirmed sessions = no materials
+        return res.json({ success: true, materials: [] });
+      }
+      
+      const tutorIds = [...new Set(sessions.map(s => s.tutor_id))];
+      query = query.in('tutor_id', tutorIds);
+    }
 
     // Apply filters
     if (subject_id) {
