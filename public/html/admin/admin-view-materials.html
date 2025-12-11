@@ -613,6 +613,7 @@
 
         // Get file icon based on extension
         function getFileIcon(filename) {
+            if (!filename) return '📄';
             const ext = filename.split('.').pop().toLowerCase();
             const icons = {
                 pdf: '??',

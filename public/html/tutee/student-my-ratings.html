@@ -295,7 +295,7 @@
 
         <div class="card">
             <h2 class="card-title">
-                <i class="fas fa-star"></i> My Ratings
+                <i class="fas fa-star"></i>
             </h2>
             
             <div id="ratingsContainer"></div>
@@ -333,6 +333,12 @@
                 // Update navbar with profile picture
                 if (window.updateNavUserInfo) window.updateNavUserInfo();
 
+                // Set global for nav-user-info.js
+                window.currentUser = currentUser;
+
+                // Update navbar with profile picture
+                if (window.updateNavUserInfo) window.updateNavUserInfo();
+
                 updateNavbar();
                 await loadRatings();
 
@@ -347,7 +353,7 @@
             const userName = document.getElementById('userName');
             const userAvatar = document.getElementById('userAvatar');
 
-            if (currentUser) {
+            if (currentUser && userName && userAvatar) {
                 const fullName = currentUser.last_name && currentUser.first_name
                     ? `${currentUser.last_name}, ${currentUser.first_name}`
                     : currentUser.email;

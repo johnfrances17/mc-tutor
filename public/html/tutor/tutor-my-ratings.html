@@ -408,7 +408,7 @@
             const userName = document.getElementById('userName');
             const userAvatar = document.getElementById('userAvatar');
 
-            if (currentUser) {
+            if (currentUser && userName && userAvatar) {
                 const fullName = currentUser.last_name && currentUser.first_name
                     ? `${currentUser.last_name}, ${currentUser.first_name}`
                     : currentUser.email;
