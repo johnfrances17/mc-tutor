@@ -105,16 +105,17 @@ export class StorageService {
     let uploadsDir: string;
     let baseUrl: string;
     
-    if (process.env.VERCEL) {
-      // On Vercel, DON'T use local storage - it's ephemeral and will be deleted
-      console.error('❌ Cannot use local storage on Vercel!');
-      throw new Error('Local storage not supported on Vercel. Use Supabase Storage.');
-    } else {
-      // Local development (XAMPP) - use relative path from project root
-      uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
-      // Use configured base URL or default to http://localhost
-      baseUrl = process.env.LOCAL_BASE_URL || 'http://localhost';
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      // On Vercel/Production, DON'T use local storage - it's ephemeral
+      console.error('❌ Cannot use local storage in production!');
+      console.error('💡 Make sure Supabase "avatars" bucket exists and is PUBLIC');
+      throw new Error('Local storage not supported in production. Use Supabase Storage.');
     }
+    
+    // Local development (XAMPP) - use relative path from project root
+    uploadsDir = path.join(process.cwd(), '..', 'uploads', 'profiles');
+    // Use configured base URL or default to http://localhost
+    baseUrl = process.env.LOCAL_BASE_URL || 'http://localhost';
     
     await fs.mkdir(uploadsDir, { recursive: true });
 

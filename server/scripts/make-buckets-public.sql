@@ -15,3 +15,9 @@ WHERE name = 'materials';
 SELECT name, public, created_at 
 FROM storage.buckets 
 WHERE name IN ('avatars', 'materials');
+
+-- Expected result:
+-- name      | public | created_at
+-- ----------|--------|------------
+-- avatars   | true   | 2024-12-11 ...
+-- materials | true   | 2024-12-11 ...

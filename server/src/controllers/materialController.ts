@@ -242,12 +242,14 @@ export const deleteMaterial = async (req: AuthRequest, res: Response, next: Next
 };
 
 /**
- * Download material
+ * Download material (NEW: Database-based instead of file-based)
  */
 export const downloadMaterial = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { tutor_student_id, subject_id } = req.query;
+
+    console.log('📥 Download request:', { materialId: id, tutor_student_id, subject_id });
 
     if (!tutor_student_id || !subject_id) {
       return res.status(400).json({
@@ -256,48 +258,82 @@ export const downloadMaterial = async (req: AuthRequest, res: Response, next: Ne
       });
     }
 
-    // Get material metadata
-    const result = await materialsService.getMaterialForDownload(
-      tutor_student_id as string,
-      Number(subject_id),
-      Number(id)
-    );
+    // Import supabase
+    const { supabase } = await import('../config/database');
 
-    if (!result.success || !result.fileName) {
-      return res.status(404).json({ success: false, message: result.error || 'File not found' });
-    }
+    // Get material from DATABASE (not file system)
+    const { data: material, error: dbError } = await supabase
+      .from('materials')
+      .select(`
+        material_id,
+        tutor_id,
+        subject_id,
+        title,
+        filename,
+        file_url,
+        file_type,
+        file_size,
+        tutor:users!materials_tutor_id_fkey(school_id)
+      `)
+      .eq('material_id', Number(id))
+      .single();
 
-    // Get signed download URL from Supabase Storage (or local path)
-    const downloadUrl = await storageService.getMaterialDownloadUrl(
-      tutor_student_id as string,
-      Number(subject_id),
-      result.fileName
-    );
-
-    if (!downloadUrl) {
-      return res.status(404).json({ success: false, message: 'File not found in storage' });
-    }
-
-    // If it's a signed URL, return it for frontend to handle
-    if (downloadUrl.startsWith('http')) {
-      return res.json({
-        success: true,
-        download_url: downloadUrl,
-        filename: result.fileName,
-        expires_in: 3600 // 1 hour
+    if (dbError || !material) {
+      console.error('❌ Material not found in database:', dbError);
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Material not found' 
       });
     }
 
-    // If it's a local path, serve the file directly
-    res.download(downloadUrl, result.fileName, (err) => {
-      if (err) {
-        console.error('Download error:', err);
-        if (!res.headersSent) {
-          res.status(500).json({ success: false, message: 'Failed to download file' });
-        }
-      }
+    // Verify tutor matches (security check)
+    const tutorData = Array.isArray(material.tutor) ? material.tutor[0] : material.tutor;
+    const materialTutorId = tutorData?.school_id;
+    if (materialTutorId !== tutor_student_id) {
+      console.warn('⚠️ Tutor ID mismatch:', { expected: tutor_student_id, actual: materialTutorId });
+    }
+
+    console.log('✅ Material found:', material.title, '- File URL:', material.file_url);
+
+    // If file_url is already a full URL (Supabase), return it directly
+    if (material.file_url && material.file_url.startsWith('http')) {
+      console.log('📤 Returning Supabase Storage URL');
+      return res.json({
+        success: true,
+        download_url: material.file_url,
+        filename: material.filename || material.title,
+        file_type: material.file_type,
+        expires_in: null // Public URL, no expiration
+      });
+    }
+
+    // Otherwise, construct download URL using StorageService
+    const downloadUrl = await storageService.getMaterialDownloadUrl(
+      tutor_student_id as string,
+      Number(subject_id),
+      material.filename || material.title
+    );
+
+    if (!downloadUrl) {
+      console.error('❌ Failed to generate download URL');
+      return res.status(404).json({ 
+        success: false, 
+        message: 'File not found in storage' 
+      });
+    }
+
+    console.log('📤 Returning download URL:', downloadUrl);
+
+    // Return download URL for frontend
+    return res.json({
+      success: true,
+      download_url: downloadUrl,
+      filename: material.filename || material.title,
+      file_type: material.file_type,
+      expires_in: downloadUrl.startsWith('http') ? null : 3600
     });
   } catch (error) {
+    console.error('❌ Download error:', error);
     return next(error);
-    }
+  }
 };

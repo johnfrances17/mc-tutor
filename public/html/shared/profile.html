@@ -975,7 +975,7 @@
                         }
                         
                         const fallbackHtml = `<div class='profile-avatar-large'><span>${initial}</span></div>`;
-                        profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img" onerror="console.error('[Profile] Failed to load image:', this.src); this.onerror=null; this.parentElement.innerHTML='${fallbackHtml}';">`;
+                        profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img" onerror="this.onerror=null; this.parentElement.innerHTML='${fallbackHtml}';">`;
                         console.log('[Profile] Picture URL set:', pictureUrl);
                     } else {
                         profilePicturePreview.innerHTML = `
@@ -1224,7 +1224,8 @@
                                 pictureUrl = pictureUrl.replace('http://', 'https://');
                             }
                             
-                            profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img" onerror="console.error('[Profile Upload] Failed to load uploaded image:', this.src);">`;
+                            
+                            profilePicturePreview.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="Profile" class="profile-picture-img" onerror="this.onerror=null; this.style.display='none';">`;
                             console.log('[Profile Upload] Picture updated successfully');
                         }
 
