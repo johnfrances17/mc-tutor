@@ -51,7 +51,7 @@
             gap: 32px;
             margin-bottom: 32px;
             padding: 24px;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             border-radius: 12px;
             color: white;
         }
@@ -145,7 +145,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -289,7 +289,7 @@
         <div class="nav-container">
             <a href="/html/tutor/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-right">
-                <div class="user-info-inline" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);">
+                <div class="user-info-inline" style="background: #5865F2;">
                     <div class="user-avatar-small" data-user-avatar id="navAvatar">
                         <span id="navAvatarInitial">T</span>
                     </div>
@@ -310,7 +310,7 @@
     </nav>
 
     <!-- Collapsible Secondary Navigation -->
-    <nav class="secondary-navbar" id="secondaryNav" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);">
+    <nav class="secondary-navbar" id="secondaryNav" style="background: #5865F2;">
         <div class="secondary-nav-container">
             <div class="secondary-nav-links">
                 <a href="/html/tutor/tutor-dashboard.html" class="secondary-nav-link">Dashboard</a>
@@ -324,22 +324,22 @@
 
     <div class="container">
         <div class="stats-row">
-            <div class="stat-box" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); color: white;">
+            <div class="stat-box" style="background: #5865F2; color: white;">
                 <i class="fas fa-star"></i>
                 <h3 id="avgRating">0.0</h3>
                 <p>Average Rating</p>
             </div>
-            <div class="stat-box" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); color: white;">
+            <div class="stat-box" style="background: #5865F2; color: white;">
                 <i class="fas fa-users"></i>
                 <h3 id="totalRatings">0</h3>
                 <p>Total Ratings</p>
             </div>
-            <div class="stat-box" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); color: white;">
+            <div class="stat-box" style="background: #5865F2; color: white;">
                 <i class="fas fa-user-graduate"></i>
                 <h3 id="studentsRated">0</h3>
                 <p>Students Who Rated</p>
             </div>
-            <div class="stat-box" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); color: white;">
+            <div class="stat-box" style="background: #5865F2; color: white;">
                 <i class="fas fa-trophy"></i>
                 <h3 id="fiveStars">0</h3>
                 <p>5-Star Ratings</p>
@@ -372,19 +372,24 @@
         </div>
     </div>
 
-    <script src="/js/auth.js"></script>
-    <script src="/js/api.js"></script>
+    <script src="/scripts/utils.js"></script>
+    <script src="/scripts/api.js"></script>
+    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/nav-user-info.js"></script>
     <script>
         let currentUser = null;
 
         // Initialize page
         async function init() {
             try {
-                currentUser = await checkAuth();
+                currentUser = await window.auth.getCurrentUser();
                 if (!currentUser || currentUser.role !== 'tutor') {
                     window.location.href = '/html/auth/login.html';
                     return;
                 }
+
+                // Update navbar with profile picture
+                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 updateNavbar();
                 await loadRatings();

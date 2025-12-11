@@ -145,7 +145,7 @@
             <div class="secondary-nav-links">
                 <a href="/html/tutee/student-dashboard.html" class="secondary-nav-link">Dashboard</a>
                 <a href="/html/tutee/student-find-tutors.html" class="secondary-nav-link">Find Tutors</a>
-                <a href="/html/tutee/student-my-sessions.html" class="secondary-nav-link">My Sessions</a>
+                <a href="/html/tutee/student-my-sessions.html" class="secondary-nav-link">My Sessions</a>`n            <a href="/html/tutee/student-my-ratings.html" class="secondary-nav-link">My Ratings</a>
                 <a href="/html/tutee/student-my-ratings.html" class="secondary-nav-link">My Ratings</a>
                 <a href="/html/tutee/student-study-materials.html" class="secondary-nav-link active">Study Materials</a>
             </div>
@@ -232,6 +232,7 @@
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
+    <script src="/scripts/nav-user-info.js"></script>
     <script type="module">
         // Using window.auth from auth.js loaded above
         const { getCurrentUser } = window.auth;
@@ -254,6 +255,9 @@
                 window.location.href = '/html/auth/login.html';
                 return;
             }
+
+            // Update navbar with profile picture
+            if (window.updateNavUserInfo) window.updateNavUserInfo();
 
             // Show upload button for tutors
             if (currentUser.role === 'tutor') {

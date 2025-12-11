@@ -163,7 +163,7 @@
             <div class="secondary-nav-links">
                 <a href="/html/tutor/tutor-dashboard.html" class="secondary-nav-link active">Dashboard</a>
                 <a href="/html/tutor/tutor-my-subjects.html" class="secondary-nav-link">My Subjects</a>
-                <a href="/html/tutor/tutor-sessions.html" class="secondary-nav-link">Sessions</a>
+                <a href="/html/tutor/tutor-sessions.html" class="secondary-nav-link">Sessions</a>`n            <a href="/html/tutor/tutor-my-ratings.html" class="secondary-nav-link">My Ratings</a>
                 <a href="/html/tutor/tutor-my-ratings.html" class="secondary-nav-link">My Ratings</a>
                 <a href="/html/tutor/tutor-upload-materials.html" class="secondary-nav-link">Materials</a>
             </div>
@@ -228,7 +228,7 @@
     <!-- Core Scripts -->
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
-    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/auth.js"></script>`n    <script src="/scripts/nav-user-info.js"></script>
     <script type="module">
         // Using window.auth from auth.js loaded above
         const { getCurrentUser } = window.auth;
@@ -274,6 +274,9 @@
                     setTimeout(() => window.location.href = '/html/index.html', 2000);
                     return;
                 }
+
+                // Update navbar with profile picture
+                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 const tutorFullName = currentUser.fullName || currentUser.full_name || 
                     (currentUser.first_name && currentUser.last_name ? 

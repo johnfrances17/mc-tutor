@@ -126,7 +126,7 @@
             <div class="secondary-nav-links">
                 <a href="/html/tutee/student-dashboard.html" class="secondary-nav-link">Dashboard</a>
                 <a href="/html/tutee/student-find-tutors.html" class="secondary-nav-link active">Find Tutors</a>
-                <a href="/html/tutee/student-my-sessions.html" class="secondary-nav-link">My Sessions</a>
+                <a href="/html/tutee/student-my-sessions.html" class="secondary-nav-link">My Sessions</a>`n            <a href="/html/tutee/student-my-ratings.html" class="secondary-nav-link">My Ratings</a>
                 <a href="/html/tutee/student-my-ratings.html" class="secondary-nav-link">My Ratings</a>
                 <a href="/html/tutee/student-study-materials.html" class="secondary-nav-link">Study Materials</a>
             </div>
@@ -217,7 +217,7 @@
     <!-- Core Scripts -->
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
-    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/auth.js"></script>`n    <script src="/scripts/nav-user-info.js"></script>
     <script type="module">
         // Using window.auth from auth.js loaded above
         const { getCurrentUser, requireRole } = window.auth;
@@ -227,6 +227,10 @@
         await requireRole('tutee');
 
         const currentUser = await getCurrentUser();
+        
+        // Update navbar with profile picture
+        if (window.updateNavUserInfo) window.updateNavUserInfo();
+        
         let allTutors = [];
         let subjects = [];
         let filteredTutors = [];
@@ -432,7 +436,7 @@
                                 ${totalSessions} Session${totalSessions !== 1 ? 's' : ''}
                             </div>
                             <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-primary" onclick="bookTutor(${tutor.user_id})" style="background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); box-shadow: 0 2px 8px rgba(88, 101, 242, 0.3); width: 100%;">
+                                <button class="btn btn-primary" onclick="bookTutor(${tutor.user_id})" style="background: #5865F2; box-shadow: 0 2px 8px rgba(88, 101, 242, 0.3); width: 100%;">
                                     <i class="fas fa-calendar-plus"></i> Book Session
                                 </button>
                             </div>
@@ -647,7 +651,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -660,7 +664,7 @@
             position: absolute;
             top: 16px;
             right: 16px;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             color: white;
             padding: 8px 12px;
             border-radius: 20px;
@@ -691,7 +695,7 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             color: white;
             display: flex;
             align-items: center;
@@ -775,7 +779,7 @@
         }
 
         .rating-badge.no-rating {
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
         }
 
         .tutor-details {
@@ -842,7 +846,7 @@
             align-items: center;
             gap: 4px;
             padding: 6px 12px;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             color: white;
             border-radius: 20px;
             font-size: 12px;
@@ -860,7 +864,7 @@
             align-items: center;
             gap: 6px;
             padding: 8px 14px;
-            background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%);
+            background: #5865F2;
             color: white;
             border-radius: 20px;
             font-size: 13px;
