@@ -489,8 +489,14 @@
                 session_date: document.getElementById('sessionDate').value,
                 start_time: startTime,
                 end_time: endTime,
-                notes: document.getElementById('notes').value
+                notes: document.getElementById('notes').value || ''
             };
+
+            // Validate required fields
+            if (!formData.tutor_id || !formData.subject_id || !formData.session_date || !formData.start_time || !formData.end_time) {
+                showMessage('Please fill in all required fields', 'error');
+                return;
+            }
 
             try {
                 const response = await api.post('/sessions', formData);
