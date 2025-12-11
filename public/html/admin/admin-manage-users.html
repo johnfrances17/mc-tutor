@@ -755,7 +755,12 @@
 
         <!-- Users Table -->
         <div class="card">
-            <h2><i class="fas fa-users"></i> All Users</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;"><i class="fas fa-users"></i> All Users</h2>
+                <button class="btn btn-primary" onclick="openAddUserModal()" style="padding: 10px 20px; font-size: 14px;">
+                    <i class="fas fa-user-plus"></i> Add User
+                </button>
+            </div>
             
             <div class="filter-bar">
                 <input type="text" id="searchInput" placeholder="Search by name, email, or school ID...">
@@ -763,11 +768,6 @@
                     <option value="">All Roles</option>
                     <option value="tutor">Tutors</option>
                     <option value="tutee">Students</option>
-                </select>
-                <select id="filterStatus">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
                 </select>
             </div>
 
@@ -919,7 +919,6 @@
                             <th>Role</th>
                             <th>Course</th>
                             <th>Year</th>
-                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -948,29 +947,7 @@
                                 <td>${user.course_name || user.course_code || '-'}</td>
                                 <td>${formatYearLevel(user.year_level)}</td>
                                 <td>
-                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                        <span class="badge ${user.status === 'active' ? 'badge-success' : 'badge-secondary'}">
-                                            <i class="fas fa-${user.status === 'active' ? 'check-circle' : 'times-circle'}"></i> 
-                                            ${user.status === 'active' ? 'Active' : 'Inactive'}
-                                        </span>
-                                        ${(() => {
-                                            const activity = getActivityStatus(user.last_active);
-                                            return `<span class="badge ${activity.class}" style="font-size: 11px;">
-                                                <i class="fas fa-circle" style="font-size: 8px;"></i> ${activity.text}
-                                            </span>`;
-                                        })()}
-                                    </div>
-                                </td>
-                                <td>
                                     <div class="action-buttons">
-                                        ${user.status === 'active' ? 
-                                            `<button class="btn btn-warning" onclick="toggleStatus(${user.user_id}, 'inactive')">
-                                                <i class="fas fa-ban"></i> Deactivate
-                                            </button>` :
-                                            `<button class="btn btn-success" onclick="toggleStatus(${user.user_id}, 'active')">
-                                                <i class="fas fa-check"></i> Activate
-                                            </button>`
-                                        }
                                         <button class="btn btn-danger" onclick="deleteUser(${user.user_id})">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
@@ -990,7 +967,6 @@
         function filterUsers() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const roleFilter = document.getElementById('filterRole').value;
-            const statusFilter = document.getElementById('filterStatus').value;
 
             let filtered = allUsers;
 
@@ -1007,39 +983,12 @@
                 filtered = filtered.filter(user => user.role === roleFilter);
             }
 
-            if (statusFilter) {
-                filtered = filtered.filter(user => user.status === statusFilter);
-            }
-
             displayUsers(filtered);
         }
 
         // Event listeners for filters
         document.getElementById('searchInput').addEventListener('input', filterUsers);
         document.getElementById('filterRole').addEventListener('change', filterUsers);
-        document.getElementById('filterStatus').addEventListener('change', filterUsers);
-
-        // Toggle user status
-        window.toggleStatus = async function(userId, newStatus) {
-            const action = newStatus === 'active' ? 'activate' : 'deactivate';
-            if (!confirm(`Are you sure you want to ${action} this user?`)) {
-                return;
-            }
-
-            try {
-                const response = await api.put(`/admin/users/${userId}`, { status: newStatus });
-
-                if (response.success) {
-                    showMessage(`User ${action}d successfully!`, 'success');
-                    await loadUsers();
-                } else {
-                    showMessage(response.message || `Error ${action}ing user`, 'danger');
-                }
-            } catch (error) {
-                console.error('Error updating user status:', error);
-                showMessage('Error updating user status. Please try again.', 'danger');
-            }
-        };
 
         // Delete user
         window.deleteUser = async function(userId) {
@@ -1123,6 +1072,283 @@
             }
         });
     </script>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Add New User</h3>
+                <button class="modal-close" onclick="closeAddUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newSchoolId">School ID *</label>
+                            <input type="text" id="newSchoolId" name="school_id" required 
+                                   placeholder="Enter school ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="newRole">Role *</label>
+                            <select id="newRole" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="tutee">Tutee (Student)</option>
+                                <option value="tutor">Tutor</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newFirstName">First Name *</label>
+                            <input type="text" id="newFirstName" name="first_name" required 
+                                   placeholder="Enter first name">
+                        </div>
+                        <div class="form-group">
+                            <label for="newMiddleName">Middle Name</label>
+                            <input type="text" id="newMiddleName" name="middle_name" 
+                                   placeholder="Enter middle name (optional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newLastName">Last Name *</label>
+                        <input type="text" id="newLastName" name="last_name" required 
+                               placeholder="Enter last name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newEmail">Email *</label>
+                        <input type="email" id="newEmail" name="email" required 
+                               placeholder="Enter email address">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">Password *</label>
+                        <input type="password" id="newPassword" name="password" required 
+                               placeholder="Enter password (min 6 characters)" minlength="6">
+                        <small style="color: #666;">Password must be at least 6 characters long</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newCourse">Course Code</label>
+                            <input type="text" id="newCourse" name="course_code" 
+                                   placeholder="e.g., BSCS">
+                        </div>
+                        <div class="form-group">
+                            <label for="newYearLevel">Year Level</label>
+                            <select id="newYearLevel" name="year_level">
+                                <option value="">Select Year</option>
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                                <option value="5">5th Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPhone">Phone Number</label>
+                        <input type="tel" id="newPhone" name="phone" 
+                               placeholder="Enter phone number (optional)">
+                    </div>
+
+                    <div class="form-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddUserModal()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Open Add User Modal
+        window.openAddUserModal = function() {
+            document.getElementById('addUserModal').style.display = 'flex';
+            document.getElementById('addUserForm').reset();
+        };
+
+        // Close Add User Modal
+        window.closeAddUserModal = function() {
+            document.getElementById('addUserModal').style.display = 'none';
+            document.getElementById('addUserForm').reset();
+        };
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('addUserModal');
+            if (event.target === modal) {
+                closeAddUserModal();
+            }
+        };
+
+        // Submit Add User Form
+        document.getElementById('addUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                school_id: document.getElementById('newSchoolId').value.trim(),
+                email: document.getElementById('newEmail').value.trim().toLowerCase(),
+                password: document.getElementById('newPassword').value,
+                first_name: document.getElementById('newFirstName').value.trim(),
+                middle_name: document.getElementById('newMiddleName').value.trim(),
+                last_name: document.getElementById('newLastName').value.trim(),
+                role: document.getElementById('newRole').value,
+                phone: document.getElementById('newPhone').value.trim(),
+                course_code: document.getElementById('newCourse').value.trim().toUpperCase(),
+                year_level: document.getElementById('newYearLevel').value ? parseInt(document.getElementById('newYearLevel').value) : null
+            };
+
+            // Basic validation
+            if (!formData.school_id || !formData.email || !formData.password || 
+                !formData.first_name || !formData.last_name || !formData.role) {
+                showMessage('Please fill in all required fields', 'danger');
+                return;
+            }
+
+            if (formData.password.length < 6) {
+                showMessage('Password must be at least 6 characters long', 'danger');
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                showMessage('Please enter a valid email address', 'danger');
+                return;
+            }
+
+            try {
+                const response = await api.post('/admin/users', formData);
+
+                if (response.success) {
+                    showMessage(`User created successfully! School ID: ${formData.school_id}`, 'success');
+                    closeAddUserModal();
+                    await loadUsers();
+                } else {
+                    showMessage(response.message || 'Error creating user', 'danger');
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+                if (error.message && error.message.includes('duplicate')) {
+                    showMessage('School ID or email already exists', 'danger');
+                } else {
+                    showMessage('Error creating user. Please try again.', 'danger');
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </body>
 </html>
 

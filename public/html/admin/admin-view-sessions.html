@@ -616,13 +616,7 @@
                 if (currentUser.role !== 'admin') {
                     window.location.href = '/html/index.html';
                     return;
-                }
-
-                // Set global for nav-user-info.js
-                window.currentUser = currentUser;
-
-                // Update navbar with profile picture
-                if (window.updateNavUserInfo) window.updateNavUserInfo();
+                }                // Set global for nav-user-info.js                window.currentUser = currentUser;                // Update navbar with profile picture                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 await Promise.all([
                     loadSessions(),

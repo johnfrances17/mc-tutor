@@ -104,6 +104,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       phone,
       year_level,
       course,
+      course_code,
       status = 'active',
     } = req.body;
 
@@ -144,6 +145,9 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     // ⚠️ Store password in PLAIN TEXT (not secure!)
     const plainPassword = password;
 
+    // Accept both course and course_code
+    const courseValue = course_code || course;
+
     // Create user
     const { data: newUser, error } = await supabase
       .from('users')
@@ -157,10 +161,10 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         role,
         phone: phone ? sanitizeInput(phone) : null,
         year_level: year_level || null,
-        course: course ? sanitizeInput(course) : null,
+        course_code: courseValue ? sanitizeInput(courseValue) : null,
         status,
       })
-      .select('user_id, school_id, first_name, middle_name, last_name, email, role, phone, year_level, course, status, created_at')
+      .select('user_id, school_id, first_name, middle_name, last_name, email, role, phone, year_level, course_code, status, created_at')
       .single();
 
     if (error) {
