@@ -396,8 +396,8 @@
                             : 'Unknown Tutor';
                         const fileName = material.file_name || material.filename || 'file';
                         const materialId = material.material_id || material.id;
-                        const subjectId = material.subject_id || 'null';
-                        const tutorStudentId = tutorInfo.school_id || 'null';
+                        const subjectId = material.subject_id || null;
+                        const tutorStudentId = tutorInfo.school_id || null;
                         
                         // Debug log to check what data we have
                         console.log('[Material Card]', {
@@ -424,7 +424,7 @@
                                 <div class="material-card-footer">
                                     <span class="text-muted">${formatDateHelper(material.uploaded_at)}</span>
                                     <button class="btn btn-sm btn-primary" 
-                                            onclick="downloadMaterial(${materialId}, '${fileName.replace(/'/g, "\\'")}', ${subjectId}, '${tutorStudentId}')">
+                                            onclick="downloadMaterial(${materialId}, '${fileName.replace(/'/g, "\\'")}', ${subjectId || 'null'}, '${tutorStudentId || ''}')">
                                         <i class="fas fa-download"></i> Download
                                     </button>
                                 </div>
@@ -538,6 +538,11 @@
         window.downloadMaterial = async function(materialId, filename, subjectId = null, tutorStudentId = null) {
             try {
                 console.log('📥 Downloading material:', { materialId, filename, subjectId, tutorStudentId });
+                
+                // If subject_id or tutorStudentId not passed, try to find from material
+                // Normalize 'null' string to actual null
+                if (subjectId === 'null') subjectId = null;
+                if (tutorStudentId === 'null') tutorStudentId = null;
                 
                 // If subject_id or tutorStudentId not passed, try to find from material
                 if (!subjectId || !tutorStudentId) {
