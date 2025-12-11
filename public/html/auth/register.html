@@ -176,6 +176,12 @@
     <div class="register-body">
       <h2>Create Your Account</h2>
 
+      <div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 12px 15px; margin-bottom: 20px; border-radius: 5px;">
+        <p style="margin: 0; font-size: 14px; color: #1565C0;">
+          <i class="fas fa-info-circle"></i> <strong>Registration Approval:</strong> All new accounts require admin approval before login access is granted.
+        </p>
+      </div>
+
       <form id="registerForm">
         <div id="errorMessage" class="error-message" style="display: none;"></div>
         <div id="successMessage" class="success-message" style="display: none;"></div>
@@ -479,7 +485,17 @@
         }
       } catch (error) {
         console.error('Registration error:', error);
-        errorMessage.textContent = error.message || 'Registration failed. Please try again.';
+        
+        let errorMsg = error.message || 'Registration failed. Please try again.';
+        
+        // Handle specific database errors
+        if (errorMsg.includes('check constraint') || errorMsg.includes('status_check')) {
+          errorMsg = '⚠️ Database configuration issue. Please contact the administrator to run the pending status migration.';
+        } else if (errorMsg.includes('duplicate') || errorMsg.includes('already exists')) {
+          errorMsg = '❌ This email or school ID is already registered.';
+        }
+        
+        errorMessage.innerHTML = errorMsg;
         errorMessage.style.display = 'block';
         registerBtn.disabled = false;
         registerBtn.innerHTML = 'Create Account';
