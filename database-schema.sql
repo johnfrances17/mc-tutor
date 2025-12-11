@@ -76,7 +76,10 @@ CREATE TABLE public.subjects (
   description text,
   created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT subjects_pkey PRIMARY KEY (subject_id)
+  is_custom boolean DEFAULT false,
+  created_by_tutor_id integer,
+  CONSTRAINT subjects_pkey PRIMARY KEY (subject_id),
+  CONSTRAINT subjects_created_by_tutor_id_fkey FOREIGN KEY (created_by_tutor_id) REFERENCES public.users(user_id)
 );
 CREATE TABLE public.tutor_availability (
   availability_id integer NOT NULL DEFAULT nextval('tutor_availability_availability_id_seq'::regclass),
