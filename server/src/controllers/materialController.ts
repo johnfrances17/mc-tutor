@@ -1,9 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../types';
-import { MaterialsService } from '../services/MaterialsService';
 import { StorageService } from '../services/StorageService';
 
-const materialsService = new MaterialsService();
 const storageService = StorageService.getInstance();
 
 /**
