@@ -985,6 +985,7 @@
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
+    <script src="/scripts/nav-user-info.js"></script>
     <script type="module">
         // Using window.auth from auth.js loaded above
         const { getCurrentUser } = window.auth;
@@ -1010,6 +1011,12 @@
                     window.location.href = '/html/index.html';
                     return;
                 }
+
+                // Set global for nav-user-info.js
+                window.currentUser = currentUser;
+
+                // Update navbar with profile picture
+                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 // Load system stats first (needed by other functions)
                 await loadSystemStats();

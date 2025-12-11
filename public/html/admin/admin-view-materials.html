@@ -425,6 +425,7 @@
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
     <script src="/scripts/auth.js"></script>
+    <script src="/scripts/nav-user-info.js"></script>
     <script type="module">
         const { getCurrentUser } = window.auth;
         const { showToast, debounce, formatDate } = window;
@@ -450,6 +451,12 @@
                     window.location.href = '/html/index.html';
                     return;
                 }
+
+                // Set global for nav-user-info.js
+                window.currentUser = currentUser;
+
+                // Update navbar with profile picture
+                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 // Show upload button for tutors
                 if (currentUser.role === 'tutor') {

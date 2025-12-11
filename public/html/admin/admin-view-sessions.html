@@ -592,7 +592,7 @@
     <!-- Core Scripts -->
     <script src="/scripts/utils.js"></script>
     <script src="/scripts/api.js"></script>
-    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/auth.js"></script>`n    <script src="/scripts/nav-user-info.js"></script>
     <script type="module">
         const { getCurrentUser } = window.auth;
         const { showToast, formatDate } = window;
@@ -615,7 +615,7 @@
                 if (currentUser.role !== 'admin') {
                     window.location.href = '/html/index.html';
                     return;
-                }
+                }`n`n                // Set global for nav-user-info.js`n                window.currentUser = currentUser;`n`n                // Update navbar with profile picture`n                if (window.updateNavUserInfo) window.updateNavUserInfo();
 
                 await Promise.all([
                     loadSessions(),
