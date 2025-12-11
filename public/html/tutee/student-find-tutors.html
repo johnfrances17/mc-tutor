@@ -154,7 +154,6 @@
                         <div class="form-group" style="flex: 1;">
                             <label for="sortBy">Sort By</label>
                             <select id="sortBy" class="form-control">
-                                <option value="rating">Highest Rating</option>
                                 <option value="sessions">Most Sessions</option>
                                 <option value="name">Name (A-Z)</option>
                             </select>
@@ -346,16 +345,8 @@
                     return `${level}${suffix} Year`;
                 }
                 const phone = tutor.phone || 'Not provided';
-                const rating = parseFloat(tutor.average_rating || 0);
-                const totalRatings = tutor.total_ratings || 0;
                 const totalSessions = tutor.total_sessions || 0;
                 const subjects = tutor.subjects || [];
-
-                // Generate star rating
-                let stars = '';
-                for (let i = 1; i <= 5; i++) {
-                    stars += i <= Math.round(rating) ? '★' : '☆';
-                }
 
                 // Generate subject tags
                 const subjectTags = subjects.length > 0 ? 
@@ -364,16 +355,6 @@
 
                 return `
                     <div class="tutor-card">
-                        ${rating > 0 ? `
-                            <div class="rating-badge">
-                                <i class="fas fa-star"></i> ${rating.toFixed(1)}
-                            </div>
-                        ` : `
-                            <div class="rating-badge no-rating">
-                                <i class="fas fa-star"></i> New
-                            </div>
-                        `}
-                        
                         <div class="tutor-header">
                             <div class="tutor-avatar">
                                 ${fullName.charAt(0).toUpperCase()}
@@ -390,17 +371,6 @@
                                         ${courseName}${yearLevel ? ` - ${yearLevel}` : ''}
                                     </span>
                                 </div>
-                                ${rating > 0 ? `
-                                    <div class="rating-display">
-                                        <span class="rating-stars">${stars}</span>
-                                        <span class="rating-value">${rating.toFixed(1)}</span>
-                                        <span class="rating-count">(${totalRatings} rating${totalRatings !== 1 ? 's' : ''})</span>
-                                    </div>
-                                ` : `
-                                    <div class="no-rating-text">
-                                        <i class="fas fa-info-circle"></i> No ratings yet
-                                    </div>
-                                `}
                             </div>
                         </div>
                         
@@ -531,16 +501,8 @@
                     });
                     break;
                 case 'sessions':
-                    filteredTutors.sort((a, b) => (b.total_sessions || 0) - (a.total_sessions || 0));
-                    break;
-                case 'rating':
                 default:
-                    filteredTutors.sort((a, b) => {
-                        const ratingA = parseFloat(a.average_rating || 0);
-                        const ratingB = parseFloat(b.average_rating || 0);
-                        if (ratingB !== ratingA) return ratingB - ratingA;
-                        return (b.total_sessions || 0) - (a.total_sessions || 0);
-                    });
+                    filteredTutors.sort((a, b) => (b.total_sessions || 0) - (a.total_sessions || 0));
                     break;
             }
 
@@ -548,7 +510,7 @@
             displayTutors();
 
             // Show/hide clear button
-            const hasFilters = searchQuery || subjectId || sortBy !== 'rating';
+            const hasFilters = searchQuery || subjectId || sortBy !== 'name';
             document.getElementById('clearBtn').style.display = hasFilters ? 'inline-block' : 'none';
         }
 
@@ -556,7 +518,7 @@
         function clearFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('subjectFilter').value = '';
-            document.getElementById('sortBy').value = 'rating';
+            document.getElementById('sortBy').value = 'sessions';
             filteredTutors = allTutors;
             currentPage = 1;
             displayTutors();

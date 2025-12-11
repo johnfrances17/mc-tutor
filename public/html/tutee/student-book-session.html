@@ -389,7 +389,7 @@
                 const tutorName = tutor.last_name && tutor.first_name 
                     ? `${tutor.last_name}, ${tutor.first_name}${tutor.middle_name ? ' ' + tutor.middle_name : ''}`
                     : 'Unknown';
-                option.textContent = `${tutorName} ${tutor.rating ? '⭐ ' + tutor.rating : ''}`;
+                option.textContent = tutorName;
                 select.appendChild(option);
             });
         }
@@ -454,7 +454,6 @@
                         <strong>Email:</strong> ${tutor.email}
                     </p>
                     ${tutor.phone ? `<p style="margin: 8px 0; color: #6b7280; display: flex; align-items: center; gap: 8px;"><i class="fas fa-phone" style="color: #5865F2; width: 16px;"></i> <strong>Phone:</strong> ${tutor.phone}</p>` : ''}
-                    ${tutor.rating ? `<p style="margin: 8px 0; color: #6b7280; display: flex; align-items: center; gap: 8px;"><i class="fas fa-star" style="color: #fbbf24; width: 16px;"></i> <strong>Rating:</strong> ${tutor.rating}/5.0</p>` : ''}
                 </div>
                 ${tutorSubjectsHTML}
                 <div style="margin-top: 16px; padding: 12px; background: #eff6ff; border-radius: 6px; border-left: 4px solid #3b82f6;">
