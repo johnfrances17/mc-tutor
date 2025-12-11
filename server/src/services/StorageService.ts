@@ -68,9 +68,8 @@ export class StorageService {
 
       if (error) {
         console.error('❌ Supabase upload error:', error);
-        console.log('💡 Tip: Create "avatars" bucket in Supabase Dashboard (Settings > Storage)');
-        console.log('🔄 Falling back to local storage...');
-        return this.uploadProfilePictureLocal(file, userId);
+        console.error('❌ Error details:', JSON.stringify(error, null, 2));
+        throw new Error(`Supabase upload failed: ${error.message}. Make sure "avatars" bucket exists and is PUBLIC.`);
       }
 
       // Get public URL
@@ -83,12 +82,10 @@ export class StorageService {
     } catch (error: any) {
       console.error('❌ Upload profile picture error:', error);
       if (error?.message?.includes('Bucket not found') || error?.message?.includes('bucket')) {
-        console.log('⚠️  Supabase bucket "avatars" not found!');
-        console.log('💡 To fix: Go to Supabase Dashboard > Storage > Create bucket "avatars" (Public)');
-        console.log('📍 Storage endpoint: https://axrzqrzlnceaiuiyixif.storage.supabase.co');
+        console.error('⚠️  Supabase bucket "avatars" not found!');
+        console.error('💡 To fix: Go to Supabase Dashboard > Storage > Create bucket "avatars" (Public)');
       }
-      console.log('🔄 Falling back to local storage...');
-      return this.uploadProfilePictureLocal(file, userId);
+      throw error;
     }
   }
 
@@ -153,14 +150,14 @@ export class StorageService {
 
       if (error) {
         console.error('❌ Delete error:', error);
-        return this.deleteProfilePictureLocal(fileUrl);
+        throw new Error(`Failed to delete from Supabase: ${error.message}`);
       }
 
       console.log('✅ Profile picture deleted from Supabase');
       return true;
     } catch (error) {
       console.error('❌ Delete profile picture error:', error);
-      return this.deleteProfilePictureLocal(fileUrl);
+      throw error;
     }
   }
 
@@ -207,9 +204,8 @@ export class StorageService {
 
       if (error) {
         console.error('❌ Supabase upload error:', error);
-        console.log('💡 Tip: Create "materials" bucket in Supabase Dashboard (Settings > Storage)');
-        console.log('🔄 Falling back to local storage...');
-        return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
+        console.error('❌ Error details:', JSON.stringify(error, null, 2));
+        throw new Error(`Supabase upload failed: ${error.message}. Make sure "materials" bucket exists and is PUBLIC.`);
       }
 
       // Get public URL (bucket is public, no signed URL needed)
@@ -226,12 +222,10 @@ export class StorageService {
     } catch (error: any) {
       console.error('❌ Upload study material error:', error);
       if (error?.message?.includes('Bucket not found') || error?.message?.includes('bucket')) {
-        console.log('⚠️  Supabase bucket "materials" not found!');
-        console.log('💡 To fix: Go to Supabase Dashboard > Storage > Create bucket "materials" (Public)');
-        console.log('📍 Storage endpoint: https://axrzqrzlnceaiuiyixif.storage.supabase.co');
+        console.error('⚠️  Supabase bucket "materials" not found!');
+        console.error('💡 To fix: Go to Supabase Dashboard > Storage > Create bucket "materials" (Public)');
       }
-      console.log('🔄 Falling back to local storage...');
-      return this.uploadStudyMaterialLocal(file, tutorId, subjectId);
+      throw error;
     }
   }
 
@@ -291,14 +285,14 @@ export class StorageService {
 
       if (error) {
         console.error('❌ Delete error:', error);
-        return this.deleteStudyMaterialLocal(tutorId, subjectId, filename);
+        throw new Error(`Failed to delete from Supabase: ${error.message}`)
       }
 
       console.log('✅ File deleted from Supabase');
       return true;
     } catch (error) {
       console.error('❌ Delete study material error:', error);
-      return this.deleteStudyMaterialLocal(tutorId, subjectId, filename);
+      throw error;
     }
   }
 
