@@ -674,7 +674,7 @@
                     const tutorResponse = await api.post('/tutors/subjects', tutorSubjectData);
 
                     if (tutorResponse.success) {
-                        showMessage('✅ Custom subject created successfully! You can now teach this subject.', 'success');
+                        showMessage('Subject created successfully! You can now teach this subject.', 'success');
                         closeAddSubjectModal();
                         await loadData();
                     } else {
