@@ -1010,7 +1010,7 @@
 
             try {
                 console.log(`🗑️ Attempting to delete user ${userId}...`);
-                const response = await api.delete(`/admin/users/${userId}`);
+                const response = await api.delete(`/admin/users/${userId}?permanent=true`);
                 console.log('Delete response:', response);
 
                 if (response.success) {
@@ -1157,7 +1157,7 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="newCourse">Course Code</label>
+                            <label for="newCourse">Course</label>
                             <select id="newCourse" name="course_code">
                                 <option value="">Select your course/program</option>
                                 <option value="BSA">BS in Accountancy</option>
