@@ -492,9 +492,18 @@
                 notes: document.getElementById('notes').value || ''
             };
 
-            // Validate required fields
-            if (!formData.tutor_id || !formData.subject_id || !formData.session_date || !formData.start_time || !formData.end_time) {
-                showMessage('Please fill in all required fields', 'error');
+            console.log('📋 Form data:', formData);
+
+            // Validate required fields with specific messages
+            const missingFields = [];
+            if (!formData.tutor_id) missingFields.push('Tutor');
+            if (!formData.subject_id) missingFields.push('Subject');
+            if (!formData.session_date) missingFields.push('Session Date');
+            if (!formData.start_time) missingFields.push('Start Time');
+            if (!formData.end_time) missingFields.push('End Time');
+            
+            if (missingFields.length > 0) {
+                showMessage(`Please fill in: ${missingFields.join(', ')}`, 'error');
                 return;
             }
 

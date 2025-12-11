@@ -829,14 +829,35 @@
                 el.textContent = role.toUpperCase();
             });
 
-            // Update avatar initial in nav - use FIRST letter of FIRST name
+            // Update avatar in nav - use FIRST letter of FIRST name
             const firstName = currentUser.first_name || 'User';
             const initial = firstName.charAt(0).toUpperCase();
             
-            const navAvatarInitial = document.getElementById('navAvatarInitial');
-            if (navAvatarInitial) {
-                navAvatarInitial.textContent = initial;
-            }
+            // Update all navbar avatars with profile picture or initial
+            const avatarElements = document.querySelectorAll('[data-user-avatar]');
+            avatarElements.forEach(avatarEl => {
+                if (currentUser.profile_picture) {
+                    // User has profile picture
+                    let pictureUrl = currentUser.profile_picture;
+                    
+                    // Handle Supabase Storage URLs
+                    if (pictureUrl.includes('supabase.co/storage')) {
+                        console.log('[Nav] Using Supabase Storage URL');
+                    } else if (pictureUrl.startsWith('/uploads/')) {
+                        pictureUrl = `${window.location.protocol}//${window.location.host}${pictureUrl}`;
+                    } else if (pictureUrl.startsWith('http://') && window.location.protocol === 'https:') {
+                        pictureUrl = pictureUrl.replace('http://', 'https://');
+                    }
+                    
+                    // Set profile picture with fallback to initial
+                    avatarEl.innerHTML = `<img src="${pictureUrl}?t=${Date.now()}" alt="${firstName}" onerror="this.onerror=null; this.parentElement.innerHTML='<span>${initial}</span>';" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    console.log('[Nav] Profile picture set for avatar');
+                } else {
+                    // No profile picture, show initial
+                    avatarEl.innerHTML = `<span>${initial}</span>`;
+                    console.log('[Nav] Avatar initial set to:', initial);
+                }
+            });
             
             console.log('✅ Nav updated - Name:', firstName, 'Initial:', initial);
         }

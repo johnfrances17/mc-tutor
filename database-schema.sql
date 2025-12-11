@@ -90,6 +90,20 @@ CREATE TABLE public.tutor_availability (
   CONSTRAINT tutor_availability_pkey PRIMARY KEY (availability_id),
   CONSTRAINT tutor_availability_tutor_id_fkey FOREIGN KEY (tutor_id) REFERENCES public.users(user_id)
 );
+CREATE TABLE public.tutor_ratings (
+  rating_id integer NOT NULL DEFAULT nextval('tutor_ratings_rating_id_seq'::regclass),
+  session_id integer NOT NULL UNIQUE,
+  tutor_id integer NOT NULL,
+  tutee_id integer NOT NULL,
+  rating integer NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  review_text text,
+  created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT tutor_ratings_pkey PRIMARY KEY (rating_id),
+  CONSTRAINT tutor_ratings_session_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(session_id),
+  CONSTRAINT tutor_ratings_tutor_fkey FOREIGN KEY (tutor_id) REFERENCES public.users(user_id),
+  CONSTRAINT tutor_ratings_tutee_fkey FOREIGN KEY (tutee_id) REFERENCES public.users(user_id)
+);
 CREATE TABLE public.tutor_stats (
   stats_id integer NOT NULL DEFAULT nextval('tutor_stats_stats_id_seq'::regclass),
   tutor_id integer UNIQUE,
@@ -137,5 +151,7 @@ CREATE TABLE public.users (
   last_active timestamp without time zone,
   created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  average_rating numeric DEFAULT 0.00,
+  total_ratings integer DEFAULT 0,
   CONSTRAINT users_pkey PRIMARY KEY (user_id)
 );

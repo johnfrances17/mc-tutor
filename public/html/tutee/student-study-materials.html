@@ -397,6 +397,7 @@
                         const fileName = material.file_name || material.filename || 'file';
                         const materialId = material.material_id || material.id;
                         const subjectId = material.subject_id || '';
+                        const tutorStudentId = tutorInfo.school_id || '';
                         
                         // Debug log to check what data we have
                         console.log('[Material Card]', {
@@ -404,7 +405,7 @@
                             title: material.title,
                             subject_id: subjectId,
                             subject_name: material.subject_name,
-                            tutor_student_id: tutorInfo.school_id,
+                            tutor_student_id: tutorStudentId,
                             fileName
                         });
                         
@@ -423,7 +424,7 @@
                                 <div class="material-card-footer">
                                     <span class="text-muted">${formatDateHelper(material.uploaded_at)}</span>
                                     <button class="btn btn-sm btn-primary" 
-                                            onclick="downloadMaterial(${materialId}, '${fileName}', ${subjectId})">
+                                            onclick="downloadMaterial(${materialId}, '${fileName}', ${subjectId}, '${tutorStudentId}')">
                                         <i class="fas fa-download"></i> Download
                                     </button>
                                 </div>
@@ -534,29 +535,38 @@
         };
 
         // Download material
-        window.downloadMaterial = async function(materialId, filename, subjectId = null) {
+        window.downloadMaterial = async function(materialId, filename, subjectId = null, tutorStudentId = null) {
             try {
-                console.log('📥 Downloading material:', { materialId, filename, subjectId });
+                console.log('📥 Downloading material:', { materialId, filename, subjectId, tutorStudentId });
                 
-                // If subject_id is not passed, try to find it from the material
-                if (!subjectId) {
+                // If subject_id or tutorStudentId not passed, try to find from material
+                if (!subjectId || !tutorStudentId) {
                     const material = allMaterials.find(m => (m.material_id || m.id) === materialId);
                     if (!material) {
                         showToast('Material not found', 'error');
                         return;
                     }
-                    subjectId = material.subject_id;
+                    
+                    if (!subjectId) {
+                        subjectId = material.subject_id;
+                    }
+                    
+                    if (!tutorStudentId) {
+                        const tutorInfo = material.tutor_info || material.tutor || {};
+                        tutorStudentId = tutorInfo.school_id;
+                    }
                 }
 
-                if (!subjectId) {
-                    console.error('Missing subject_id for material:', materialId);
-                    showToast('Cannot download: missing subject information', 'error');
+                if (!subjectId || !tutorStudentId) {
+                    console.error('Missing required fields:', { subjectId, tutorStudentId, materialId });
+                    showToast('Cannot download: missing required information', 'error');
                     return;
                 }
 
                 // Build download URL with required parameters
                 const params = new URLSearchParams();
                 params.append('subject_id', subjectId);
+                params.append('tutor_student_id', tutorStudentId);
                 const downloadUrl = `/materials/${materialId}/download?${params.toString()}`;
                 
                 console.log('📥 Download URL:', downloadUrl);
@@ -571,7 +581,7 @@
                 }
             } catch (error) {
                 console.error('❌ Download error:', error);
-                showToast('Download failed', 'error');
+                showToast('Download failed: ' + (error.response?.data?.message || error.message), 'error');
             }
         };
 
