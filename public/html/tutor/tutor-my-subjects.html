@@ -580,23 +580,45 @@
         async function loadSubjectsDropdown() {
             try {
                 console.log('📚 Loading subjects for dropdown...');
-                const response = await api.get('/subjects');
-                console.log('📚 Subjects response:', response);
+                
+                // Get all subjects from catalog
+                const subjectsResponse = await api.get('/subjects');
+                console.log('📚 All subjects:', subjectsResponse);
+                
+                // Get tutor's current subjects to filter them out
+                const currentUser = await getCurrentUser();
+                const tutorSubjectsResponse = await api.get(`/tutors/${currentUser.user_id}/subjects`);
+                console.log('📚 Tutor subjects:', tutorSubjectsResponse);
                 
                 const select = document.getElementById('existing_subject_id');
                 
-                if (response.success && response.data) {
-                    console.log('✅ Found', response.data.length, 'subjects');
+                if (subjectsResponse.success && subjectsResponse.subjects) {
+                    // Get IDs of subjects tutor already has
+                    const tutorSubjectIds = tutorSubjectsResponse.subjects?.map(s => s.subject_id) || [];
+                    
+                    // Filter out subjects tutor already has
+                    const availableSubjects = subjectsResponse.subjects.filter(
+                        subject => !tutorSubjectIds.includes(subject.subject_id)
+                    );
+                    
+                    console.log('✅ Found', availableSubjects.length, 'available subjects (filtered from', subjectsResponse.subjects.length, 'total)');
+                    
                     select.innerHTML = '<option value="">Select a subject from catalog...</option>';
-                    response.data.forEach(subject => {
+                    availableSubjects.forEach(subject => {
                         const option = document.createElement('option');
                         option.value = subject.subject_id;
                         option.textContent = `${subject.subject_code} - ${subject.subject_name}`;
                         select.appendChild(option);
                     });
-                    console.log('✅ Dropdown populated with', response.data.length, 'subjects');
+                    
+                    console.log('✅ Dropdown populated with', availableSubjects.length, 'subjects');
+                    
+                    if (availableSubjects.length === 0) {
+                        select.innerHTML = '<option value="">All subjects already added!</option>';
+                        showMessage('You have already added all available subjects!', 'info');
+                    }
                 } else {
-                    console.error('❌ Failed to load subjects:', response);
+                    console.error('❌ Failed to load subjects:', subjectsResponse);
                     showMessage('Failed to load subjects. Please refresh the page.', 'warning');
                 }
             } catch (error) {
