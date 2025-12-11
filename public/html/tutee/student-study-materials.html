@@ -396,12 +396,13 @@
                             : 'Unknown Tutor';
                         const fileName = material.file_name || material.filename || 'file';
                         const materialId = material.material_id || material.id;
+                        const subjectId = material.subject_id || '';
                         
                         // Debug log to check what data we have
                         console.log('[Material Card]', {
                             materialId,
                             title: material.title,
-                            subject_id: material.subject_id,
+                            subject_id: subjectId,
                             subject_name: material.subject_name,
                             tutor_student_id: tutorInfo.school_id,
                             fileName
@@ -422,7 +423,7 @@
                                 <div class="material-card-footer">
                                     <span class="text-muted">${formatDateHelper(material.uploaded_at)}</span>
                                     <button class="btn btn-sm btn-primary" 
-                                            onclick="downloadMaterial(${materialId}, '${fileName}')">
+                                            onclick="downloadMaterial(${materialId}, '${fileName}', ${subjectId})">
                                         <i class="fas fa-download"></i> Download
                                     </button>
                                 </div>
@@ -533,33 +534,32 @@
         };
 
         // Download material
-        window.downloadMaterial = async function(materialId, filename) {
+        window.downloadMaterial = async function(materialId, filename, subjectId = null) {
             try {
-                console.log('📥 Downloading material:', materialId, filename);
+                console.log('📥 Downloading material:', { materialId, filename, subjectId });
                 
-                // Get the material to find tutor_student_id and subject_id
-                const material = allMaterials.find(m => (m.material_id || m.id) === materialId);
-                if (!material) {
-                    showToast('Material not found', 'error');
-                    return;
+                // If subject_id is not passed, try to find it from the material
+                if (!subjectId) {
+                    const material = allMaterials.find(m => (m.material_id || m.id) === materialId);
+                    if (!material) {
+                        showToast('Material not found', 'error');
+                        return;
+                    }
+                    subjectId = material.subject_id;
                 }
 
-                const tutorInfo = material.tutor_info || material.tutor || material.uploader || {};
-                const tutorStudentId = tutorInfo.school_id || material.tutor_student_id || material.uploaded_by;
-                const subjectId = material.subject_id;
-
                 if (!subjectId) {
-                    console.error('Missing subject_id', material);
+                    console.error('Missing subject_id for material:', materialId);
                     showToast('Cannot download: missing subject information', 'error');
                     return;
                 }
 
                 // Build download URL with required parameters
                 const params = new URLSearchParams();
-                if (tutorStudentId) params.append('tutor_student_id', tutorStudentId);
                 params.append('subject_id', subjectId);
                 const downloadUrl = `/materials/${materialId}/download?${params.toString()}`;
                 
+                console.log('📥 Download URL:', downloadUrl);
                 const response = await api.get(downloadUrl);
                 
                 if (response.success && response.download_url) {
