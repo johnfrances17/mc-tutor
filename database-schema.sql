@@ -147,7 +147,7 @@ CREATE TABLE public.users (
   year_level integer CHECK (year_level >= 1 AND year_level <= 4),
   course_code character varying CHECK (course_code::text = ANY (ARRAY['BSA'::character varying, 'BSBA'::character varying, 'BSED'::character varying, 'BSN'::character varying, 'BSCS'::character varying, 'BSCrim'::character varying]::text[])),
   profile_picture text,
-  status character varying DEFAULT 'active'::character varying CHECK (status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'suspended'::character varying]::text[])),
+  status character varying DEFAULT 'active'::character varying CHECK (status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'suspended'::character varying, 'pending'::character varying]::text[])),
   last_active timestamp without time zone,
   created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
