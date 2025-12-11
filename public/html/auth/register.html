@@ -460,16 +460,20 @@
         const response = await window.API.auth.register(formData);
 
         if (response.success) {
-          successMessage.textContent = 'Registration successful! Redirecting to login...';
+          successMessage.innerHTML = `
+            <i class="fas fa-check-circle"></i> Registration submitted successfully!<br>
+            <small>Your account is pending admin approval. You will be notified when approved.</small>
+          `;
           successMessage.style.display = 'block';
           
           if (window.utils && window.utils.showToast) {
-            window.utils.showToast('Registration successful! Please login.', 'success');
+            window.utils.showToast('Registration submitted! Awaiting admin approval.', 'success');
           }
 
+          // Don't redirect immediately - show message
           setTimeout(() => {
             window.location.href = '/html/auth/login.html?role=' + (formData.role === 'tutee' ? 'student' : formData.role);
-          }, 2000);
+          }, 4000);
         } else {
           throw new Error(response.message || 'Registration failed');
         }

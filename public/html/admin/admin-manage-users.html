@@ -779,6 +779,22 @@
                 </div>
             </div>
         </div>
+
+        <!-- Unverified Users Table -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;"><i class="fas fa-user-clock"></i> Unverified Users (Pending Approval)</h2>
+                <span id="unverifiedCount" class="badge badge-warning" style="font-size: 16px; padding: 8px 16px;">0 pending</span>
+            </div>
+            
+            <div class="table-wrapper">
+                <div id="unverifiedUsersContainer">
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading unverified users...
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Core Scripts -->
@@ -831,23 +847,42 @@
                 console.log('📊 Users length:', response.users?.length);
                 
                 const container = document.getElementById('usersContainer');
+                const unverifiedContainer = document.getElementById('unverifiedUsersContainer');
 
-                if (!response.success || !response.users || response.users.length === 0) {
-                    console.warn('⚠️ No users in response or empty array');
+                if (!response.success || !response.users) {
+                    console.warn('⚠️ No users in response');
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-users-slash"></i>
                             <p>No users found.</p>
-                            <p style="font-size: 12px; color: #999;">Response: ${JSON.stringify(response)}</p>
+                        </div>
+                    `;
+                    unverifiedContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-user-check"></i>
+                            <p>No pending users.</p>
                         </div>
                     `;
                     return;
                 }
 
-                allUsers = response.users;
-                console.log('✅ Loaded', allUsers.length, 'users');
-                updateStats(allUsers);
-                displayUsers(allUsers);
+                // Separate verified (active) and unverified (pending) users
+                const verifiedUsers = response.users.filter(u => u.status === 'active');
+                const unverifiedUsers = response.users.filter(u => u.status === 'pending');
+                
+                allUsers = verifiedUsers;
+                console.log('✅ Loaded', verifiedUsers.length, 'verified users and', unverifiedUsers.length, 'unverified users');
+                
+                // Update stats with verified users only
+                updateStats(verifiedUsers);
+                displayUsers(verifiedUsers);
+                displayUnverifiedUsers(unverifiedUsers);
+                
+                // Update unverified count badge
+                const unverifiedCount = document.getElementById('unverifiedCount');
+                if (unverifiedCount) {
+                    unverifiedCount.textContent = `${unverifiedUsers.length} pending`;
+                }
             } catch (error) {
                 console.error('❌ Error loading users:', error);
                 document.getElementById('usersContainer').innerHTML = `
@@ -963,6 +998,80 @@
             container.innerHTML = tableHTML;
         }
 
+        // Display unverified users in table
+        function displayUnverifiedUsers(users) {
+            const container = document.getElementById('unverifiedUsersContainer');
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-check"></i>
+                        <p style="font-weight: 600; font-size: 16px; color: #2d3748;">No pending users</p>
+                        <p>All new registrations will appear here for approval</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>School ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Course</th>
+                            <th>Year</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => {
+                            const userFullName = user.fullName || user.full_name || 
+                                (user.first_name && user.last_name ? 
+                                  `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.replace(/\s+/g, ' ').trim() : 
+                                  'User');
+                            
+                            const formatYearLevel = (level) => {
+                                if (!level) return '-';
+                                const suffixes = ['st', 'nd', 'rd', 'th'];
+                                const suffix = level <= 3 ? suffixes[level - 1] : suffixes[3];
+                                return `${level}${suffix} Year`;
+                            };
+                            
+                            const registeredDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : '-';
+                            
+                            return `
+                            <tr style="background-color: #fffbeb;">
+                                <td><strong>${user.school_id || '-'}</strong></td>
+                                <td><strong>${userFullName}</strong></td>
+                                <td>${user.email}</td>
+                                <td><span class="badge badge-${user.role}">${user.role.toUpperCase()}</span></td>
+                                <td>${user.course_name || user.course_code || '-'}</td>
+                                <td>${formatYearLevel(user.year_level)}</td>
+                                <td>${registeredDate}</td>
+                                <td>
+                                    <div class="action-buttons" style="gap: 8px;">
+                                        <button class="btn btn-primary" onclick="approveUser(${user.user_id})" style="padding: 8px 16px;">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                        <button class="btn btn-danger" onclick="rejectUser(${user.user_id})" style="padding: 8px 16px;">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
         // Filter users
         function filterUsers() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -989,6 +1098,66 @@
         // Event listeners for filters
         document.getElementById('searchInput').addEventListener('input', filterUsers);
         document.getElementById('filterRole').addEventListener('change', filterUsers);
+
+        // Approve user
+        window.approveUser = async function(userId) {
+            // Find user details
+            const response = await api.get('/admin/users');
+            const user = response.users?.find(u => u.user_id === userId);
+            const userName = user ? (user.fullName || user.full_name || `${user.first_name} ${user.last_name}`) : 'this user';
+            const userSchoolId = user ? user.school_id : '';
+            
+            if (!confirm(`✅ APPROVE USER\n\nApprove registration for:\n\nName: ${userName}\nSchool ID: ${userSchoolId}\nRole: ${user ? user.role.toUpperCase() : 'Unknown'}\nEmail: ${user ? user.email : ''}\n\nThis user will be able to login after approval.`)) {
+                return;
+            }
+
+            try {
+                console.log(`✅ Approving user ${userId}...`);
+                const approveResponse = await api.put(`/admin/users/${userId}`, { status: 'active' });
+                console.log('Approve response:', approveResponse);
+
+                if (approveResponse.success) {
+                    window.showMessage(`✅ User "${userName}" (${userSchoolId}) has been approved and can now login!`, 'success');
+                    await window.loadUsers();
+                } else {
+                    window.showMessage(`❌ ${approveResponse.message || 'Error approving user'}`, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ Error approving user:', error);
+                const errorMessage = error.response?.data?.message || error.message || 'Network error';
+                window.showMessage(`❌ Failed to approve user: ${errorMessage}`, 'danger');
+            }
+        };
+
+        // Reject user
+        window.rejectUser = async function(userId) {
+            // Find user details
+            const response = await api.get('/admin/users');
+            const user = response.users?.find(u => u.user_id === userId);
+            const userName = user ? (user.fullName || user.full_name || `${user.first_name} ${user.last_name}`) : 'this user';
+            const userSchoolId = user ? user.school_id : '';
+            
+            if (!confirm(`❌ REJECT USER\n\nReject and delete registration for:\n\nName: ${userName}\nSchool ID: ${userSchoolId}\nRole: ${user ? user.role.toUpperCase() : 'Unknown'}\nEmail: ${user ? user.email : ''}\n\nThis will permanently delete the registration.`)) {
+                return;
+            }
+
+            try {
+                console.log(`❌ Rejecting user ${userId}...`);
+                const deleteResponse = await api.delete(`/admin/users/${userId}?permanent=true`);
+                console.log('Reject response:', deleteResponse);
+
+                if (deleteResponse.success) {
+                    window.showMessage(`✅ User registration for "${userName}" (${userSchoolId}) has been rejected and deleted.`, 'success');
+                    await window.loadUsers();
+                } else {
+                    window.showMessage(`❌ ${deleteResponse.message || 'Error rejecting user'}`, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ Error rejecting user:', error);
+                const errorMessage = error.response?.data?.message || error.message || 'Network error';
+                window.showMessage(`❌ Failed to reject user: ${errorMessage}`, 'danger');
+            }
+        };
 
         // Delete user
         window.deleteUser = async function(userId) {

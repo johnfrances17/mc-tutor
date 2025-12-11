@@ -87,6 +87,7 @@ export class AuthService {
     });
 
     // Insert new user (using admin client to bypass RLS)
+    // Status is set to 'pending' - requires admin approval before login
     const { data: newUser, error: insertError } = await supabaseAdmin
       .from('users')
       .insert({
@@ -100,7 +101,7 @@ export class AuthService {
         phone: data.phone,
         year_level: data.year_level,
         course_code: data.course_code,
-        status: 'active',
+        status: 'pending',  // Changed from 'active' to 'pending' - requires admin approval
       })
       .select('*')
       .single();
@@ -196,11 +197,11 @@ export class AuthService {
     }
 
     // Build query - USE ADMIN CLIENT to bypass RLS
+    // Don't filter by status yet - we want to give specific error messages
     let query = supabaseAdmin
       .from('users')
       .select('*')
-      .eq('email', data.email)
-      .eq('status', 'active');
+      .eq('email', data.email);
     
     // Only filter by role if it's provided (for backward compatibility)
     if (data.role) {
@@ -218,11 +219,32 @@ export class AuthService {
       throw createError('Invalid email or password', 401);
     }
 
+    // Check if user is pending approval
+    if (user.status === 'pending') {
+      console.log('⏳ User pending approval:', {
+        user_id: user.user_id,
+        email: user.email,
+        status: user.status
+      });
+      throw createError('Your account is pending admin approval. Please wait for approval to login.', 403);
+    }
+
+    // Check if user is inactive or suspended
+    if (user.status !== 'active') {
+      console.log('🚫 User status not active:', {
+        user_id: user.user_id,
+        email: user.email,
+        status: user.status
+      });
+      throw createError('Your account is not active. Please contact admin.', 403);
+    }
+
     console.log('✅ User found:', {
       user_id: user.user_id,
       email: user.email,
       school_id: user.school_id,
       role: user.role,
+      status: user.status,
       hashPrefix: user.password?.substring(0, 7),
       hashLength: user.password?.length
     });
