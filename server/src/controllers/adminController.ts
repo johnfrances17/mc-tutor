@@ -259,6 +259,37 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
   try {
     const { id } = req.params;
     const { permanent = false } = req.query;
+    const currentUser = (req as any).user;
+
+    // Check if user exists and get their role
+    const { data: targetUser, error: getUserError } = await supabase
+      .from('users')
+      .select('user_id, role, first_name, last_name')
+      .eq('user_id', id)
+      .single();
+
+    if (getUserError || !targetUser) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    // Prevent admin from deleting themselves
+    if (currentUser.user_id === parseInt(id)) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'You cannot delete your own account' 
+      });
+    }
+
+    // Prevent admin from deleting other admins
+    if (targetUser.role === 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'You cannot delete another admin account' 
+      });
+    }
 
     if (permanent === 'true') {
       // Permanent delete - must delete related records first to avoid foreign key constraint errors
