@@ -994,15 +994,3 @@ export const deleteMaterial = async (req: Request, res: Response, next: NextFunc
     return next(error);
   }
 };
-    }
-
-    res.json({
-      success: true,
-      message: 'Session deleted successfully',
-    });
-  } catch (error) {
-    console.error('Delete session error:', error);
-    return next(error);
-  }
-};
-
