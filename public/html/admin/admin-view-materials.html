@@ -519,7 +519,8 @@
                 if (subjectId) params.append('subject_id', subjectId);
                 if (tutorId) params.append('tutor_student_id', tutorId);
 
-                const response = await API.get(`/materials${params.toString() ? '?' + params.toString() : ''}`);
+                // Use admin endpoint
+                const response = await API.get(`/admin/materials${params.toString() ? '?' + params.toString() : ''}`);
                 
                 if (!response.success) {
                     throw new Error('Failed to load materials');
@@ -594,13 +595,16 @@
                                 }
                                 <div class="material-card-footer">
                                     <span class="text-muted">${formatDate(material.uploaded_at)}</span>
-                                    <button class="btn btn-sm btn-primary" 
-                                            onclick="downloadMaterial('${material.id}', '${material.filename}')">
-                                        ?? Download
-                                    </button>
-                                    ${currentUser.role === 'tutor' && material.tutor_student_id === currentUser.school_id ? 
-                                        `<button class="btn btn-sm btn-danger" onclick="deleteMaterial('${material.id}')">Delete</button>` : ''
-                                    }
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="btn btn-sm btn-primary" 
+                                                onclick="downloadMaterial('${material.material_id}', '${material.filename}')">
+                                            <i class="fas fa-download"></i> Download
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" 
+                                                onclick="deleteMaterial('${material.material_id}', '${material.title.replace(/'/g, "\\'")}')">
+                                            <i class="fas fa-trash"></i> Remove
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -659,30 +663,47 @@
         // Download material
         window.downloadMaterial = async function(materialId, filename) {
             try {
+                showToast('Preparing download...', 'info');
+                
+                // Get the download URL
                 const response = await API.get(`/materials/${materialId}/download`);
-                // Handle download
-                showToast('Download started', 'success');
+                
+                if (response.success && response.downloadUrl) {
+                    // Create a temporary link and trigger download
+                    const link = document.createElement('a');
+                    link.href = response.downloadUrl;
+                    link.download = filename || 'download';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showToast('Download started!', 'success');
+                } else {
+                    throw new Error('Download URL not available');
+                }
             } catch (error) {
                 console.error('Download error:', error);
-                showToast('Download failed', 'error');
+                showToast('Download failed. Please try again.', 'error');
             }
         };
 
-        // Delete material (tutors only)
-        window.deleteMaterial = async function(materialId) {
-            if (!confirm('Are you sure you want to delete this material?')) return;
+        // Delete material (admin only - can remove inappropriate content)
+        window.deleteMaterial = async function(materialId, title = '') {
+            if (!confirm(`Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`)) return;
 
             try {
-                const response = await API.delete(`/materials/${materialId}`);
+                // Use admin endpoint
+                const response = await API.delete(`/admin/materials/${materialId}`);
                 if (response.success) {
-                    showToast('Material deleted successfully', 'success');
+                    showToast('Material removed successfully', 'success');
                     await loadMaterials();
                 } else {
                     throw new Error(response.message || 'Delete failed');
                 }
             } catch (error) {
                 console.error('Delete error:', error);
-                showToast('Failed to delete material', 'error');
+                showToast('Failed to delete material. ' + (error.message || ''), 'error');
             }
         };
 

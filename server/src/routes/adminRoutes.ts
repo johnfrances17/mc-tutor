@@ -13,6 +13,13 @@ import {
   createSubject,
   updateSubject,
   deleteSubject,
+  // Session management
+  getAllSessions,
+  updateSessionStatus,
+  deleteSession,
+  // Material management
+  getAllMaterials,
+  deleteMaterial,
   // System stats
   getSystemStats,
   getActivityLog,
@@ -99,6 +106,47 @@ router.put('/subjects/:id', updateSubject);
  * Delete subject (only if not used in sessions)
  */
 router.delete('/subjects/:id', deleteSubject);
+
+// =====================================================
+// SESSION MANAGEMENT ROUTES
+// =====================================================
+
+/**
+ * GET /api/admin/sessions
+ * Get all sessions with filters
+ * Query params: ?status=pending&session_type=online&subject_id=1&page=1&limit=100
+ */
+router.get('/sessions', getAllSessions);
+
+/**
+ * PUT /api/admin/sessions/:id
+ * Update session status (approve, cancel, complete)
+ * Body: { status, cancellation_reason? }
+ */
+router.put('/sessions/:id', updateSessionStatus);
+
+/**
+ * DELETE /api/admin/sessions/:id
+ * Delete session permanently
+ */
+router.delete('/sessions/:id', deleteSession);
+
+// =====================================================
+// MATERIAL MANAGEMENT ROUTES
+// =====================================================
+
+/**
+ * GET /api/admin/materials
+ * Get all materials with filters
+ * Query params: ?subject_id=1&search=math&page=1&limit=50
+ */
+router.get('/materials', getAllMaterials);
+
+/**
+ * DELETE /api/admin/materials/:id
+ * Delete material (admin can remove malicious/inappropriate content)
+ */
+router.delete('/materials/:id', deleteMaterial);
 
 // =====================================================
 // SYSTEM STATISTICS ROUTES

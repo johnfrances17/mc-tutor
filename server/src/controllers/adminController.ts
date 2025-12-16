@@ -684,3 +684,325 @@ export const getActivityLog = async (req: Request, res: Response, next: NextFunc
     return next(error);
   }
 };
+
+// =====================================================
+// SESSION MANAGEMENT
+// =====================================================
+
+/**
+ * Get all sessions (admin view)
+ * GET /api/admin/sessions
+ */
+export const getAllSessions = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { status, session_type, subject_id, page = '1', limit = '100' } = req.query;
+
+    const { offset, limit: validLimit } = validatePagination(String(page), String(limit));
+
+    let query = supabase
+      .from('sessions')
+      .select(`
+        *,
+        tutor:users!sessions_tutor_id_fkey(user_id, school_id, first_name, middle_name, last_name, email),
+        tutee:users!sessions_tutee_id_fkey(user_id, school_id, first_name, middle_name, last_name, email),
+        subject:subjects(subject_id, subject_code, subject_name, course_code)
+      `, { count: 'exact' });
+
+    // Apply filters
+    if (status && typeof status === 'string') {
+      query = query.eq('status', status);
+    }
+
+    if (session_type && typeof session_type === 'string') {
+      query = query.eq('session_type', session_type);
+    }
+
+    if (subject_id && typeof subject_id === 'string') {
+      query = query.eq('subject_id', parseInt(subject_id));
+    }
+
+    // Pagination and sorting
+    query = query.range(offset, offset + validLimit - 1).order('session_date', { ascending: false });
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      console.error('Error fetching sessions:', error);
+      return res.status(400).json({ success: false, message: 'Failed to fetch sessions' });
+    }
+
+    // Format the data
+    const sessions = (data || []).map(session => ({
+      session_id: session.session_id,
+      tutee_id: session.tutee_id,
+      tutor_id: session.tutor_id,
+      subject_id: session.subject_id,
+      session_date: session.session_date,
+      start_time: session.start_time,
+      end_time: session.end_time,
+      session_type: session.session_type,
+      physical_location: session.physical_location,
+      google_meet_link: session.google_meet_link,
+      location: session.location,
+      notes: session.notes,
+      status: session.status,
+      cancellation_reason: session.cancellation_reason,
+      created_at: session.created_at,
+      updated_at: session.updated_at,
+      // User data
+      tutee_name: session.tutee ? `${session.tutee.first_name} ${session.tutee.last_name}` : 'N/A',
+      tutee_first_name: session.tutee?.first_name,
+      tutee_last_name: session.tutee?.last_name,
+      tutee_email: session.tutee?.email,
+      tutee_school_id: session.tutee?.school_id,
+      tutor_name: session.tutor ? `${session.tutor.first_name} ${session.tutor.last_name}` : 'N/A',
+      tutor_first_name: session.tutor?.first_name,
+      tutor_last_name: session.tutor?.last_name,
+      tutor_email: session.tutor?.email,
+      tutor_school_id: session.tutor?.school_id,
+      // Subject data
+      subject_code: session.subject?.subject_code,
+      subject_name: session.subject?.subject_name,
+      course_code: session.subject?.course_code,
+    }));
+
+    res.json({
+      success: true,
+      sessions,
+      pagination: {
+        total: count || 0,
+        page: parseInt(String(page)),
+        limit: validLimit,
+        totalPages: Math.ceil((count || 0) / validLimit),
+      },
+    });
+  } catch (error) {
+    console.error('Get all sessions error:', error);
+    return next(error);
+  }
+};
+
+/**
+ * Update session status (admin can approve, cancel, complete any session)
+ * PUT /api/admin/sessions/:id
+ */
+export const updateSessionStatus = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const { status, cancellation_reason } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ success: false, message: 'Status is required' });
+    }
+
+    const validStatuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+
+    const updateData: any = {
+      status,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (status === 'cancelled' && cancellation_reason) {
+      updateData.cancellation_reason = sanitizeInput(cancellation_reason);
+    }
+
+    const { data, error } = await supabase
+      .from('sessions')
+      .update(updateData)
+      .eq('session_id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Update session error:', error);
+      return res.status(400).json({ success: false, message: 'Failed to update session' });
+    }
+
+    res.json({
+      success: true,
+      message: `Session ${status} successfully`,
+      session: data,
+    });
+  } catch (error) {
+    console.error('Update session status error:', error);
+    return next(error);
+  }
+};
+
+/**
+ * Delete session (admin only)
+ * DELETE /api/admin/sessions/:id
+ */
+export const deleteSession = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('sessions')
+      .delete()
+      .eq('session_id', id);
+
+    if (error) {
+      console.error('Delete session error:', error);
+      return res.status(400).json({ success: false, message: 'Failed to delete session' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Session deleted successfully',
+    });
+  } catch (error) {
+    console.error('Delete session error:', error);
+    return next(error);
+  }
+};
+
+// =====================================================
+// MATERIAL MANAGEMENT
+// =====================================================
+
+/**
+ * Get all materials (admin view)
+ * GET /api/admin/materials
+ */
+export const getAllMaterials = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { subject_id, search, page = '1', limit = '50' } = req.query;
+
+    const { offset, limit: validLimit } = validatePagination(String(page), String(limit));
+
+    let query = supabase
+      .from('materials')
+      .select(`
+        *,
+        tutor:users!materials_tutor_id_fkey(user_id, school_id, first_name, middle_name, last_name, email),
+        subject:subjects(subject_id, subject_code, subject_name, course_code)
+      `, { count: 'exact' });
+
+    // Apply filters
+    if (subject_id && typeof subject_id === 'string') {
+      query = query.eq('subject_id', parseInt(subject_id));
+    }
+
+    if (search && typeof search === 'string') {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+
+    // Pagination and sorting
+    query = query.range(offset, offset + validLimit - 1).order('uploaded_at', { ascending: false });
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      console.error('Error fetching materials:', error);
+      return res.status(400).json({ success: false, message: 'Failed to fetch materials' });
+    }
+
+    // Format the data
+    const materials = (data || []).map(material => ({
+      id: material.material_id,
+      material_id: material.material_id,
+      tutor_id: material.tutor_id,
+      subject_id: material.subject_id,
+      title: material.title,
+      description: material.description,
+      filename: material.filename,
+      file_url: material.file_url,
+      file_size: material.file_size,
+      file_type: material.file_type,
+      category: material.category,
+      tags: material.tags,
+      download_count: material.download_count,
+      uploaded_at: material.uploaded_at,
+      updated_at: material.updated_at,
+      // User data
+      tutor_name: material.tutor ? `${material.tutor.first_name} ${material.tutor.last_name}` : 'N/A',
+      tutor_first_name: material.tutor?.first_name,
+      tutor_last_name: material.tutor?.last_name,
+      tutor_email: material.tutor?.email,
+      tutor_student_id: material.tutor?.school_id,
+      // Subject data
+      subject_code: material.subject?.subject_code,
+      subject_name: material.subject?.subject_name,
+      course_code: material.subject?.course_code,
+    }));
+
+    res.json({
+      success: true,
+      materials,
+      pagination: {
+        total: count || 0,
+        page: parseInt(String(page)),
+        limit: validLimit,
+        totalPages: Math.ceil((count || 0) / validLimit),
+      },
+    });
+  } catch (error) {
+    console.error('Get all materials error:', error);
+    return next(error);
+  }
+};
+
+/**
+ * Delete material (admin can delete any material)
+ * DELETE /api/admin/materials/:id
+ */
+export const deleteMaterial = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { id } = req.params;
+
+    // Get material info first (for file deletion if needed)
+    const { data: material, error: getMaterialError } = await supabase
+      .from('materials')
+      .select('material_id, filename, file_url, title')
+      .eq('material_id', id)
+      .single();
+
+    if (getMaterialError || !material) {
+      return res.status(404).json({ success: false, message: 'Material not found' });
+    }
+
+    // Delete from database
+    const { error } = await supabase
+      .from('materials')
+      .delete()
+      .eq('material_id', id);
+
+    if (error) {
+      console.error('Delete material error:', error);
+      return res.status(400).json({ success: false, message: 'Failed to delete material' });
+    }
+
+    // Note: In a production environment, you would also want to delete the actual file from storage
+    // For example, if using Supabase Storage:
+    // if (material.file_url) {
+    //   const filePath = material.file_url.split('/').slice(-2).join('/');
+    //   await supabase.storage.from('study_materials').remove([filePath]);
+    // }
+
+    console.log(`✅ Material ${id} deleted by admin`);
+
+    res.json({
+      success: true,
+      message: 'Material deleted successfully',
+    });
+  } catch (error) {
+    console.error('Delete material error:', error);
+    return next(error);
+  }
+};
+    }
+
+    res.json({
+      success: true,
+      message: 'Session deleted successfully',
+    });
+  } catch (error) {
+    console.error('Delete session error:', error);
+    return next(error);
+  }
+};
+

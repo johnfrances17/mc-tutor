@@ -179,15 +179,15 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/html/tutee/student-dashboard.html" class="nav-brand">MC Tutor</a>
+            <a href="/html/tutor/tutor-dashboard.html" class="nav-brand">MC Tutor</a>
             <div class="nav-right">
                 <div class="user-info-inline">
                     <div class="user-avatar-small" data-user-avatar id="navAvatar">
-                        <span id="navAvatarInitial">S</span>
+                        <span id="navAvatarInitial">T</span>
                     </div>
                     <div class="user-details-inline">
                         <span class="user-name-inline" data-user-name>User</span>
-                        <span class="user-role-badge-inline" data-user-role>Student</span>
+                        <span class="user-role-badge-inline" data-user-role>Tutor</span>
                     </div>
                 </div>
                 <div class="nav-links">
@@ -205,11 +205,11 @@
     <nav class="secondary-navbar" id="secondaryNav">
         <div class="secondary-nav-container">
             <div class="secondary-nav-links">
-                <a href="/html/tutee/student-dashboard.html" class="secondary-nav-link">Dashboard</a>
-                <a href="/html/tutee/student-find-tutors.html" class="secondary-nav-link">Find Tutors</a>
-                <a href="/html/tutee/student-my-sessions.html" class="secondary-nav-link">My Sessions</a>
-                <a href="/html/tutee/student-study-materials.html" class="secondary-nav-link">Study Materials</a>
-                <a href="/html/tutee/student-my-feedback.html" class="secondary-nav-link active">My Feedback</a>
+                <a href="/html/tutor/tutor-dashboard.html" class="secondary-nav-link">Dashboard</a>
+                <a href="/html/tutor/tutor-my-subjects.html" class="secondary-nav-link">My Subjects</a>
+                <a href="/html/tutor/tutor-sessions.html" class="secondary-nav-link">Sessions</a>
+                <a href="/html/tutor/tutor-upload-materials.html" class="secondary-nav-link">Materials</a>
+                <a href="/html/tutor/tutor-my-feedback.html" class="secondary-nav-link active">My Feedback</a>
             </div>
         </div>
     </nav>
@@ -219,31 +219,31 @@
         <div class="stats-row" id="statsContainer">
             <div class="stat-box">
                 <h3 id="totalFeedback">0</h3>
-                <p>Total Feedback Given</p>
+                <p>Total Feedback Received</p>
             </div>
             <div class="stat-box">
                 <h3 id="avgRating">0.0</h3>
-                <p>Average Rating Given</p>
+                <p>Average Overall Rating</p>
             </div>
             <div class="stat-box">
                 <h3 id="recentFeedback">0</h3>
                 <p>This Month</p>
             </div>
             <div class="stat-box">
-                <h3 id="tutorsRated">0</h3>
-                <p>Tutors Rated</p>
+                <h3 id="studentsReviewed">0</h3>
+                <p>Students Reviewed By</p>
             </div>
         </div>
 
         <!-- Feedback Table -->
         <div class="card">
-            <h2 class="card-title"><i class="fas fa-star"></i> My Feedback History</h2>
+            <h2 class="card-title"><i class="fas fa-star"></i> Feedback from Students</h2>
             <div class="table-wrapper">
                 <table id="feedbackTable">
                     <thead>
                         <tr>
                             <th>Session Date</th>
-                            <th>Tutor</th>
+                            <th>Student</th>
                             <th>Subject</th>
                             <th>Communication</th>
                             <th>Knowledge</th>
@@ -251,7 +251,7 @@
                             <th>Teaching Style</th>
                             <th>Overall</th>
                             <th>Comments</th>
-                            <th>Submitted</th>
+                            <th>Received</th>
                         </tr>
                     </thead>
                     <tbody id="feedbackTableBody">
@@ -277,12 +277,12 @@
         const { api } = window;
 
         // Check authentication and role
-        await requireRole('tutee');
+        await requireRole('tutor');
 
         // Load feedback data
         async function loadFeedback() {
             try {
-                const response = await window.API.feedback.getMyFeedback();
+                const response = await window.API.feedback.getTutorFeedback();
                 const tbody = document.getElementById('feedbackTableBody');
 
                 if (!response.success || !response.data || response.data.length === 0) {
@@ -291,8 +291,8 @@
                             <td colspan="10">
                                 <div class="empty-state">
                                     <i class="fas fa-comment-slash"></i>
-                                    <p>You haven't given any feedback yet.</p>
-                                    <p>Complete a session and provide feedback to help improve the tutoring experience.</p>
+                                    <p>You haven't received any feedback yet.</p>
+                                    <p>Complete sessions with students to start receiving feedback.</p>
                                 </div>
                             </td>
                         </tr>
@@ -308,7 +308,7 @@
                     const sessionDate = new Date(feedback.session_date).toLocaleDateString('en-US', { 
                         year: 'numeric', month: 'short', day: 'numeric' 
                     });
-                    const submittedDate = new Date(feedback.created_at).toLocaleDateString('en-US', { 
+                    const receivedDate = new Date(feedback.created_at).toLocaleDateString('en-US', { 
                         year: 'numeric', month: 'short', day: 'numeric' 
                     });
                     
@@ -322,7 +322,7 @@
                     return `
                         <tr>
                             <td>${sessionDate}</td>
-                            <td><strong>${feedback.tutor_first_name} ${feedback.tutor_last_name}</strong></td>
+                            <td><strong>${feedback.tutee_first_name} ${feedback.tutee_last_name}</strong></td>
                             <td>${feedback.subject_code}</td>
                             <td>${getRatingBadge(feedback.communication_rating)}</td>
                             <td>${getRatingBadge(feedback.knowledge_rating)}</td>
@@ -330,13 +330,13 @@
                             <td>${getRatingBadge(feedback.teaching_style_rating)}</td>
                             <td>${getRatingBadge(feedback.overall_rating)}</td>
                             <td style="max-width: 200px;">${feedback.comments || '<em style="color: #9ca3af;">No comments</em>'}</td>
-                            <td>${submittedDate}</td>
+                            <td>${receivedDate}</td>
                         </tr>
                     `;
                 }).join('');
 
                 tbody.innerHTML = feedbackHTML;
-                updateStats(feedbackData, response.tutors || []);
+                updateStats(feedbackData, response.students || []);
             } catch (error) {
                 console.error('Error loading feedback:', error);
                 document.getElementById('feedbackTableBody').innerHTML = `
@@ -352,11 +352,11 @@
             }
         }
 
-        function updateStats(feedbackData, tutors) {
+        function updateStats(feedbackData, students) {
             // Total feedback count
             document.getElementById('totalFeedback').textContent = feedbackData.length;
 
-            // Average rating
+            // Average overall rating
             if (feedbackData.length > 0) {
                 const avgRating = feedbackData.reduce((sum, f) => sum + f.overall_rating, 0) / feedbackData.length;
                 document.getElementById('avgRating').textContent = avgRating.toFixed(1);
@@ -372,9 +372,9 @@
             });
             document.getElementById('recentFeedback').textContent = thisMonth.length;
 
-            // Unique tutors rated
-            const uniqueTutors = new Set(feedbackData.map(f => f.tutor_id));
-            document.getElementById('tutorsRated').textContent = uniqueTutors.size;
+            // Unique students who reviewed
+            const uniqueStudents = new Set(feedbackData.map(f => f.tutee_id));
+            document.getElementById('studentsReviewed').textContent = uniqueStudents.size;
         }
 
         // Logout handler - direct implementation
