@@ -282,7 +282,7 @@
         // Load feedback data
         async function loadFeedback() {
             try {
-                const response = await window.API.feedback.getTutorFeedback();
+                const response = await api.get('/feedback/received');
                 const tbody = document.getElementById('feedbackTableBody');
 
                 if (!response.success || !response.data || response.data.length === 0) {

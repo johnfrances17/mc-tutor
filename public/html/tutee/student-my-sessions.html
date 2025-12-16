@@ -630,28 +630,76 @@
 
     <!-- Feedback Modal -->
     <div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; overflow-y: auto;">
-        <div style="max-width: 500px; margin: 60px auto; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+        <div style="max-width: 600px; margin: 60px auto; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
             <div style="padding: 25px 30px; border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
                 <h2 style="margin: 0; font-size: 24px; color: #2d3748;"><i class="fas fa-star" style="color: #f59e0b;"></i> Give Feedback</h2>
                 <button onclick="closeFeedbackModal()" style="background: none; border: none; font-size: 28px; color: #9ca3af; cursor: pointer; line-height: 1;">&times;</button>
             </div>
             <div style="padding: 30px;">
-                <p id="feedbackTutorName" style="margin-bottom: 20px; color: #6b7280;">Rate your session with <strong></strong></p>
+                <p id="feedbackTutorName" style="margin-bottom: 25px; color: #6b7280;">Rate your session with <strong></strong></p>
                 
-                <div style="margin-bottom: 25px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #2d3748;">Rating</label>
-                    <div id="starRating" style="display: flex; gap: 8px; font-size: 32px; cursor: pointer;">
+                <!-- Communication Rating -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748; font-size: 14px;">Communication</label>
+                    <div class="star-rating" data-category="communication" style="display: flex; gap: 6px; font-size: 24px; cursor: pointer;">
                         <i class="far fa-star" data-rating="1"></i>
                         <i class="far fa-star" data-rating="2"></i>
                         <i class="far fa-star" data-rating="3"></i>
                         <i class="far fa-star" data-rating="4"></i>
                         <i class="far fa-star" data-rating="5"></i>
                     </div>
-                    <input type="hidden" id="ratingValue" value="0">
+                </div>
+
+                <!-- Knowledge Rating -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748; font-size: 14px;">Knowledge</label>
+                    <div class="star-rating" data-category="knowledge" style="display: flex; gap: 6px; font-size: 24px; cursor: pointer;">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+
+                <!-- Punctuality Rating -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748; font-size: 14px;">Punctuality</label>
+                    <div class="star-rating" data-category="punctuality" style="display: flex; gap: 6px; font-size: 24px; cursor: pointer;">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+
+                <!-- Teaching Style Rating -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748; font-size: 14px;">Teaching Style</label>
+                    <div class="star-rating" data-category="teaching_style" style="display: flex; gap: 6px; font-size: 24px; cursor: pointer;">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+
+                <!-- Overall Rating -->
+                <div style="margin-bottom: 25px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748; font-size: 14px;">Overall Rating</label>
+                    <div class="star-rating" data-category="overall" style="display: flex; gap: 6px; font-size: 28px; cursor: pointer;">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label for="feedbackComment" style="display: block; margin-bottom: 10px; font-weight: 600; color: #2d3748;">Comment (Optional)</label>
+                    <label for="feedbackComment" style="display: block; margin-bottom: 10px; font-weight: 600; color: #2d3748;">Comments (Optional)</label>
                     <textarea id="feedbackComment" rows="4" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: 'Montserrat', sans-serif; resize: vertical;" placeholder="Share your experience with this tutor..."></textarea>
                 </div>
 
@@ -672,31 +720,43 @@
         let currentFeedbackSession = null;
         let currentFeedbackTutor = null;
         let currentFeedbackSubject = null;
-        let selectedRating = 0;
+        const feedbackRatings = {
+            communication: 0,
+            knowledge: 0,
+            punctuality: 0,
+            teaching_style: 0,
+            overall: 0
+        };
 
         // Star rating interaction
         document.addEventListener('DOMContentLoaded', () => {
-            const stars = document.querySelectorAll('#starRating i');
-            stars.forEach(star => {
-                star.addEventListener('click', () => {
-                    selectedRating = parseInt(star.dataset.rating);
-                    document.getElementById('ratingValue').value = selectedRating;
-                    updateStarDisplay(selectedRating);
+            const ratingContainers = document.querySelectorAll('.star-rating');
+            
+            ratingContainers.forEach(container => {
+                const category = container.dataset.category;
+                const stars = container.querySelectorAll('i');
+                
+                stars.forEach(star => {
+                    star.addEventListener('click', () => {
+                        const rating = parseInt(star.dataset.rating);
+                        feedbackRatings[category] = rating;
+                        updateStarDisplay(container, rating);
+                    });
+
+                    star.addEventListener('mouseenter', () => {
+                        const rating = parseInt(star.dataset.rating);
+                        updateStarDisplay(container, rating);
+                    });
                 });
 
-                star.addEventListener('mouseenter', () => {
-                    const rating = parseInt(star.dataset.rating);
-                    updateStarDisplay(rating);
+                container.addEventListener('mouseleave', () => {
+                    updateStarDisplay(container, feedbackRatings[category]);
                 });
-            });
-
-            document.getElementById('starRating').addEventListener('mouseleave', () => {
-                updateStarDisplay(selectedRating);
             });
         });
 
-        function updateStarDisplay(rating) {
-            const stars = document.querySelectorAll('#starRating i');
+        function updateStarDisplay(container, rating) {
+            const stars = container.querySelectorAll('i');
             stars.forEach((star, index) => {
                 if (index < rating) {
                     star.classList.remove('far');
@@ -714,12 +774,21 @@
             currentFeedbackSession = sessionId;
             currentFeedbackTutor = tutorId;
             currentFeedbackSubject = subjectId;
-            selectedRating = 0;
+            
+            // Reset ratings
+            feedbackRatings.communication = 0;
+            feedbackRatings.knowledge = 0;
+            feedbackRatings.punctuality = 0;
+            feedbackRatings.teaching_style = 0;
+            feedbackRatings.overall = 0;
             
             document.querySelector('#feedbackTutorName strong').textContent = tutorName;
             document.getElementById('feedbackComment').value = '';
-            document.getElementById('ratingValue').value = '0';
-            updateStarDisplay(0);
+            
+            // Reset all star displays
+            document.querySelectorAll('.star-rating').forEach(container => {
+                updateStarDisplay(container, 0);
+            });
             
             document.getElementById('feedbackModal').style.display = 'block';
         };
@@ -729,15 +798,18 @@
             currentFeedbackSession = null;
             currentFeedbackTutor = null;
             currentFeedbackSubject = null;
-            selectedRating = 0;
         };
 
         window.submitFeedback = async function() {
-            const rating = parseInt(document.getElementById('ratingValue').value);
             const comment = document.getElementById('feedbackComment').value.trim();
 
-            if (rating === 0) {
-                showToast('Please select a rating', 'warning');
+            // Validate all ratings are set
+            if (feedbackRatings.communication === 0 || 
+                feedbackRatings.knowledge === 0 || 
+                feedbackRatings.punctuality === 0 || 
+                feedbackRatings.teaching_style === 0 || 
+                feedbackRatings.overall === 0) {
+                showToast('Please rate all categories', 'warning');
                 return;
             }
 
@@ -746,8 +818,12 @@
                     session_id: currentFeedbackSession,
                     tutor_id: currentFeedbackTutor,
                     subject_id: currentFeedbackSubject,
-                    rating: rating,
-                    comment: comment || null
+                    communication_rating: feedbackRatings.communication,
+                    knowledge_rating: feedbackRatings.knowledge,
+                    punctuality_rating: feedbackRatings.punctuality,
+                    teaching_style_rating: feedbackRatings.teaching_style,
+                    overall_rating: feedbackRatings.overall,
+                    comments: comment || null
                 });
 
                 if (response.success) {
