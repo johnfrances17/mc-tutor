@@ -8,14 +8,27 @@ import { AuthRequest } from '../types';
 export const submitFeedback = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const tuteeId = req.user!.user_id;
-    const { session_id, rating, comment } = req.body;
+    const { 
+      session_id, 
+      tutor_id,
+      communication_rating, 
+      knowledge_rating, 
+      punctuality_rating, 
+      teaching_style_rating, 
+      overall_rating, 
+      comments 
+    } = req.body;
 
-    if (!session_id || !rating) {
-      return res.status(400).json({ success: false, message: 'Session ID and rating are required' });
+    if (!session_id || !overall_rating) {
+      return res.status(400).json({ success: false, message: 'Session ID and overall rating are required' });
     }
 
-    if (rating < 1 || rating > 5) {
-      return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5' });
+    // Validate all ratings
+    const ratings = [communication_rating, knowledge_rating, punctuality_rating, teaching_style_rating, overall_rating];
+    for (const rating of ratings) {
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ success: false, message: 'All ratings must be between 1 and 5' });
+      }
     }
 
     // Verify session exists and user is the tutee
@@ -39,6 +52,7 @@ export const submitFeedback = async (req: AuthRequest, res: Response, next: Next
       .from('feedback')
       .select('*')
       .eq('session_id', session_id)
+      .eq('tutee_id', tuteeId)
       .single();
 
     if (existing) {
@@ -50,10 +64,14 @@ export const submitFeedback = async (req: AuthRequest, res: Response, next: Next
       .from('feedback')
       .insert({
         session_id,
-        tutor_id: session.tutor_id,
+        tutor_id: tutor_id || session.tutor_id,
         tutee_id: tuteeId,
-        rating,
-        comment: comment || null,
+        communication_rating,
+        knowledge_rating,
+        punctuality_rating,
+        teaching_style_rating,
+        overall_rating,
+        comments: comments || null,
       })
       .select('*')
       .single();
@@ -133,7 +151,19 @@ export const getMyFeedback = async (req: AuthRequest, res: Response, next: NextF
       return res.status(400).json({ success: false, message: 'Failed to fetch feedback' });
     }
 
-    res.json({ success: true, feedback: data });
+    // Format data for frontend
+    const formattedData = data.map((feedback: any) => ({
+      ...feedback,
+      session_date: feedback.session?.session_date,
+      subject_code: feedback.session?.subject?.subject_code,
+      subject_name: feedback.session?.subject?.subject_name,
+      tutor_first_name: feedback.tutor?.first_name,
+      tutor_middle_name: feedback.tutor?.middle_name,
+      tutor_last_name: feedback.tutor?.last_name,
+      tutor_school_id: feedback.tutor?.school_id,
+    }));
+
+    res.json({ success: true, data: formattedData });
   } catch (error) {
     return next(error);
     }
@@ -160,22 +190,34 @@ export const getReceivedFeedback = async (req: AuthRequest, res: Response, next:
       return res.status(400).json({ success: false, message: 'Failed to fetch feedback' });
     }
 
-    // Calculate stats
+    // Calculate stats using overall_rating
     const avgRating = data.length > 0
-      ? data.reduce((sum: number, fb: any) => sum + fb.rating, 0) / data.length
+      ? data.reduce((sum: number, fb: any) => sum + (fb.overall_rating || 0), 0) / data.length
       : 0;
 
     const ratingDistribution = {
-      5: data.filter((f: any) => f.rating === 5).length,
-      4: data.filter((f: any) => f.rating === 4).length,
-      3: data.filter((f: any) => f.rating === 3).length,
-      2: data.filter((f: any) => f.rating === 2).length,
-      1: data.filter((f: any) => f.rating === 1).length,
+      5: data.filter((f: any) => f.overall_rating === 5).length,
+      4: data.filter((f: any) => f.overall_rating === 4).length,
+      3: data.filter((f: any) => f.overall_rating === 3).length,
+      2: data.filter((f: any) => f.overall_rating === 2).length,
+      1: data.filter((f: any) => f.overall_rating === 1).length,
     };
+
+    // Format data for frontend
+    const formattedData = data.map((feedback: any) => ({
+      ...feedback,
+      session_date: feedback.session?.session_date,
+      subject_code: feedback.session?.subject?.subject_code,
+      subject_name: feedback.session?.subject?.subject_name,
+      tutee_first_name: feedback.tutee?.first_name,
+      tutee_middle_name: feedback.tutee?.middle_name,
+      tutee_last_name: feedback.tutee?.last_name,
+      tutee_school_id: feedback.tutee?.school_id,
+    }));
 
     res.json({
       success: true,
-      feedback: data,
+      data: formattedData,
       stats: {
         total_reviews: data.length,
         average_rating: Math.round(avgRating * 10) / 10,

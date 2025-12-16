@@ -555,7 +555,15 @@
                     </button>
                 `;
             } else if (session.status === 'completed') {
-                return '';
+                if (session.has_feedback) {
+                    return `
+                        <a href="/html/tutor/tutor-my-feedback.html" class="btn btn-primary" style="text-decoration: none;">
+                            <i class="fas fa-star"></i> View Feedback
+                        </a>
+                    `;
+                } else {
+                    return `<span class="badge badge-secondary"><i class="fas fa-clock"></i> No feedback yet</span>`;
+                }
             }
             return '';
         }

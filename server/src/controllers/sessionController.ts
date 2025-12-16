@@ -50,7 +50,7 @@ export const getSessions = async (req: AuthRequest, res: Response, next: NextFun
       return res.status(400).json({ success: false, message: 'Failed to fetch sessions' });
     }
 
-    // Post-process to fetch tutor_subjects data for each session
+    // Post-process to fetch tutor_subjects data and feedback status for each session
     const sessionsWithLocations = await Promise.all(
       (data || []).map(async (session: any) => {
         const { data: tutorSubject } = await supabase
@@ -60,9 +60,17 @@ export const getSessions = async (req: AuthRequest, res: Response, next: NextFun
           .eq('subject_id', session.subject_id)
           .single();
 
+        // Check if feedback exists for this session
+        const { data: feedbackData } = await supabase
+          .from('feedback')
+          .select('feedback_id')
+          .eq('session_id', session.session_id)
+          .single();
+
         return {
           ...session,
-          tutor_subjects: tutorSubject || null
+          tutor_subjects: tutorSubject || null,
+          has_feedback: !!feedbackData
         };
       })
     );
