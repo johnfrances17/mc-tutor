@@ -342,7 +342,7 @@
             }
         }
 
-        async function loadSessions() {
+        window.loadSessions = async function() {
             try {
                 const response = await api.get('/sessions');
                 console.log('Sessions response:', response);
@@ -364,7 +364,7 @@
                     </div>
                 `;
             }
-        }
+        };
 
         function updateStats() {
             document.getElementById('totalSessions').textContent = allSessions.length;
