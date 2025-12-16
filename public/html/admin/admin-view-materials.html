@@ -665,22 +665,23 @@
             try {
                 showToast('Preparing download...', 'info');
                 
-                // Get the download URL
-                const response = await API.get(`/materials/${materialId}/download`);
+                // For admin, directly use the file_url from the material object
+                const material = allMaterials.find(m => m.material_id === parseInt(materialId));
                 
-                if (response.success && response.downloadUrl) {
-                    // Create a temporary link and trigger download
+                if (material && material.file_url) {
+                    // Direct download from Supabase storage URL
                     const link = document.createElement('a');
-                    link.href = response.downloadUrl;
-                    link.download = filename || 'download';
+                    link.href = material.file_url;
+                    link.download = filename || material.filename || 'download';
                     link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     
                     showToast('Download started!', 'success');
                 } else {
-                    throw new Error('Download URL not available');
+                    throw new Error('Material file not found');
                 }
             } catch (error) {
                 console.error('Download error:', error);

@@ -743,6 +743,10 @@
                     <option value="face-to-face">Face-to-Face</option>
                 </select>
 
+                <button id="exportBtn" onclick="exportToCSV()" class="btn" style="background: #10b981; color: white; margin-left: auto;">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+
                 <label style="font-weight: 600; color: #2d3748; margin-left: 20px;">Show:</label>
                 <select id="perPageSelect" style="width: 80px;">
                     <option value="10" selected>10</option>
@@ -768,6 +772,19 @@
                 <div style="display: flex; gap: 8px;" id="paginationButtons">
                     <!-- Pagination buttons will be inserted here -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Details Modal -->
+    <div id="sessionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; overflow-y: auto;">
+        <div style="max-width: 700px; margin: 40px auto; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div style="padding: 25px 30px; border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; font-size: 24px; color: #2d3748;"><i class="fas fa-info-circle"></i> Session Details</h2>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; color: #9ca3af; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+            <div id="modalContent" style="padding: 30px;">
+                <!-- Content will be inserted here -->
             </div>
         </div>
     </div>
@@ -954,7 +971,8 @@
                     </thead>
                     <tbody>
                         ${paginatedSessions.map(session => {
-                            const studentName = session.student_name || session.tutee_name || 'N/A';
+                            // Handle both old and new field names
+                            const studentName = session.tutee_name || session.student_name || 'N/A';
                             const tutorName = session.tutor_name || 'N/A';
                             const subjectName = session.subject_name || 'N/A';
                             const sessionDate = session.session_date || session.date || 'N/A';
@@ -994,6 +1012,9 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
+                                        <button class="btn btn-info" onclick="viewSessionDetails(${session.session_id})" style="background: #5865F2;">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
                                         ${session.status === 'pending' ? 
                                             `<button class="btn btn-success" onclick="approveSession(${session.session_id})">
                                                 <i class="fas fa-check"></i> Approve
@@ -1143,6 +1164,240 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => container.innerHTML = '', 5000);
         }
+
+        // View session details modal
+        window.viewSessionDetails = function(sessionId) {
+            const session = allSessions.find(s => s.session_id === sessionId);
+            if (!session) {
+                showMessage('Session not found', 'danger');
+                return;
+            }
+
+            const studentName = session.tutee_name || session.student_name || 'N/A';
+            const tutorName = session.tutor_name || 'N/A';
+            const subjectName = session.subject_name || 'N/A';
+            const physicalLocation = session.physical_location || session.location || 'Not specified';
+            const meetLink = session.google_meet_link || session.meet_link || '';
+
+            const modalContent = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div style="grid-column: 1 / -1;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px; color: white; text-align: center;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 28px;">Session #${session.session_id}</h3>
+                            <span class="badge" style="background: rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 20px; font-size: 14px;">
+                                ${session.status ? session.status.toUpperCase() : 'N/A'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-weight: 600;">STUDENT</p>
+                        <p style="margin: 0; font-size: 16px; font-weight: 600; color: #2d3748;">
+                            <i class="fas fa-user-graduate" style="color: #5865F2;"></i> ${studentName}
+                        </p>
+                        ${session.tutee_email ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;"><i class="fas fa-envelope"></i> ${session.tutee_email}</p>` : ''}
+                        ${session.tutee_school_id ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;"><i class="fas fa-id-card"></i> ${session.tutee_school_id}</p>` : ''}
+                    </div>
+
+                    <div>
+                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-weight: 600;">TUTOR</p>
+                        <p style="margin: 0; font-size: 16px; font-weight: 600; color: #2d3748;">
+                            <i class="fas fa-chalkboard-teacher" style="color: #10b981;"></i> ${tutorName}
+                        </p>
+                        ${session.tutor_email ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;"><i class="fas fa-envelope"></i> ${session.tutor_email}</p>` : ''}
+                        ${session.tutor_school_id ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;"><i class="fas fa-id-card"></i> ${session.tutor_school_id}</p>` : ''}
+                    </div>
+
+                    <div>
+                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-weight: 600;">SUBJECT</p>
+                        <p style="margin: 0; font-size: 16px; font-weight: 600; color: #2d3748;">
+                            <i class="fas fa-book" style="color: #f59e0b;"></i> ${subjectName}
+                        </p>
+                        ${session.subject_code ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;">${session.subject_code}</p>` : ''}
+                        ${session.course_code ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;"><i class="fas fa-graduation-cap"></i> ${session.course_code}</p>` : ''}
+                    </div>
+
+                    <div>
+                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-weight: 600;">DATE & TIME</p>
+                        <p style="margin: 0; font-size: 16px; font-weight: 600; color: #2d3748;">
+                            <i class="fas fa-calendar" style="color: #ef4444;"></i> ${formatDate(session.session_date || session.date)}
+                        </p>
+                        ${session.start_time && session.end_time ? `<p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;"><i class="fas fa-clock"></i> ${session.start_time} - ${session.end_time}</p>` : ''}
+                    </div>
+
+                    <div style="grid-column: 1 / -1;">
+                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-weight: 600;">SESSION TYPE</p>
+                        <p style="margin: 0; font-size: 16px; font-weight: 600; color: #2d3748;">
+                            ${session.session_type === 'online' ? 
+                                '<i class="fas fa-laptop" style="color: #3b82f6;"></i> Online Session' : 
+                                '<i class="fas fa-users" style="color: #8b5cf6;"></i> Face-to-Face Session'}
+                        </p>
+                    </div>
+
+                    ${session.session_type === 'face-to-face' ? `
+                        <div style="grid-column: 1 / -1;">
+                            <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 13px; font-weight: 600;">PHYSICAL LOCATION</p>
+                            <p style="margin: 0; font-size: 15px; color: #2d3748;">
+                                <i class="fas fa-map-marker-alt" style="color: #ef4444;"></i> ${physicalLocation}
+                            </p>
+                        </div>
+                    ` : ''}
+
+                    ${meetLink ? `
+                        <div style="grid-column: 1 / -1;">
+                            <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 13px; font-weight: 600;">GOOGLE MEET LINK</p>
+                            <a href="${meetLink}" target="_blank" rel="noopener noreferrer" 
+                               class="btn" style="background: #3b82f6; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;">
+                                <i class="fas fa-video"></i> Join Meeting
+                            </a>
+                        </div>
+                    ` : ''}
+
+                    ${session.notes ? `
+                        <div style="grid-column: 1 / -1;">
+                            <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 13px; font-weight: 600;">NOTES</p>
+                            <div style="background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid #5865F2;">
+                                <p style="margin: 0; font-size: 14px; color: #4b5563; line-height: 1.6;">${session.notes}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${session.cancellation_reason ? `
+                        <div style="grid-column: 1 / -1;">
+                            <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 13px; font-weight: 600;">CANCELLATION REASON</p>
+                            <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                                <p style="margin: 0; font-size: 14px; color: #991b1b; line-height: 1.6;">${session.cancellation_reason}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="grid-column: 1 / -1; margin-top: 10px; padding-top: 20px; border-top: 2px solid #e5e7eb; display: flex; gap: 10px; justify-content: flex-end;">
+                        ${session.status === 'pending' ? 
+                            `<button class="btn btn-success" onclick="approveSessionFromModal(${session.session_id})" style="padding: 10px 20px;">
+                                <i class="fas fa-check"></i> Approve Session
+                            </button>` : ''
+                        }
+                        <button class="btn btn-danger" onclick="deleteSessionFromModal(${session.session_id})" style="padding: 10px 20px;">
+                            <i class="fas fa-trash"></i> Delete Session
+                        </button>
+                        <button class="btn" onclick="closeModal()" style="background: #6b7280; color: white; padding: 10px 20px;">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('sessionModal').style.display = 'block';
+        };
+
+        // Close modal
+        window.closeModal = function() {
+            document.getElementById('sessionModal').style.display = 'none';
+        };
+
+        // Approve from modal
+        window.approveSessionFromModal = async function(sessionId) {
+            closeModal();
+            await approveSession(sessionId);
+        };
+
+        // Delete from modal
+        window.deleteSessionFromModal = async function(sessionId) {
+            closeModal();
+            await deleteSession(sessionId);
+        };
+
+        // Export to CSV
+        window.exportToCSV = function() {
+            if (!filteredSessions || filteredSessions.length === 0) {
+                showMessage('No sessions to export', 'warning');
+                return;
+            }
+
+            try {
+                // Prepare CSV data
+                const headers = [
+                    'Session ID',
+                    'Student Name',
+                    'Student ID',
+                    'Student Email',
+                    'Tutor Name',
+                    'Tutor ID',
+                    'Tutor Email',
+                    'Subject',
+                    'Subject Code',
+                    'Course',
+                    'Date',
+                    'Start Time',
+                    'End Time',
+                    'Type',
+                    'Status',
+                    'Physical Location',
+                    'Google Meet Link',
+                    'Notes',
+                    'Cancellation Reason',
+                    'Created At'
+                ];
+
+                const rows = filteredSessions.map(session => [
+                    session.session_id || '',
+                    session.tutee_name || session.student_name || '',
+                    session.tutee_school_id || '',
+                    session.tutee_email || '',
+                    session.tutor_name || '',
+                    session.tutor_school_id || '',
+                    session.tutor_email || '',
+                    session.subject_name || '',
+                    session.subject_code || '',
+                    session.course_code || '',
+                    session.session_date || session.date || '',
+                    session.start_time || '',
+                    session.end_time || '',
+                    session.session_type || '',
+                    session.status || '',
+                    session.physical_location || session.location || '',
+                    session.google_meet_link || session.meet_link || '',
+                    (session.notes || '').replace(/"/g, '""'),
+                    (session.cancellation_reason || '').replace(/"/g, '""'),
+                    session.created_at || ''
+                ]);
+
+                // Build CSV string
+                let csvContent = 'data:text/csv;charset=utf-8,';
+                csvContent += headers.map(h => `"${h}"`).join(',') + '\n';
+                csvContent += rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+                // Download
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', `sessions_export_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showMessage(`Exported ${filteredSessions.length} sessions to CSV`, 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showMessage('Failed to export CSV', 'danger');
+            }
+        };
+
+        // Close modal on outside click
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('sessionModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on ESC key
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
 
         // Logout handler - direct implementation
         const logoutBtn = document.getElementById('logoutBtn');
